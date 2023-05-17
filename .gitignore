@@ -4,3 +4,6 @@
 *.asv
 *.json
 *.xdat
+*.mat
+*.fig
+*.pdf
