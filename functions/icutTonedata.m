@@ -17,18 +17,19 @@ onsets = find(crossover == 1);
 stimITI = 1200;
 BL = 399; % baseline ms
 % pre-psuedorandomized tone list for this subject
-toneList = readmatrix([file(1:6) 'Tonotopy.txt']);
+toneList = readmatrix([file(1:6) 'Tonotopy.txt'])';
 
 % get ready to sort, stack the list to match the amount of onsets if needed
-while length(file(1:6)) < length(onsets)
+while length(toneList) < length(onsets)
     toneList = [toneList toneList];
 end
 
-% do we need to remove that first stim?
+% RPvdsEx always skips producing the first stim, which in this case is set to 0
+% and do we also need to remove that first stim?
 if throwoutfirst == 1
-    toneList = toneList(2:length(onsets)+1);
+    toneList = toneList(3:length(onsets)+2);
 elseif throwoutfirst == 0
-    toneList = toneList(1:length(onsets));
+    toneList = toneList(2:length(onsets)+1);
 end
 
 shortlist = unique(toneList);
@@ -36,11 +37,7 @@ ToneData = struct;
 
 % now we can cut out the time points around onsets corresponding to
 % specific dB
-for itone = 1:length(toneList)
-    
-    if shortlist(itone) == 0 % don't count first pause
-        continue
-    end
+for itone = 1:length(shortlist)
     
     cutHere = find(toneList == shortlist(itone));
     % create container for stacked data, channel x time(ms) x trials

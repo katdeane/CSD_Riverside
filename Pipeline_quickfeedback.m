@@ -1,7 +1,13 @@
 %% Pipeline for LFP Quick Feedback
 
 clear; clc;
-cd('E:\CSD_Riverside'); % change for your station
+if exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
+    cd('C:\Users\RazakLab\Documents\CSD_Riverside')
+elseif exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); % change for your station
+else
+    error('add your local repository as shown above')
+end
 homedir = pwd; 
 addpath(genpath(homedir));
 
@@ -38,10 +44,6 @@ elseif strcmp(stimtype, 'Pure tones')
     
 end
 
-%% get CSDs and tuning curves
-
-
-%% Generate CSDs
 
 
 

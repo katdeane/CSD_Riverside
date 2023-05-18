@@ -31,6 +31,10 @@ ylabel(CSDfig, 'depth [channels]')
 
 for istim = 1:size(Data,2)
     
+    if isempty(Data(istim).LFP)
+        continue
+    end
+
     % CSD
     % preallocate:
     CSD = NaN(size(Data(istim).LFP));
@@ -49,7 +53,7 @@ for istim = 1:size(Data,2)
 
     nexttile, imagesc(fullCSD);
     colormap('jet');
-    caxis([-0.2 0.2])
+    clim([-0.2 0.2])
     colorbar
     title([num2str(stimlist(istim)) thisunit])
     

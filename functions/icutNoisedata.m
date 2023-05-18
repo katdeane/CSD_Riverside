@@ -20,7 +20,7 @@ BL = 399; % baseline ms
 dBList = [20, 30, 40, 50, 60, 70, 80, 90];
 
 % get ready to sort, stack the list to match the amount of onsets
-dBListExtend = zeros(1,length(dBList) * (ceil((312+1)/length(dBList))));
+dBListExtend = zeros(1,length(dBList) * (ceil((length(onsets)+1)/length(dBList))));
 for iextend = 1:ceil((312+1)/length(dBList))
     dBListExtend(8*iextend-7:8*iextend) = dBList;
 end
@@ -29,7 +29,7 @@ end
 if throwoutfirst == 1
     dBListExtend = dBListExtend(2:length(onsets)+1);
 elseif throwoutfirst == 0
-    dBListExtend = dBListExtend(1:length(onsets));
+    dBListExtend = dBListExtend(1:length(onsets)-1);
 end
 
 NoiseData = struct;
