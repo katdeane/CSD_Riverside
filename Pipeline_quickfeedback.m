@@ -8,7 +8,7 @@ elseif exist('E:\CSD_Riverside','dir')
 else
     error('add your local repository as shown above')
 end
-homedir = pwd; 
+homedir = pwd;
 addpath(genpath(homedir));
 
 %% get some bigger inputs
@@ -16,13 +16,13 @@ addpath(genpath(homedir));
 % prompt stimulus type
 stimtype = questdlg('Is this noise or pure tones?', ...
 	'Stimulus Type', ...
-	'Noise bursts','Pure tones','Pure Tones');
+	'Noise bursts', 'Click Trains', 'Pure tones','Pure Tones');
 
 % prompt file name
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'test_01_LFP'};
+definput = {'subject_meas#_LFP'};
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
 
@@ -42,6 +42,11 @@ elseif strcmp(stimtype, 'Pure tones')
     DataOut = icutTonedata(homedir, file, StimIn, DataIn);
     CSDandTuningFigs(homedir, file, DataOut, 'Tones')
     
+elseif strcmp(stimtype, 'Click Trains')
+    
+    DataOut = icutClickdata(homedir, file, StimIn, DataIn);
+    CSDandTuningFigs(homedir, file, DataOut, 'Clicks')
+
 end
 
 

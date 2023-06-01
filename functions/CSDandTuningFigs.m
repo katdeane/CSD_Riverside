@@ -4,13 +4,15 @@ function CSDandTuningFigs(homedir, file, Data, stimtype)
 if strcmp(stimtype,'Noise')
     thisunit = 'dB';
 elseif strcmp(stimtype,'Tones')
+    thisunit = 'kHz';
+elseif strcmp(stimtype,'Clicks')
     thisunit = 'Hz';
 else
-    warning('You have to input Noise or Tones for stimtype variable')
+    warning('You have to input specific stimtype variable as above')
 end
 
 % Parameters for CSD filtering
-chan_dist = 50; % same type of electrodes
+chan_dist = 50; % distance between channels (µm)
 kernel    = 450; % 600 is very smooth, 300 is more accurate, 450 is happy medium
 kernelxchannel = kernel./chan_dist; % kernel size in terms of number of channels
 hammsiz   = kernelxchannel+(rem(kernelxchannel,2)-1)*-1; % linear extrapolation and running avg
@@ -25,7 +27,7 @@ stimlist = [Data.(fieldnames{2})];
 % set up CSD figure
 figure
 CSDfig = tiledlayout('flow');
-title(CSDfig,['CSD ' file])
+title(CSDfig,['CSD ' file(1:5) ' ' file(7:8)])
 xlabel(CSDfig, 'time [ms]')
 ylabel(CSDfig, 'depth [channels]')
 
@@ -55,8 +57,14 @@ for istim = 1:size(Data,2)
     colormap('jet');
     clim([-0.2 0.2])
     colorbar
-    title([num2str(stimlist(istim)) thisunit])
-    
+    if strcmp(stimtype,'Tones')
+        title([num2str(stimlist(istim)/1000) thisunit])
+    elseif strcmp(stimtype,'Clicks')
+        title([num2str(1000/stimlist(istim)) thisunit])
+    else
+        title([num2str(stimlist(istim)) thisunit])
+    end
+  
     % get average rectified rms value, full column, for first 100 ms after onset
     rmslist(istim) = rms(mean(abs(fullCSD(:,BL + 1:BL + 100)),1)); 
 
