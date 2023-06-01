@@ -27,9 +27,9 @@ end
 
 % do we need to remove that first stim?
 if throwoutfirst == 1
-    dBListExtend = dBListExtend(2:length(onsets)+1);
+    dBListExtend = dBListExtend(3:length(onsets)+1);
 elseif throwoutfirst == 0
-    dBListExtend = dBListExtend(1:length(onsets)-1);
+    dBListExtend = dBListExtend(2:length(onsets));
 end
 
 NoiseData = struct;
