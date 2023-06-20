@@ -14,15 +14,15 @@ addpath(genpath(homedir));
 %% get some bigger inputs
 
 % prompt stimulus type
-stimtype = questdlg('Is this noise or pure tones?', ...
+stimtype = questdlg('What type of stimulus?', ...
 	'Stimulus Type', ...
-	'Noise bursts', 'Click Trains', 'Pure tones','Pure Tones');
+	'Noise bursts', 'Click Trains', 'Pure tones', 'Noise bursts');
 
 % prompt file name
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'subject_meas#_LFP'};
+definput = {'MKO03_01_LFP'}; % replace with current 
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
 
@@ -43,9 +43,14 @@ elseif strcmp(stimtype, 'Pure tones')
     CSDandTuningFigs(homedir, file, DataOut, 'Tones')
     
 elseif strcmp(stimtype, 'Click Trains')
-    
+
     DataOut = icutClickdata(homedir, file, StimIn, DataIn);
     CSDandTuningFigs(homedir, file, DataOut, 'Clicks')
+
+elseif strcmp(stimtype, 'Chirps')
+
+    DataOut = icutChirpdata(homedir, file, StimIn, DataIn);
+    CSDandTuningFigs(homedir, file, DataOut, 'Chirps')
 
 end
 
