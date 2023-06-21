@@ -22,13 +22,13 @@ stimtype = questdlg('What type of stimulus?', ...
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'MKO03_01_LFP'}; % replace with current 
+definput = {'MKO04_01_LFP'}; % replace with current 
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
 
 %% Get data from .xdat files
  
-[StimIn, DataIn] = FileReader(file);
+[StimIn, DataIn] = FileReaderLFP(file);
 
 %% cut data at each stim onset (-200 BL) and sort
 

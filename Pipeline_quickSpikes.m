@@ -28,4 +28,9 @@ file = file{1}; % clean it up
 
 %% Get data from .xdat files
  
-[StimIn, DataIn] = FileReader(file);
+[StimIn, DataIn] = FileReaderSpike(file);
+
+%%
+
+DataOut = icutNoisedata(homedir, file, StimIn, DataIn);
+

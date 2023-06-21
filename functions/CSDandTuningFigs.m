@@ -22,7 +22,7 @@ kernel    = 450; % 600 is very smooth, 300 is more accurate, 450 is happy medium
 kernelxchannel = kernel./chan_dist; % kernel size in terms of number of channels
 hammsiz   = kernelxchannel+(rem(kernelxchannel,2)-1)*-1; % linear extrapolation and running avg
 paddsiz   = floor(hammsiz/2)+1;
-BL        = 399; % standard practice
+BL        = 399; % baseline time period
 
 
 fieldnames = fields(Data);
