@@ -1,8 +1,10 @@
 %% Pipeline for LFP Quick Feedback
 
 clear; clc;
-if exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
-    cd('C:\Users\RazakLab\Documents\CSD_Riverside')
+if exist('D:\CSD_Riverside','dir')
+    cd('D:\CSD_Riverside')
+% if exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
+%     cd('C:\Users\RazakLab\Documents\CSD_Riverside')
 elseif exist('E:\CSD_Riverside','dir')
     cd('E:\CSD_Riverside'); % change for your station
 else
@@ -22,7 +24,7 @@ stimtype = questdlg('What type of stimulus?', ...
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'MKO05_01_LFP'}; % replace with current 
+definput = {'MKO06_01_LFP'}; % replace with current 
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
 
@@ -34,7 +36,7 @@ file = file{1}; % clean it up
 
 if strcmp(stimtype, 'Noise bursts')
    
-    DataOut = icutNoisedata(homedir, file, StimIn, DataIn);
+    DataOut = icutNoisedata(file, StimIn, DataIn);
     CSDandTuningFigs(homedir, file, DataOut, 'Noise')
     
 elseif strcmp(stimtype, 'Pure tones')
