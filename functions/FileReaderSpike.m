@@ -1,8 +1,6 @@
-function [stimIn, data] = FileReader(file)
-% This function produces figures for either tonotopies or noise bursts based
-% on the selected file and type. It will also generate an averaged raw data
-% file. For full (single trial) data file, run ___tbd____ funtion 
-
+function [stimIn, data] = FileReaderSpike(file)
+% This converts the data from allego/curate and downsamples it by 30. That
+% results in sr = 1000 (1000 sp in 1 second / each sp is 1 ms)
 % initalized NeuroNexus conversion function
 reader = allegoXDatFileReaderR2019b;
 
@@ -20,6 +18,8 @@ dlgtitle = 'Channels';
 dims     = [1 35];
 definput = {'1','32'};
 channels = inputdlg(prompt,dlgtitle,dims,definput);
-% downsample with that info
-data = downsample(signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:)',30)';
+% downsample with that info - it's 30k sr, I want 3k
+data = downsample(signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:)',10)';
+% or without downsampling
+%data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
 

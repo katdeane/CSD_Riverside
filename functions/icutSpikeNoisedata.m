@@ -1,4 +1,4 @@
-function NoiseData = icutNoisedata(homedir, file, StimIn, Data)
+function NoiseData = icutSpikeNoisedata(homedir, file, StimIn, DataIn)
 
 threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
@@ -13,9 +13,11 @@ end
 crossover = diff(location);
 onsets = find(crossover == 1);
 
-% stim duration = 100 ms + ITI = 1000 ms
-stimITI = 1100;
-BL = 399; % baseline ms
+% sampling rate preserved for spiking data = 3000 points/second
+sr = 3000;
+% stim duration = 0.1 s + ITI = 1 s
+stimITI = 1.1*sr; 
+BL = 0.399*sr; % baseline (s)
 % non randomized list of dB presentation
 dBList = [20, 30, 40, 50, 60, 70, 80, 90];
 
@@ -42,16 +44,16 @@ for idB = 1:length(dBList)
     
     cutHere = find(dBListExtend == dBList(idB));
     % create container for stacked data, channel x time(ms) x trials
-    curData = NaN(size(Data,1), stimITI + BL + 1, length(cutHere));
+    curData = NaN(size(DataIn,1), stimITI + BL + 1, length(cutHere));
     
     for iOn = 1:length(cutHere)
         
-        if onsets(cutHere(iOn)) + stimITI > size(Data,2) % if last ITI cut short
+        if onsets(cutHere(iOn)) + stimITI > size(DataIn,2) % if last ITI cut short
             curData = curData(:,:,1:size(curData,3)-1);
             continue
         end
         
-        curData(:,:,iOn) = Data(:,onsets(cutHere(iOn))-BL:onsets(cutHere(iOn))+stimITI);
+        curData(:,:,iOn) = DataIn(:,onsets(cutHere(iOn))-BL:onsets(cutHere(iOn))+stimITI);
         
     end
     
