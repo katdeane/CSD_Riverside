@@ -1,4 +1,4 @@
-function NoiseData = icutNoisedata(homedir, file, StimIn, Data)
+function NoiseData = icutNoisedata(file, StimIn, Data)
 
 threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
@@ -60,11 +60,4 @@ for idB = 1:length(dBList)
     NoiseData(idB).LFP      = curData;
     
 end
-
-% also save it out, no need to run multiple times
-cd(homedir); cd output
-filename = [file '_Noise.mat'];
-save(filename, 'NoiseData')
-cd(homedir)
-
 

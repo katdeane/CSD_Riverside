@@ -18,6 +18,7 @@ cd(homedir); cd groups;
 %% Load in
 input = dir('*.m');
 entries = length(input);
+cd(homedir)
 
 for i1 = 1:entries    
     
@@ -57,7 +58,7 @@ for i1 = 1:entries
                     % The next part depends on the stimulus
                     LFPOut = icutNoisedata(homedir, file, StimIn, DataIn);
                     % Need to combine this with next thing to get out all of the extra data    
-                    CSDandTuningFigs(homedir, file, LFPOut, 'Noise')
+                    CSDandTuningFigs(file, LFPOut, 'Noise')
                     
                     %% CSD full
 
