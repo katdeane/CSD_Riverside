@@ -29,6 +29,7 @@ for i1 = 1:entries
     
     %% Condition and Indexer
     Data = struct;
+    BL   = 399; % always a 400ms baseline pre-event 
        
     Indexer = imakeIndexer(Condition,animals,Cond); %#ok<*USENS>
     %%
@@ -56,11 +57,13 @@ for i1 = 1:entries
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
                    
                     % The next part depends on the stimulus
-                    LFPOut = icutNoisedata(homedir, file, StimIn, DataIn);
-                    % Need to combine this with next thing to get out all of the extra data    
-                    CSDandTuningFigs(file, LFPOut, 'Noise')
-                    
-                    %% CSD full
+                    if matches(Condition{iStimType},'NoiseBurst')
+                        % non randomized list of dB presentation
+                        dBList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, dBList);
+                    end
+
+                    %% All the data from the LFP now
 
                     %note: channel order is given twice because the whole
                     %CSD needs to be checked now (and not any one layer)
@@ -68,7 +71,7 @@ for i1 = 1:entries
                         SingleTrialCSD, AvgRecCSD, SingleTrialAvgRecCSD,...
                         SingleTrialRelResCSD, AvgRelResCSD,AvgAbsResCSD,...
                         SingleTrialAbsResCSD, LayerRelRes, AvgLayerRelRes] =...
-                        SingleTrialCSD_full(SWEEP, str2num(channels{iA}),1:length(str2num(channels{iA})),BL);
+                        SingleTrialCSD_full(sngtrlLFP,BL);
                     
                     %In case needed to delete empty columns to have the 
                     %correct amount of stimuli present: 

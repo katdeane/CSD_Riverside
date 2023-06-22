@@ -1,4 +1,4 @@
-function NoiseData = icutNoisedata(file, StimIn, Data)
+function NoiseData = icutNoisedata(file, StimIn, Data, dBList)
 
 threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
@@ -16,8 +16,6 @@ onsets = find(crossover == 1);
 % stim duration = 100 ms + ITI = 1000 ms
 stimITI = 1100;
 BL = 399; % baseline ms
-% non randomized list of dB presentation
-dBList = [20, 30, 40, 50, 60, 70, 80, 90];
 
 % get ready to sort, stack the list to match the amount of onsets
 dBListExtend = zeros(1,length(dBList) * (ceil((length(onsets)+1)/length(dBList))));
@@ -34,7 +32,7 @@ elseif throwoutfirst == 0
     dBListExtend = dBListExtend(2:length(onsets)+1);
 end
 
-NoiseData = struct;
+NoiseData = cell(1,length(dBList));
 
 % now we can cut out the time points around onsets corresponding to
 % specific dB
@@ -55,9 +53,7 @@ for idB = 1:length(dBList)
         
     end
     
-    NoiseData(idB).filename = file;
-    NoiseData(idB).dB       = dBList(idB);
-    NoiseData(idB).LFP      = curData;
+    NoiseData{idB} = curData;
     
 end
 
