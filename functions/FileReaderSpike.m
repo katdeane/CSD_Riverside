@@ -20,4 +20,6 @@ definput = {'1','32'};
 channels = inputdlg(prompt,dlgtitle,dims,definput);
 % downsample with that info - it's 30k sr, I want 3k
 data = downsample(signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:)',10)';
+% or without downsampling
+%data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
 
