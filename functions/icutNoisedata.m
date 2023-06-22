@@ -21,15 +21,17 @@ dBList = [20, 30, 40, 50, 60, 70, 80, 90];
 
 % get ready to sort, stack the list to match the amount of onsets
 dBListExtend = zeros(1,length(dBList) * (ceil((length(onsets)+1)/length(dBList))));
-for iextend = 1:ceil((312+1)/length(dBList))
+for iextend = 1:ceil((length(dBListExtend)+1)/length(dBList))
     dBListExtend(8*iextend-7:8*iextend) = dBList;
 end
 
 % do we need to remove that first stim?
 if throwoutfirst == 1
-    dBListExtend = dBListExtend(3:length(onsets)+1);
+    dBListExtend = dBListExtend(3:length(onsets)+2);
 elseif throwoutfirst == 0
-    dBListExtend = dBListExtend(2:length(onsets));
+    % even if we don't need to throw out first, RPvdsEx doesn't play the
+    % first stim in the list, so we skip to the second
+    dBListExtend = dBListExtend(2:length(onsets)+1);
 end
 
 NoiseData = struct;
