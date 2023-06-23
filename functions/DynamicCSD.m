@@ -67,18 +67,15 @@ for i1 = 1:entries
 
                     %note: channel order is given twice because the whole
                     %CSD needs to be checked now (and not any one layer)
-                    [SingleRec_preAVREC,Rec_preAVREC,AvgFP, SingleTrialFP, AvgCSD,...
-                        SingleTrialCSD, AvgRecCSD, SingleTrialAvgRecCSD,...
-                        SingleTrialRelResCSD, AvgRelResCSD,AvgAbsResCSD,...
-                        SingleTrialAbsResCSD, LayerRelRes, AvgLayerRelRes] =...
-                        SingleTrialCSD_full(sngtrlLFP,BL);
+                    [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD,AvgRelResCSD,...
+                        singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
                     
                     %In case needed to delete empty columns to have the 
                     %correct amount of stimuli present: 
                     %AvgCSD = AvgCSD(~cellfun('isempty', AvgCSD')); AvgCSD=AvgCSD(1:length(frqz));
                     
                     % Sink durations
-                    L.I_II = str2num(Layer.I_II{iA}); 
+                    L.II = str2num(Layer.II{iA}); 
                     L.IV = str2num(Layer.IV{iA}); 
                     L.V = str2num(Layer.V{iA}); 
                     L.VI = str2num(Layer.VI{iA}); 
@@ -86,7 +83,7 @@ for i1 = 1:entries
                     
                     %Generate Sink Boxes
                     [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_PAMP,PLAT,SINGLE_PLAT] =...
-                        sink_dura_Crypt(L,AvgCSD,SingleTrialCSD,BL);
+                        sink_dura(L,sngtrlCSD,BL);
                     
                     toc
                                                          
@@ -193,17 +190,17 @@ for i1 = 1:entries
                     end
 
                     %% Save and Quit
+                    % identifiers and basic info
                     Data(CondIDX).measurement   = [name '_' measurement];
                     Data(CondIDX).Condition     = [Condition{iStimType} '_' num2str(iStimCount)];
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).StimDur       = tone;
                     Data(CondIDX).Frqz          = frqz';
+                    % sink data
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
                     Data(CondIDX).BF_V          = BF_V;
                     Data(CondIDX).BF_VI         = BF_VI;
-                    Data(CondIDX).Bandwidth     = bandwidth;
-                    Data(CondIDX).Tuningwidth   = tuningwidth;
                     Data(CondIDX).SinkPeakAmp   = PAMP;
                     Data(CondIDX).SglSinkPkAmp  = SINGLE_PAMP;
                     Data(CondIDX).SinkPeakLate  = PLAT;
@@ -213,20 +210,14 @@ for i1 = 1:entries
                     Data(CondIDX).Sinkoffset    = OFFSET;
                     Data(CondIDX).SinkRMS       = RMS;
                     Data(CondIDX).SingleSinkRMS = SINGLE_RMS;
-                    Data(CondIDX).SglTrl_LFP    = SingleTrialFP;
-                    Data(CondIDX).LFP           = AvgFP;
-                    Data(CondIDX).SglTrl_CSD    = SingleTrialCSD;
-                    Data(CondIDX).CSD           = AvgCSD;
-                    Data(CondIDX).LayerRelRes   = AvgLayerRelRes;
-                    Data(CondIDX).SingleRecCSD  = SingleRec_preAVREC;
-                    Data(CondIDX).LayerRecCSD   = Rec_preAVREC;
-                    Data(CondIDX).AVREC_raw     = AvgRecCSD;
-                    Data(CondIDX).SglTrl_AVRraw = SingleTrialAvgRecCSD;
-                    Data(CondIDX).SglTrl_Relraw = SingleTrialRelResCSD;
-                    Data(CondIDX).SglTrl_Absraw = SingleTrialAbsResCSD;
-                    Data(CondIDX).RELRES_raw    = AvgRelResCSD;
-                    Data(CondIDX).ABSRES_raw    = AvgAbsResCSD;
-                    
+                    % CSD data
+                    Data(CondIDX).sngtrlLFP     = sngtrlLFP;
+                    Data(CondIDX).sngtrlCSD     = sngtrlCSD;
+                    Data(CondIDX).AVREC         = AvrecCSD;
+                    Data(CondIDX).sngtrlAvrec   = sngtrlAvrecCSD;
+                    Data(CondIDX).RELRES        = AvgRelResCSD;
+                    Data(CondIDX).singtrlRelRes = singtrlRelResCSD;
+                                        
                     %% Visualize early tuning (onset between 0:65 ms)
                     IIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     IVcurve = nan(1,length(Data(CondIDX).SinkRMS));

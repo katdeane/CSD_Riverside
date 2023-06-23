@@ -57,9 +57,8 @@ for iLFP = 1:length(sngtrlLFP)
 
     end
 
-    AvrecCSD{iLFP}(:,itrial)     = mean(sngtrlAvrecCSD{iLFP},2);
-    AvgRelResCSD{iLFP}(:,itrial) =  mean(singtrlRelResCSD{iLFP},2);
-
+    AvrecCSD{iLFP}(:)     = mean(sngtrlAvrecCSD{iLFP},2);
+    AvgRelResCSD{iLFP}(:) =  mean(singtrlRelResCSD{iLFP},2);
 
 end
 
