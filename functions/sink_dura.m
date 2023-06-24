@@ -34,19 +34,19 @@ function [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_SinkPeak,PLAT,SINGLE_PeakL
 % used in further analysis steps to determine which sinks count, for example
 % towards tuning or after stim onset time. 
 
-std_find = 1.1;
-std_contain = 1.5;
+std_find    = 1;
+std_contain = 2;
 
-Order = {'II','IV','V','VI','all_chan'};
-PAMP = struct;
-PLAT = struct;
-ONSET = struct; 
-OFFSET = struct;
-DUR = struct;
-RMS = struct;
+Order   = {'II','IV','Va','Vb','VI','all_chan'};
+PAMP    = struct;
+PLAT    = struct;
+ONSET   = struct; 
+OFFSET  = struct;
+DUR     = struct;
+RMS     = struct;
 SINGLE_SinkPeak = struct;
-SINGLE_PeakLat = struct;
-SINGLE_RMS = struct;
+SINGLE_PeakLat  = struct;
+SINGLE_RMS      = struct;
 
 for istim = 1:length(sngtrlCSD)
     
@@ -83,13 +83,6 @@ for istim = 1:length(sngtrlCSD)
         thresh_find = (mean_BL + (std_BL*std_find)); %*T
         thresh_contain = (mean_BL+(std_BL*std_contain)); %*T
         
-        % sanity check
-%         T = ones(1,length(AvgCSD_layer));
-%         plot(AvgCSD_layer) 
-%         hold on
-%         plot(thresh_find*T)
-%         plot(thresh_contain*T)
-%         hold off
         
         %% Averaged CSD
         
@@ -102,16 +95,29 @@ for istim = 1:length(sngtrlCSD)
         onsets      = find(crossover == 1); %ABOVE threshold
         offsets     = find(crossover == -1); %BELOW threshold
         
+        % sanity check plot
+%         T = ones(1,length(AvgCSD_layer));
+%         plot(AvgCSD_layer) 
+%         hold on
+%         plot(thresh_find*T)
+%         plot(thresh_contain*T)
+%         for ion  = 1:length(onsets); plot(onsets(ion),thresh_find,'o'); end
+%         for ioff = 1:length(offsets); plot(offsets(ioff),thresh_find,'d'); end
+%         hold off
+        
         rmslist = NaN(1,length(onsets));
         pamplist = NaN(1,length(onsets));
         platlist = NaN(1,length(onsets));
         for iCross = 1:length(onsets)-1
             %if the first point less than the onset level and if there's a peak following it, calculate rms
             if (nanmax(AvgCSD_layer(:,onsets(iCross):offsets(iCross)))) > thresh_contain
-                % take actual rms and peak from RAW CSD
-                rmslist(iCross)  = rms(rawCSD(:,onsets(iCross):onsets(iCross+1)));
-                pamplist(iCross) = nanmax(rawCSD(:,onsets(iCross):onsets(iCross+1)));
-                platlist(iCross) = find(rawCSD(:,onsets(iCross):onsets(iCross+1)) == pamplist(iCross));
+                % if the sink is wide enough at the base 
+                if (offsets(iCross)-onsets(iCross)) > 30
+                    % take actual rms and peak from RAW CSD
+                    rmslist(iCross)  = rms(rawCSD(:,onsets(iCross):onsets(iCross+1)));
+                    pamplist(iCross) = nanmax(rawCSD(:,onsets(iCross):onsets(iCross+1)));
+                    platlist(iCross) = find(rawCSD(:,onsets(iCross):onsets(iCross+1)) == pamplist(iCross));
+                end
             end
         end
         
@@ -128,7 +134,7 @@ for istim = 1:length(sngtrlCSD)
             % Based on gausian and zero source data:
             clear boolist; boolist(~isnan(rmslist)) = 1; % boolian of sinks
             LayerSinkON   = onsets(boolist==1);
-            LayerSinkOFF  = onsets(find(boolist == 1)+1);
+            LayerSinkOFF  = offsets(boolist == 1);
             LayerSinkDUR  = LayerSinkOFF - LayerSinkON;
             
             % Based on raw data:
@@ -138,12 +144,12 @@ for istim = 1:length(sngtrlCSD)
             
         end
         
-        PAMP(istim).(Order{iOrder}) = LayerSinkPAMP;
-        PLAT(istim).(Order{iOrder}) = LayerSinkPLAT;
-        ONSET(istim).(Order{iOrder}) = LayerSinkON;
+        PAMP(istim).(Order{iOrder})   = LayerSinkPAMP;
+        PLAT(istim).(Order{iOrder})   = LayerSinkPLAT;
+        ONSET(istim).(Order{iOrder})  = LayerSinkON;
         OFFSET(istim).(Order{iOrder}) = LayerSinkOFF;
-        DUR(istim).(Order{iOrder})  = LayerSinkDUR;
-        RMS(istim).(Order{iOrder})  = LayerSinkRMS;
+        DUR(istim).(Order{iOrder})    = LayerSinkDUR;
+        RMS(istim).(Order{iOrder})    = LayerSinkRMS;
         
         %% Single Trial CSD (using onset-offset of average)
         

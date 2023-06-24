@@ -6,8 +6,7 @@ function DynamicCSD(homedir, Condition)
 %   Data struct per animal (eg MWT01_Data.mat) which is saved in the DATA 
 %   folder. 
 % 
-%   The sinks list takes into account the smaller mouse cortex compared to
-%   gerbils. (I_II, IV, V, VI)
+%   The sinks list is (II, IV, Va, Vb, VI)
 %   IMPORTANT: DO NOT change sink list here. If you need another set of
 %   sinks then create a SEPARATE and UNIQUELY NAMED script.
 
@@ -59,15 +58,14 @@ for i1 = 1:entries
                     % The next part depends on the stimulus
                     if matches(Condition{iStimType},'NoiseBurst')
                         % non randomized list of dB presentation
-                        dBList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, dBList);
+                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        thisunit = 'dB';
+                        stimDur  = 100; % ms
+                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
                     end
 
-                    %% All the data from the LFP now
-
-                    %note: channel order is given twice because the whole
-                    %CSD needs to be checked now (and not any one layer)
-                    [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD,AvgRelResCSD,...
+                    %% All the data from the LFP now (sngtrl = single trial)
+                    [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
                     
                     %In case needed to delete empty columns to have the 
@@ -77,7 +75,8 @@ for i1 = 1:entries
                     % Sink durations
                     L.II = str2num(Layer.II{iA}); 
                     L.IV = str2num(Layer.IV{iA}); 
-                    L.V = str2num(Layer.V{iA}); 
+                    L.Va = str2num(Layer.Va{iA}); 
+                    L.Vb = str2num(Layer.Vb{iA}); 
                     L.VI = str2num(Layer.VI{iA}); 
                     Layers = fieldnames(L); 
                     
@@ -89,33 +88,35 @@ for i1 = 1:entries
                                                          
                     
                     %% Plots 
+                    disp('Plotting CSD with sink detections')
+                    tic
+                    
                     cd (homedir); cd figures;
                     mkdir(['Single_' input(i1).name(1:end-2)]);
+                    cd (['Single_' input(i1).name(1:end-2)])
     
-                    figure('Name',[name ' ' measurement ': ' Condition{iStimType}])
-                    tic
-                    disp('Plotting CSD with sink detections')
-                    for istim = 1:length(AvgCSD)
-                        subplot(2,round(length(AvgCSD)/2),istim)
-                        imagesc(AvgCSD{istim})
-                        if istim == 1
-                            title ([name ' ' measurement ': ' Condition{iStimType} ' ' num2str(istim) ' ' num2str(frqz(istim)) ' Hz'])
-                        else
-                            title ([num2str(frqz(istim)) ' Hz'])
-                        end
-                        
-                        colormap (jet)                        
-                        clim([-0.0005 0.0005])
+                    CSDfig = tiledlayout('flow');
+                    title(CSDfig,[file(1:5) ' ' Condition{iStimType}...
+                        ' ' num2str(iStimCount) ' CSD'])
+                    xlabel(CSDfig, 'time [ms]')
+                    ylabel(CSDfig, 'depth [channels]')
+                    
+                    for istim = 1:length(stimList)
+                        nexttile
+                        imagesc(mean(sngtrlCSD{istim},3))
+                        title([num2str(stimList(istim)) thisunit])
+                        colormap jet                       
+                        caxis([-0.1 0.1])
                         
                         hold on
-                        % Layer I_II
-                        for isink = 1:length(ONSET(istim).I_II)
-                            y =[(max(L.I_II)+0.5),(max(L.I_II)+0.5),(min(L.I_II)-0.5),...
-                                (min(L.I_II)-0.5),(max(L.I_II)+0.5)];
+                        % Layer II
+                        for isink = 1:length(ONSET(istim).II)
+                            y =[(max(L.II)+0.5),(max(L.II)+0.5),(min(L.II)-0.5),...
+                                (min(L.II)-0.5),(max(L.II)+0.5)];
                             if isempty(y); y = [NaN NaN NaN NaN NaN]; end %in case the upper layer is not there
-                            x = [ONSET(istim).I_II(isink)+BL, OFFSET(istim).I_II(isink)+BL,...
-                                OFFSET(istim).I_II(isink)+BL, ONSET(istim).I_II(isink)+BL,...
-                                ONSET(istim).I_II(isink)+BL];
+                            x = [ONSET(istim).II(isink), OFFSET(istim).II(isink),...
+                                OFFSET(istim).II(isink), ONSET(istim).II(isink),...
+                                ONSET(istim).II(isink)];
                             plot(x,y,'black','LineWidth',2)
                         end
                                                                         
@@ -123,19 +124,29 @@ for i1 = 1:entries
                         for isink = 1:length(ONSET(istim).IV)
                             y =[(max(L.IV)+0.5),(max(L.IV)+0.5),(min(L.IV)-0.5),...
                                 (min(L.IV)-0.5),(max(L.IV)+0.5)];
-                            x = [ONSET(istim).IV(isink)+BL, OFFSET(istim).IV(isink)+BL,...
-                                OFFSET(istim).IV(isink)+BL, ONSET(istim).IV(isink)+BL,...
-                                ONSET(istim).IV(isink)+BL];
+                            x = [ONSET(istim).IV(isink), OFFSET(istim).IV(isink),...
+                                OFFSET(istim).IV(isink), ONSET(istim).IV(isink),...
+                                ONSET(istim).IV(isink)];
                             plot(x,y,'black','LineWidth',2)
                         end
                         
-                        % Layer V
-                        for isink = 1:length(ONSET(istim).V)
-                            y =[(max(L.V)+0.5),(max(L.V)+0.5),(min(L.V)-0.5),...
-                                (min(L.V)-0.5),(max(L.V)+0.5)];
-                            x = [ONSET(istim).V(isink)+BL, OFFSET(istim).V(isink)+BL,...
-                                OFFSET(istim).V(isink)+BL, ONSET(istim).V(isink)+BL,...
-                                ONSET(istim).V(isink)+BL];
+                        % Layer Va
+                        for isink = 1:length(ONSET(istim).Va)
+                            y =[(max(L.Va)+0.5),(max(L.Va)+0.5),(min(L.Va)-0.5),...
+                                (min(L.Va)-0.5),(max(L.Va)+0.5)];
+                            x = [ONSET(istim).Va(isink), OFFSET(istim).Va(isink),...
+                                OFFSET(istim).Va(isink), ONSET(istim).Va(isink),...
+                                ONSET(istim).Va(isink)];
+                            plot(x,y,'black','LineWidth',2)
+                        end
+                        
+                        % Layer Vb
+                        for isink = 1:length(ONSET(istim).Vb)
+                            y =[(max(L.Vb)+0.5),(max(L.Vb)+0.5),(min(L.Vb)-0.5),...
+                                (min(L.Vb)-0.5),(max(L.Vb)+0.5)];
+                            x = [ONSET(istim).Vb(isink), OFFSET(istim).Vb(isink),...
+                                OFFSET(istim).Vb(isink), ONSET(istim).Vb(isink),...
+                                ONSET(istim).Vb(isink)];
                             plot(x,y,'black','LineWidth',2)
                         end
                         
@@ -143,9 +154,9 @@ for i1 = 1:entries
                         for isink = 1:length(ONSET(istim).VI)
                             y =[(max(L.VI)+0.5),(max(L.VI)+0.5),(min(L.VI)-0.5),...
                                 (min(L.VI)-0.5),(max(L.VI)+0.5)];
-                            x = [ONSET(istim).VI(isink)+BL, OFFSET(istim).VI(isink)+BL,...
-                                OFFSET(istim).VI(isink)+BL, ONSET(istim).VI(isink)+BL,...
-                                ONSET(istim).VI(isink)+BL];
+                            x = [ONSET(istim).VI(isink), OFFSET(istim).VI(isink),...
+                                OFFSET(istim).VI(isink), ONSET(istim).VI(isink),...
+                                ONSET(istim).VI(isink)];
                             plot(x,y,'black','LineWidth',2)
                         end                    
                         
@@ -154,52 +165,47 @@ for i1 = 1:entries
                     end
                     toc
                     
-                    cd([homedir '\figs\']); mkdir(['Single_' input(i1).name(1:end-2)]);
-                    cd(['Single_' input(i1).name(1:end-2)])
                     h = gcf;
-                    set(h, 'PaperType', 'A4');
-                    set(h, 'PaperOrientation', 'landscape');
-                    set(h, 'PaperUnits', 'centimeters');
-                    savefig(h,[name '_' measurement '_CSDs' ],'compact')
+                    savefig(h,[name '_' measurement '_CSD' ],'compact')
                     close (h)
 
                     % determine BF of each layer from 1st sink's rms
-                    clear BF_II BF_IV BF_V BF_VI
+                    clear BF_II BF_IV BF_Va BF_Vb BF_VI
                     for ilay = 1:length(Layers)
                         
                         RMSlist = nan(1,length(RMS));
                         for istim = 1:length(RMS)
-                            if frqz(istim) == 0 || isinf(frqz(istim))
-                                continue
-                            end
-                            RMSlist(istim) = RMS(istim).(Layers{ilay})(1);
+                            RMSlist(istim) = nanmax(RMS(istim).(Layers{ilay}));
                         end
                         
                         BF = find(RMSlist == nanmax(RMSlist));
 
                         if contains(Layers{ilay},'II')
-                            BF_II = frqz(BF);
+                            BF_II = stimList(BF);
                         elseif contains(Layers{ilay},'IV')
-                            BF_IV = frqz(BF);
+                            BF_IV = stimList(BF);
                         elseif contains(Layers{ilay},'VI')
-                            BF_VI = frqz(BF);
-                        else 
-                            BF_V = frqz(BF);
+                            BF_VI = stimList(BF);
+                        elseif matches(Layers{ilay},'Va')
+                            BF_Va = stimList(BF);
+                        elseif matches(Layers{ilay},'Vb')
+                            BF_Vb = stimList(BF);   
                         end
                         
                     end
 
                     %% Save and Quit
                     % identifiers and basic info
-                    Data(CondIDX).measurement   = [name '_' measurement];
+                    Data(CondIDX).measurement   = file;
                     Data(CondIDX).Condition     = [Condition{iStimType} '_' num2str(iStimCount)];
                     Data(CondIDX).BL            = BL;
-                    Data(CondIDX).StimDur       = tone;
-                    Data(CondIDX).Frqz          = frqz';
+                    Data(CondIDX).stimDur       = stimDur;
+                    Data(CondIDX).StimList      = stimList;
                     % sink data
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
-                    Data(CondIDX).BF_V          = BF_V;
+                    Data(CondIDX).BF_Va         = BF_Va;
+                    Data(CondIDX).BF_Vb         = BF_Vb;
                     Data(CondIDX).BF_VI         = BF_VI;
                     Data(CondIDX).SinkPeakAmp   = PAMP;
                     Data(CondIDX).SglSinkPkAmp  = SINGLE_PAMP;
@@ -225,55 +231,57 @@ for i1 = 1:entries
                     VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     
                     for istim = 1:length(Data(CondIDX).SinkRMS)
-                        if 0 > Data(CondIDX).Sinkonset(istim).I_II(1) < 60
-                            IIcurve(istim) = Data(CondIDX).SinkRMS(istim).I_II(1);
+                        if 10 > Data(CondIDX).Sinkonset(istim).II(1) < 60
+                            IIcurve(istim) = Data(CondIDX).SinkRMS(istim).II(1);
                         else
                             IIcurve(istim) = NaN;
                         end
                         
-                        if 0 > Data(CondIDX).Sinkonset(istim).IV(1) < 60
+                        if 10 > Data(CondIDX).Sinkonset(istim).IV(1) < 60
                             IVcurve(istim) = Data(CondIDX).SinkRMS(istim).IV(1);
                         else
                             IVcurve(istim) = NaN;
                         end
                         
-                        if 0 > Data(CondIDX).Sinkonset(istim).V(1) < 60
+                        if 10 > Data(CondIDX).Sinkonset(istim).V(1) < 60
                             Vcurve(istim) = Data(CondIDX).SinkRMS(istim).V(1);
                         else
                             Vcurve(istim) = NaN;
                         end
                         
-                        if 0 > Data(CondIDX).Sinkonset(istim).VI(1) < 60
+                        if 10 > Data(CondIDX).Sinkonset(istim).VI(1) < 60
                             VIcurve(istim) = Data(CondIDX).SinkRMS(istim).VI(1);
                         else
                             VIcurve(istim) = NaN;
                         end
                     end
                     
-                    figure('Name',[name ' ' measurement ': ' Condition{iStimType} ' ' num2str(iStimCount)]);
+                    figure
                     plot(IIcurve,'LineWidth',2),...
                         hold on,...
                         plot(IVcurve,'LineWidth',2),...
                         plot(Vcurve,'LineWidth',2),...
                         plot(VIcurve,'LineWidth',2),...
                         legend('II', 'IV', 'V', 'VI')
-                    xticklabels(frqz)
+                    xticklabels(stimList)
+                    ylabel('RMS [mV/mm²]')
+                    xlabel([Condition{iStimType} ' [' thisunit ']'])
+                    title([file(1:5) ' ' Condition{iStimType}...
+                        ' ' num2str(iStimCount) ' Tuning Curve'])
+                    
                     hold off
                     h = gcf;
-                    set(h, 'PaperType', 'A4');
-                    set(h, 'PaperOrientation', 'landscape');
-                    set(h, 'PaperUnits', 'centimeters');
                     savefig(h,[name '_' measurement '_RMS Sink tuning' ],'compact')
                     close (h)
                 end
             end
         end
         
-        if ~exist([homedir 'DATA'],'dir')
-            cd(homedir); mkdir 'DATA'
+        if ~exist([homedir 'datastructs'],'dir')
+            cd(homedir); mkdir 'datastructs'
         end
         
-        cd ([homedir '/DATA'])
+        cd ([homedir '/datastructs'])
         save([name '_Data'],'Data');
         clear Data
     end    
