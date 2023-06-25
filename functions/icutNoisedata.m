@@ -1,4 +1,4 @@
-function NoiseData = icutNoisedata(file, StimIn, Data, dBList)
+function NoiseData = icutNoisedata(StimIn, Data, dBList)
 
 threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 

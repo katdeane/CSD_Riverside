@@ -56,8 +56,42 @@ for i1 = 1:entries
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
                    
                     % The next part depends on the stimulus
-                    if matches(Condition{iStimType},'NoiseBurst')
+                    if matches(Condition{iStimType},'NoiseBurst') || ...
+                            matches(Condition{iStimType},'postNoise')
                         % non randomized list of dB presentation
+                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        thisunit = 'dB';
+                        stimDur  = 100; % ms
+                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, 1000, 'noise');
+                        
+                    elseif matches(Condition{iStimType},'Tonotopy')
+                        stimList = [1, 2, 4, 8, 16, 24, 32];
+                        thisunit = 'kHz';
+                        stimDur  = 200; % ms
+                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, 1000, 'Tonotopy');
+                        
+                    elseif matches(Condition{iStimType},'Spontaneous') || ...
+                            matches(Condition{iStimType},'postSpont')
+                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        thisunit = 'dB';
+                        stimDur  = 100; % ms
+                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                       
+                    elseif matches(Condition{iStimType},'ClickTrain')
+                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        thisunit = 'dB';
+                        stimDur  = 100; % ms
+                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        
+                    elseif matches(Condition{iStimType},'Chirp')
+                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
+                        thisunit = 'dB';
+                        stimDur  = 100; % ms
+                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        
+                    elseif matches(Condition{iStimType},'gapASSR')
                         stimList = [20, 30, 40, 50, 60, 70, 80, 90];
                         thisunit = 'dB';
                         stimDur  = 100; % ms
@@ -92,7 +126,9 @@ for i1 = 1:entries
                     tic
                     
                     cd (homedir); cd figures;
-                    mkdir(['Single_' input(i1).name(1:end-2)]);
+                    if ~exist(['Single_' input(i1).name(1:end-2)],'dir')
+                        mkdir(['Single_' input(i1).name(1:end-2)]);
+                    end
                     cd (['Single_' input(i1).name(1:end-2)])
     
                     CSDfig = tiledlayout('flow');
@@ -227,7 +263,8 @@ for i1 = 1:entries
                     %% Visualize early tuning (onset between 0:65 ms)
                     IIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     IVcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    Vcurve  = nan(1,length(Data(CondIDX).SinkRMS));
+                    Vacurve = nan(1,length(Data(CondIDX).SinkRMS));
+                    Vbcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     
                     for istim = 1:length(Data(CondIDX).SinkRMS)
@@ -243,10 +280,16 @@ for i1 = 1:entries
                             IVcurve(istim) = NaN;
                         end
                         
-                        if 10 > Data(CondIDX).Sinkonset(istim).V(1) < 60
-                            Vcurve(istim) = Data(CondIDX).SinkRMS(istim).V(1);
+                        if 10 > Data(CondIDX).Sinkonset(istim).Va(1) < 60
+                            Vacurve(istim) = Data(CondIDX).SinkRMS(istim).Va(1);
                         else
-                            Vcurve(istim) = NaN;
+                            Vacurve(istim) = NaN;
+                        end
+                        
+                        if 10 > Data(CondIDX).Sinkonset(istim).Vb(1) < 60
+                            Vbcurve(istim) = Data(CondIDX).SinkRMS(istim).Vb(1);
+                        else
+                            Vbcurve(istim) = NaN;
                         end
                         
                         if 10 > Data(CondIDX).Sinkonset(istim).VI(1) < 60
@@ -260,9 +303,10 @@ for i1 = 1:entries
                     plot(IIcurve,'LineWidth',2),...
                         hold on,...
                         plot(IVcurve,'LineWidth',2),...
-                        plot(Vcurve,'LineWidth',2),...
+                        plot(Vacurve,'LineWidth',2),...
+                        plot(Vbcurve,'LineWidth',2),...
                         plot(VIcurve,'LineWidth',2),...
-                        legend('II', 'IV', 'V', 'VI')
+                        legend('II', 'IV', 'Va', 'Vb', 'VI')
                     xticklabels(stimList)
                     ylabel('RMS [mV/mm²]')
                     xlabel([Condition{iStimType} ' [' thisunit ']'])
@@ -277,11 +321,12 @@ for i1 = 1:entries
             end
         end
         
+        cd(homedir);
         if ~exist([homedir 'datastructs'],'dir')
-            cd(homedir); mkdir 'datastructs'
+            mkdir 'datastructs'
         end
         
-        cd ([homedir '/datastructs'])
+        cd 'datastructs'
         save([name '_Data'],'Data');
         clear Data
     end    
