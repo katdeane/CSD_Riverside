@@ -25,18 +25,20 @@ onsets = find(crossover == 1);
 
 %% timing info 
 
-% stim duration = 200 ms + ITI = 1000 ms
+% stim duration + ITI (ms)
 stimITI = stimdur+ITI; % ms
 
 %% stack or source the pseudorandom list
 
-if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate')
+if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
+        || matches(thistype, 'gapASSRRate')
     % pre-psuedorandomized tone list for this subject
     stimList = readmatrix([file(1:6) thistype '.txt'])';
     shortlist = unique(stimList);
+    shortlist = shortlist(shortlist ~= 0);
 
     % this should match or something is wrong
-    if (length(shortlist) - 1) ~= length(checkStimList); error('stimlist doesnt match'); end
+    if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
 
 elseif matches(thistype, 'noise') % noise bursts
     
@@ -46,11 +48,8 @@ elseif matches(thistype, 'noise') % noise bursts
         stimList(8*iextend-7:8*iextend) = checkStimList;
     end
     shortlist = checkStimList;
-
-elseif matches(thistype, 'single') % chirps, natural calls
     
 end
-
 
 %% hardware stuff
 % RPvdsEx always skips producing the first stim, which in this case is set to 0
