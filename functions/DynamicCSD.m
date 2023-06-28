@@ -1,4 +1,8 @@
 function DynamicCSD(homedir, Condition)
+
+%%%% WARNING, the script is under construction and the for loops don't
+%%%% start from 1! 
+
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
 %   This script takes input from the groups and data folders. It calculates 
@@ -33,10 +37,10 @@ for i1 = 1:entries
     Indexer = imakeIndexer(Condition,animals,Cond); %#ok<*USENS>
     %%
     
-    for iA = 1:length(animals)
+    for iA = 5:length(animals)
         name = animals{iA}; %#ok<*IDISVAR>
         
-        for iStimType = 1:length(Condition)
+        for iStimType = 3:length(Condition)
             for iStimCount = 1:length(Cond.(Condition{iStimType}){iA})
                 if iStimCount == 1
                     CondIDX = Indexer(2).(Condition{iStimType});
@@ -49,7 +53,7 @@ for i1 = 1:entries
                 % all of the above is to indicate which animal and
                 % condition is being analyzed
                 
-                if ~isempty(measurement)
+                if exist([name '_' measurement '_LFP.xdat.json'],'file')
                     file = [name '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     
@@ -74,28 +78,32 @@ for i1 = 1:entries
                         
                     elseif matches(Condition{iStimType},'Spontaneous') || ...
                             matches(Condition{iStimType},'postSpont')
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 100; % ms
-                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        stimList = 1;
+                        thisunit = [];
+                        stimDur  = 1000; % ms
+                        sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
+                            stimDur, 1000, 'spont');
                        
                     elseif matches(Condition{iStimType},'ClickTrain')
                         stimList = [20, 30, 40, 50, 60, 70, 80, 90];
                         thisunit = 'dB';
-                        stimDur  = 100; % ms
-                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        stimDur  = 2000; % ms
+                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, 2000, 'ClickRate');
                         
                     elseif matches(Condition{iStimType},'Chirp')
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 100; % ms
-                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        stimList = 1;
+                        thisunit = [];
+                        stimDur  = 3000; % ms
+                        sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
+                            stimDur, 2000, 'single');
                         
                     elseif matches(Condition{iStimType},'gapASSR')
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 100; % ms
-                        sngtrlLFP = icutNoisedata(file, StimIn, DataIn, stimList);
+                        stimList = [2, 4, 6, 8, 10];
+                        thisunit = 'gap width [ms]';
+                        stimDur  = 2000; % ms
+                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, 2000, 'gapASSRRate');
                     end
 
                     %% All the data from the LFP now (sngtrl = single trial)
@@ -118,8 +126,7 @@ for i1 = 1:entries
                     [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_PAMP,PLAT,SINGLE_PLAT] =...
                         sink_dura(L,sngtrlCSD,BL);
                     
-                    toc
-                                                         
+                    toc                                      
                     
                     %% Plots 
                     disp('Plotting CSD with sink detections')
@@ -142,7 +149,7 @@ for i1 = 1:entries
                         imagesc(mean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisunit])
                         colormap jet                       
-                        caxis([-0.1 0.1])
+                        clim([-0.1 0.1])
                         
                         hold on
                         % Layer II
@@ -268,31 +275,36 @@ for i1 = 1:entries
                     VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     
                     for istim = 1:length(Data(CondIDX).SinkRMS)
-                        if 10 > Data(CondIDX).Sinkonset(istim).II(1) < 60
+                        if (10 > Data(CondIDX).Sinkonset(istim).II(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).II(1) < 60)
                             IIcurve(istim) = Data(CondIDX).SinkRMS(istim).II(1);
                         else
                             IIcurve(istim) = NaN;
                         end
                         
-                        if 10 > Data(CondIDX).Sinkonset(istim).IV(1) < 60
+                        if (10 > Data(CondIDX).Sinkonset(istim).IV(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).IV(1) < 60)
                             IVcurve(istim) = Data(CondIDX).SinkRMS(istim).IV(1);
                         else
                             IVcurve(istim) = NaN;
                         end
                         
-                        if 10 > Data(CondIDX).Sinkonset(istim).Va(1) < 60
+                        if (10 > Data(CondIDX).Sinkonset(istim).Va(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).Va(1) < 60)
                             Vacurve(istim) = Data(CondIDX).SinkRMS(istim).Va(1);
                         else
                             Vacurve(istim) = NaN;
                         end
                         
-                        if 10 > Data(CondIDX).Sinkonset(istim).Vb(1) < 60
+                        if (10 > Data(CondIDX).Sinkonset(istim).Vb(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).Vb(1) < 60)
                             Vbcurve(istim) = Data(CondIDX).SinkRMS(istim).Vb(1);
                         else
                             Vbcurve(istim) = NaN;
                         end
                         
-                        if 10 > Data(CondIDX).Sinkonset(istim).VI(1) < 60
+                        if (10 > Data(CondIDX).Sinkonset(istim).VI(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).VI(1) < 60)
                             VIcurve(istim) = Data(CondIDX).SinkRMS(istim).VI(1);
                         else
                             VIcurve(istim) = NaN;
@@ -325,11 +337,11 @@ for i1 = 1:entries
         if ~exist([homedir 'datastructs'],'dir')
             mkdir 'datastructs'
         end
-        
-        cd 'datastructs'
-        save([name '_Data'],'Data');
-        clear Data
-    end    
+       
+    end
+    cd 'datastructs'
+    save([name '_Data'],'Data');
+    clear Data
 end
 cd(homedir)
 toc
