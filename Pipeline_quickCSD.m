@@ -3,8 +3,8 @@
 clear; clc;
 if exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
     cd('C:\Users\RazakLab\Documents\CSD_Riverside')
-elseif exist('E:\CSD_Riverside','dir')
-    cd('E:\CSD_Riverside'); % change for your station
+elseif exist('F:\CSD_Riverside','dir')
+    cd('F:\CSD_Riverside'); % change for your station
 else
     error('add your local repository as shown above')
 end
@@ -34,7 +34,7 @@ file = file{1}; % clean it up
 
 if strcmp(stimtype, 'Noise bursts')
    
-    DataOut = icutNoisedata(homedir, file, StimIn, DataIn);
+    DataOut = icutNoisedata(file, StimIn, DataIn);
     CSDandTuningFigs(homedir, file, DataOut, 'Noise')
     
 elseif strcmp(stimtype, 'Pure tones')
