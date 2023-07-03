@@ -35,6 +35,7 @@ for i1 = 1:entries
     %%
     
     for iA = 1:length(animals)
+        tic
         name = animals{iA}; %#ok<*IDISVAR>
         
         for iStimType = 1:length(Condition)
@@ -44,7 +45,6 @@ for i1 = 1:entries
                 else
                     CondIDX = Indexer(2).(Condition{iStimType})+iStimCount-1;
                 end
-                tic
                 
                 measurement = Cond.(Condition{iStimType}){iA}{iStimCount};
                 % all of the above is to indicate which animal and
@@ -103,6 +103,7 @@ for i1 = 1:entries
                             BL, stimDur, 2000, 'gapASSRRate');
                     end
 
+                    clear DataIn StimIn % these are too big to keep around
                     %% All the data from the LFP now (sngtrl = single trial)
                     [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
@@ -121,13 +122,10 @@ for i1 = 1:entries
                     
                     %Generate Sink Boxes
                     [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_PAMP,PLAT,SINGLE_PLAT] =...
-                        sink_dura(L,sngtrlCSD,BL);
-                    
-                    toc                                      
+                        sink_dura(L,sngtrlCSD,BL);                        
                     
                     %% Plots 
                     disp('Plotting CSD with sink detections')
-                    tic
                     
                     cd (homedir); cd figures;
                     if ~exist(['Single_' input(i1).name(1:end-2)],'dir')
@@ -203,7 +201,6 @@ for i1 = 1:entries
                         hold off
                         
                     end
-                    toc
                     
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
@@ -272,36 +269,36 @@ for i1 = 1:entries
                     VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
                     
                     for istim = 1:length(Data(CondIDX).SinkRMS)
-                        if (10 > Data(CondIDX).Sinkonset(istim).II(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).II(1) < 60)
+                        if (410 < Data(CondIDX).Sinkonset(istim).II(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).II(1) < 460)
                             IIcurve(istim) = Data(CondIDX).SinkRMS(istim).II(1);
                         else
                             IIcurve(istim) = NaN;
                         end
                         
-                        if (10 > Data(CondIDX).Sinkonset(istim).IV(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).IV(1) < 60)
+                        if (410 < Data(CondIDX).Sinkonset(istim).IV(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).IV(1) < 460)
                             IVcurve(istim) = Data(CondIDX).SinkRMS(istim).IV(1);
                         else
                             IVcurve(istim) = NaN;
                         end
                         
-                        if (10 > Data(CondIDX).Sinkonset(istim).Va(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Va(1) < 60)
+                        if (410 < Data(CondIDX).Sinkonset(istim).Va(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).Va(1) < 460)
                             Vacurve(istim) = Data(CondIDX).SinkRMS(istim).Va(1);
                         else
                             Vacurve(istim) = NaN;
                         end
                         
-                        if (10 > Data(CondIDX).Sinkonset(istim).Vb(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Vb(1) < 60)
+                        if (410 < Data(CondIDX).Sinkonset(istim).Vb(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).Vb(1) < 460)
                             Vbcurve(istim) = Data(CondIDX).SinkRMS(istim).Vb(1);
                         else
                             Vbcurve(istim) = NaN;
                         end
                         
-                        if (10 > Data(CondIDX).Sinkonset(istim).VI(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).VI(1) < 60)
+                        if (410 < Data(CondIDX).Sinkonset(istim).VI(1)) && ...
+                                (Data(CondIDX).Sinkonset(istim).VI(1) < 460)
                             VIcurve(istim) = Data(CondIDX).SinkRMS(istim).VI(1);
                         else
                             VIcurve(istim) = NaN;
@@ -337,6 +334,7 @@ for i1 = 1:entries
         save([name '_Data'],'Data');
         clear Data
         cd(homedir)
+        toc
     end
     
 end
