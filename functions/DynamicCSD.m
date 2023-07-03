@@ -1,8 +1,5 @@
 function DynamicCSD(homedir, Condition)
 
-%%%% WARNING, the script is under construction and the for loops don't
-%%%% start from 1! 
-
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
 %   This script takes input from the groups and data folders. It calculates 
@@ -37,10 +34,10 @@ for i1 = 1:entries
     Indexer = imakeIndexer(Condition,animals,Cond); %#ok<*USENS>
     %%
     
-    for iA = 5:length(animals)
+    for iA = 1:length(animals)
         name = animals{iA}; %#ok<*IDISVAR>
         
-        for iStimType = 3:length(Condition)
+        for iStimType = 1:length(Condition)
             for iStimCount = 1:length(Cond.(Condition{iStimType}){iA})
                 if iStimCount == 1
                     CondIDX = Indexer(2).(Condition{iStimType});
@@ -149,7 +146,7 @@ for i1 = 1:entries
                         imagesc(mean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisunit])
                         colormap jet                       
-                        clim([-0.1 0.1])
+                        caxis([-0.1 0.1])
                         
                         hold on
                         % Layer II
@@ -332,16 +329,15 @@ for i1 = 1:entries
                 end
             end
         end
-        
         cd(homedir);
-        if ~exist([homedir 'datastructs'],'dir')
-            mkdir 'datastructs'
-        end
-       
+%         if ~exist([homedir 'datastructs'],'dir')
+%             mkdir 'datastructs'
+%         end
+        cd 'datastructs'
+        save([name '_Data'],'Data');
+        clear Data
+        cd(homedir)
     end
-    cd 'datastructs'
-    save([name '_Data'],'Data');
-    clear Data
+    
 end
 cd(homedir)
-toc

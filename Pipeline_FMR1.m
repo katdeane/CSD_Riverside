@@ -16,6 +16,8 @@ addpath(genpath(homedir));
 
 %% Data generation per subject
 
-Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    'gapASSR' 'postNoise' 'postSpont'};
+
+Condition = {'Tonotopy'};
+% Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+%     'gapASSR' 'postNoise' 'postSpont'};
 DynamicCSD(homedir, Condition)
