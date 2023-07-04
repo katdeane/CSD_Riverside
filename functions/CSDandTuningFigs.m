@@ -62,7 +62,7 @@ if multiple == 1
 
         nexttile, imagesc(fullCSD);
         colormap('jet');
-        clim([-0.2 0.2])
+        caxis([-0.2 0.2])
         colorbar
         if strcmp(stimtype,'Tones')
             title([num2str(stimlist(istim)/1000) thisunit])
@@ -119,7 +119,7 @@ elseif multiple == 0
 
     nexttile, imagesc(fullCSD);
     colormap('jet');
-    clim([-0.2 0.2])
+    caxis([-0.2 0.2])
     colorbar
 
     figname = ['CSD_' file '_' stimtype '.fig'];

@@ -1,15 +1,13 @@
 %% Pipeline for LFP Quick Feedback
 
 clear; clc;
-if exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside')
-% if exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
-%     cd('C:\Users\RazakLab\Documents\CSD_Riverside')
-elseif exist('E:\CSD_Riverside','dir')
-    cd('E:\CSD_Riverside'); % change for your station
+
+if exist('F:\CSD_Riverside','dir')
+    cd('F:\CSD_Riverside');
 else
-    error('add your local repository as shown above')
-end
+       error('add your local repository as shown above')
+end 
+
 homedir = pwd;
 addpath(genpath(homedir));
 
