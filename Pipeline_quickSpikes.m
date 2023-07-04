@@ -32,7 +32,7 @@ file = file{1}; % clean it up
 
 %%
 
-DataOut = icutSpikeNoisedata(homedir, file, StimIn, DataIn);
+DataOut = icutSpikeNoisedata(file, StimIn, DataIn);
 % go through cut scripts and make sure you didn't make the same mistake
 % with throwing out extra trials :) 
 

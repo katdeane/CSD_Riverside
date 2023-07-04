@@ -1,4 +1,4 @@
-function [stimIn, data] = FileReaderSpike(file)
+function [stimIn, data] = FileReaderSpike(file,channels)
 % This converts the data from allego/curate and downsamples it by 30. That
 % results in sr = 1000 (1000 sp in 1 second / each sp is 1 ms)
 % initalized NeuroNexus conversion function
@@ -7,19 +7,10 @@ reader = allegoXDatFileReaderR2019b;
 timerange = reader.getAllegoXDatTimeRange(file);
 signalStruct = reader.getAllegoXDatAllSigs(file, timerange);
 
-%% fs is 30k, we will downsample to 1k
+%% fs is 30k, we will downsample to 3k
 
 % sanity check: 
 % timeSamples = downsample(signalStruct.timeSamples,30); % seconds
-stimIn      = downsample(signalStruct.signals(33,:),30); % microvolts
-% allow the user to change how many channels are analyzed
-prompt   = {'First Chan:','Last Chan:'};
-dlgtitle = 'Channels';
-dims     = [1 35];
-definput = {'1','32'};
-channels = inputdlg(prompt,dlgtitle,dims,definput);
-% downsample with that info - it's 30k sr, I want 3k
-data = downsample(signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:)',10)';
-% or without downsampling
-%data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
+stimIn = downsample(signalStruct.signals(33,:),10); % microvolts
+data   = downsample(signalStruct.signals(channels(1):channels(2),:)',10)';
 

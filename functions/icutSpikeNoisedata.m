@@ -63,10 +63,5 @@ for idB = 1:length(dBList)
     
 end
 
-% also save it out, no need to run multiple times
-cd(homedir); cd output
-filename = [file '_Noise.mat'];
-save(filename, 'NoiseData')
-cd(homedir)
 
 

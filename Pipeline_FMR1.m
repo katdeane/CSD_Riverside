@@ -16,8 +16,12 @@ addpath(genpath(homedir));
 
 %% Data generation per subject
 
-
 Condition = {'Tonotopy'};
 % Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 %     'gapASSR' 'postNoise' 'postSpont'};
+
+% subject CSD Script
 DynamicCSD(homedir, Condition)
+
+% subject Spike Script
+DynamicSpike(homedir, Condition)
