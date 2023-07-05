@@ -7,7 +7,7 @@ function DynamicSpike(homedir, Condition)
 %   Data struct per animal (eg MWT01_Data.mat) which is saved in the DATA
 %   folder.
 %
-%   The sinks list is (II, IV, Va, Vb, VI)
+%   The layer list is (II, IV, Va, Vb, VI)
 %   IMPORTANT: DO NOT change sink list here. If you need another set of
 %   sinks then create a SEPARATE and UNIQUELY NAMED script.
 
@@ -124,71 +124,58 @@ for i1 = 1:entries
                     end
                     cd (['SingleSpike_' input(i1).name(1:end-2)])
 
-                    Rasterfig = tiledlayout('flow');
-                    title(Rasterfig,[file(1:5) ' ' Condition{iStimType}...
-                        ' ' num2str(iStimCount) ' PSTH'])
-                    xlabel(Rasterfig, 'time [ms]')
-                    %                     ylabel(Rasterfig, 'depth [channels]')
+                    for iLay = 1:length(Layers)+1
 
-                    for istim = 1:length(stimList)
+                        Rasterfig = tiledlayout('flow');
+                        if iLay == length(Layers)+1
+                            title(Rasterfig,[file(1:5) ' ' Condition{iStimType}...
+                                ' ' num2str(iStimCount) ' PSTH All Channels'])
+                        else
+                            title(Rasterfig,[file(1:5) ' ' Condition{iStimType}...
+                            ' ' num2str(iStimCount) ' PSTH Layer ' Layers{iLay}])
+                        end
+                        xlabel(Rasterfig, 'time [ms]')
+                        ylabel(Rasterfig, 'spike count / spike rate [s]')
 
-                        % figure of psth's for all and layers per stim
-                        trlsum = sum(sngtrldat{istim},3);
-                        % raster summing all channels
-                        chansum = sum(trlsum,1);
-                        % rasters summing layer channels
-                        IIsum = sum(trlsum(L.II,:),1);
-                        IVsum = sum(trlsum(L.IV,:),1);
-                        Vasum = sum(trlsum(L.Va,:),1);
-                        Vbsum = sum(trlsum(L.Vb,:),1);
-                        VIsum = sum(trlsum(L.VI,:),1);
+                        for istim = 1:length(stimList)
 
-                        % this is absurd, make seperate figures for each
-                        % layer? or for each stim? (5 layer figs or 6 to 8
-                        % stim figs. Probably layer then, also more consistant)
-                        nexttile
-                        bar(chansum,30,'histc')
-                        nexttile
-                        plot(IIsum)
-                        nexttile
-                        plot(IVsum)
-                        nexttile
-                        plot(Vasum)
-                        nexttile
-                        plot(Vbsum)
-                        nexttile
-                        plot(VIsum)          
+                            % figure of psth's for all and layers per stim
+                            trlsum   = sum(sngtrldat{istim},3);
 
-                    end
+                            if iLay == length(Layers)+1
+                                % raster summing all channels or layer channels
+                                layersum  = sum(trlsum,1);
+                            else
+                                % raster summing all channels or layer channels
+                                layersum  = sum(trlsum(L.(Layers{iLay}),:),1);
+                            end
 
-                    h = gcf;
-                    savefig(h,[name '_' measurement '_CSD' ],'compact')
-                    close (h)
+                            % get spiking rate per second
+                            spikerate = sum(layersum) / ((length(layersum)/sr_mult)/1000);
+                            % adjust your raster by spiking rate
+                            adjlaysum = layersum ./ spikerate;
 
-                    % determine BF of each layer from 1st sink's rms
-                    clear BF_II BF_IV BF_Va BF_Vb BF_VI
-                    for ilay = 1:length(Layers)
 
-                        RMSlist = nan(1,length(RMS));
-                        for istim = 1:length(RMS)
-                            RMSlist(istim) = nanmax(RMS(istim).(Layers{ilay}));
+                            % now add the tile
+                            nexttile
+                            bar(adjlaysum,30,'histc')
+                            title([num2str(stimList(istim)) thisunit])
+                            xlim([0 length(layersum)])
+                            xticks(0:200*sr_mult:length(layersum))
+                            labellist = xticks ./ sr_mult;
+                            xticklabels(labellist)
+
                         end
 
-                        BF = find(RMSlist == nanmax(RMSlist));
-
-                        if contains(Layers{ilay},'II')
-                            BF_II = stimList(BF);
-                        elseif contains(Layers{ilay},'IV')
-                            BF_IV = stimList(BF);
-                        elseif contains(Layers{ilay},'VI')
-                            BF_VI = stimList(BF);
-                        elseif matches(Layers{ilay},'Va')
-                            BF_Va = stimList(BF);
-                        elseif matches(Layers{ilay},'Vb')
-                            BF_Vb = stimList(BF);
+                        h = gcf;
+                        if iLay == length(Layers)+1
+                             savefig(h,[name '_' measurement '_PSTH_AllChan'],'compact')
+                        else
+                            savefig(h,[name '_' measurement '_PSTH_Lay' Layers{iLay}],'compact')
                         end
-
+                        close (h)
                     end
+
 
                     %% Save and Quit
                     % identifiers and basic info
@@ -197,91 +184,10 @@ for i1 = 1:entries
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % sink data
-                    Data(CondIDX).BF_II         = BF_II;
-                    Data(CondIDX).BF_IV         = BF_IV;
-                    Data(CondIDX).BF_Va         = BF_Va;
-                    Data(CondIDX).BF_Vb         = BF_Vb;
-                    Data(CondIDX).BF_VI         = BF_VI;
-                    Data(CondIDX).SinkPeakAmp   = PAMP;
-                    Data(CondIDX).SglSinkPkAmp  = SINGLE_PAMP;
-                    Data(CondIDX).SinkPeakLate  = PLAT;
-                    Data(CondIDX).SglSinkPkLat  = SINGLE_PLAT;
-                    Data(CondIDX).SinkDur       = DUR;
-                    Data(CondIDX).Sinkonset     = ONSET;
-                    Data(CondIDX).Sinkoffset    = OFFSET;
-                    Data(CondIDX).SinkRMS       = RMS;
-                    Data(CondIDX).SingleSinkRMS = SINGLE_RMS;
+
                     % CSD data
-                    Data(CondIDX).sngtrlLFP     = sngtrldat;
-                    Data(CondIDX).sngtrlCSD     = sngtrlCSD;
-                    Data(CondIDX).AVREC         = AvrecCSD;
-                    Data(CondIDX).sngtrlAvrec   = sngtrlAvrecCSD;
-                    Data(CondIDX).RELRES        = AvgRelResCSD;
-                    Data(CondIDX).singtrlRelRes = singtrlRelResCSD;
+                    Data(CondIDX).SpikeRaster   = sngtrldat;
 
-                    %% Visualize early tuning (onset between 0:65 ms)
-                    IIcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    IVcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    Vacurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    Vbcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
-
-                    for istim = 1:length(Data(CondIDX).SinkRMS)
-                        if (410 < Data(CondIDX).Sinkonset(istim).II(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).II(1) < 460)
-                            IIcurve(istim) = Data(CondIDX).SinkRMS(istim).II(1);
-                        else
-                            IIcurve(istim) = NaN;
-                        end
-
-                        if (410 < Data(CondIDX).Sinkonset(istim).IV(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).IV(1) < 460)
-                            IVcurve(istim) = Data(CondIDX).SinkRMS(istim).IV(1);
-                        else
-                            IVcurve(istim) = NaN;
-                        end
-
-                        if (410 < Data(CondIDX).Sinkonset(istim).Va(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Va(1) < 460)
-                            Vacurve(istim) = Data(CondIDX).SinkRMS(istim).Va(1);
-                        else
-                            Vacurve(istim) = NaN;
-                        end
-
-                        if (410 < Data(CondIDX).Sinkonset(istim).Vb(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Vb(1) < 460)
-                            Vbcurve(istim) = Data(CondIDX).SinkRMS(istim).Vb(1);
-                        else
-                            Vbcurve(istim) = NaN;
-                        end
-
-                        if (410 < Data(CondIDX).Sinkonset(istim).VI(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).VI(1) < 460)
-                            VIcurve(istim) = Data(CondIDX).SinkRMS(istim).VI(1);
-                        else
-                            VIcurve(istim) = NaN;
-                        end
-                    end
-
-                    figure
-                    plot(IIcurve,'LineWidth',2),...
-                        hold on,...
-                        plot(IVcurve,'LineWidth',2),...
-                        plot(Vacurve,'LineWidth',2),...
-                        plot(Vbcurve,'LineWidth',2),...
-                        plot(VIcurve,'LineWidth',2),...
-                        legend('II', 'IV', 'Va', 'Vb', 'VI')
-                    xticklabels(stimList)
-                    ylabel('RMS [mV/mm²]')
-                    xlabel([Condition{iStimType} ' [' thisunit ']'])
-                    title([file(1:5) ' ' Condition{iStimType}...
-                        ' ' num2str(iStimCount) ' Tuning Curve'])
-
-                    hold off
-                    h = gcf;
-                    savefig(h,[name '_' measurement '_RMS Sink tuning' ],'compact')
-                    close (h)
                 end
             end
         end
