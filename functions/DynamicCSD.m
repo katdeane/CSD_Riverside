@@ -35,7 +35,7 @@ for i1 = 1:entries
     %%
     
     for iA = 1:length(animals)
-        tic
+%         tic
         name = animals{iA}; %#ok<*IDISVAR>
         
         for iStimType = 1:length(Condition)
@@ -54,8 +54,10 @@ for i1 = 1:entries
                     file = [name '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     
+                    tic
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
-                   
+                    toc
+
                     % The next part depends on the stimulus
                     if matches(Condition{iStimType},'NoiseBurst') || ...
                             matches(Condition{iStimType},'postNoise')
@@ -334,7 +336,7 @@ for i1 = 1:entries
         save([name '_Data'],'Data');
         clear Data
         cd(homedir)
-        toc
+%         toc
     end
     
 end
