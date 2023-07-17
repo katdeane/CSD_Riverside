@@ -51,6 +51,12 @@ elseif matches(thistype, 'noise') % noise bursts
     
 end
 
+% this is an issue for gapASSR where I have to manually stop the stimuli
+% and I sometimes miss that it's finished until a few stim later. 
+if length(onsets) > length(stimList)
+    onsets = onsets(1:length(stimList)-1);
+end
+
 %% hardware stuff
 % RPvdsEx always skips producing the first stim, which in this case is set to 0
 % and do we also need to remove that first stim?
