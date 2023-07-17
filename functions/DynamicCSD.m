@@ -99,7 +99,7 @@ for i1 = 1:entries
                         
                     elseif matches(Condition{iStimType},'gapASSR')
                         stimList = [2, 4, 6, 8, 10];
-                        thisunit = 'gap width [ms]';
+                        thisunit = ' [ms] gap width';
                         stimDur  = 2000; % ms
                         sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
                             BL, stimDur, 2000, 'gapASSRRate');
@@ -146,7 +146,7 @@ for i1 = 1:entries
                         imagesc(mean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisunit])
                         colormap jet                       
-                        caxis([-0.1 0.1])
+                        caxis([-0.2 0.2])
                         
                         hold on
                         % Layer II
@@ -204,6 +204,8 @@ for i1 = 1:entries
                         
                     end
                     
+                    colorbar
+
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
                     close (h)
@@ -328,14 +330,17 @@ for i1 = 1:entries
                 end
             end
         end
-        cd(homedir);
-%         if ~exist([homedir 'datastructs'],'dir')
-%             mkdir 'datastructs'
-%         end
-        cd 'datastructs'
-        save([name '_Data'],'Data');
-        clear Data
-        cd(homedir)
+
+        if exist('Data','var')
+            cd(homedir);
+            %         if ~exist([homedir 'datastructs'],'dir')
+            %             mkdir 'datastructs'
+            %         end
+            cd 'datastructs'
+            save([name '_Data'],'Data');
+            clear Data
+            cd(homedir)
+        end
 %         toc
     end
     

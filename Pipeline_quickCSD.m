@@ -2,8 +2,8 @@
 
 clear; clc;
 
-if exist('F:\CSD_Riverside','dir')
-    cd('F:\CSD_Riverside');
+if exist('D:\CSD_Riverside','dir')
+    cd('D:\CSD_Riverside');
 else
        error('add your local repository as shown above')
 end 
@@ -22,7 +22,7 @@ stimtype = questdlg('What type of stimulus?', ...
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'MKO06_01_LFP'}; % replace with current 
+definput = {'MWT05_01_LFP'}; % replace with current 
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
 
