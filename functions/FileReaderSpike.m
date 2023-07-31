@@ -10,7 +10,7 @@ signalStruct = reader.getAllegoXDatAllSigs(file, timerange);
 %% fs is 30k, we will downsample to 3k
 
 % sanity check: 
-% timeSamples = downsample(signalStruct.timeSamples,30); % seconds
+% timeSamples = downsample(signalStruct.timeSamples,10); % seconds
 stimIn = downsample(signalStruct.signals(33,:),10); % microvolts
 data   = downsample(signalStruct.signals(channels(1):channels(2),:)',10)';
 

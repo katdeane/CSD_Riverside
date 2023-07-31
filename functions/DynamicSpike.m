@@ -20,7 +20,7 @@ input = dir('*.m');
 entries = length(input);
 cd(homedir)
 
-for i1 = 1:entries
+for i1 = 2:entries
 
     run(input(i1).name); % brings in animals, channels, Layer, and Cond
 
@@ -34,12 +34,12 @@ for i1 = 1:entries
     Indexer = imakeIndexer(Condition,animals,Cond); %#ok<*USENS>
     %%
 
-    for iA = 1:length(animals)
+    for iA = 2:length(animals)
         tic
         name = animals{iA}; %#ok<*IDISVAR>
 
         for iStimType = 1:length(Condition)
-            for iStimCount = 1:length(Cond.(Condition{iStimType}){iA})
+            for iStimCount = 4:length(Cond.(Condition{iStimType}){iA})
                 if iStimCount == 1
                     CondIDX = Indexer(2).(Condition{iStimType});
                 else
@@ -54,7 +54,9 @@ for i1 = 1:entries
                     file = [name '_' measurement '_Spike'];
                     disp(['Analyzing animal: ' file])
 
+                    tic
                     [StimIn, DataIn] = FileReaderSpike(file,str2num(channels{iA}));
+                    toc
                     sr_mult = 3; % sampling rate 3000, multiply by this to get [ms]
 
                     % The next part depends on the stimulus
@@ -64,8 +66,8 @@ for i1 = 1:entries
                         stimList = [20, 30, 40, 50, 60, 70, 80, 90];
                         thisunit = 'dB';
                         stimDur  = 100*sr_mult; % ms
-                        %                         sngtrldat = icutdata(file, StimIn, DataIn, stimList, ...
-                        %                             (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'noise');
+                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
+                            (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'noise');
 
                     elseif matches(Condition{iStimType},'Tonotopy')
                         stimList = [1, 2, 4, 8, 16, 24, 32];
@@ -79,29 +81,29 @@ for i1 = 1:entries
                         stimList = 1;
                         thisunit = [];
                         stimDur  = 1000*sr_mult; % ms
-                        %                         sngtrldat = icutsinglestimdata(StimIn, DataIn, ...
-                        %                             (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'spont');
+                        sngtrldat = icutsinglespikedata(StimIn, DataIn, ...
+                            (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'spont');
 
                     elseif matches(Condition{iStimType},'ClickTrain')
                         stimList = [20, 30, 40, 50, 60, 70, 80, 90];
                         thisunit = 'dB';
                         stimDur  = 2000*sr_mult; % ms
-                        %                         sngtrldat = icutdata(file, StimIn, DataIn, stimList, ...
-                        %                             (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'ClickRate');
-                        %
+                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
+                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'ClickRate');
+                        
                     elseif matches(Condition{iStimType},'Chirp')
                         stimList = 1;
                         thisunit = [];
                         stimDur  = 3000*sr_mult; % ms
-                        %                         sngtrldat = icutsinglestimdata(StimIn, DataIn, ...
-                        %                             (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'single');
+                        sngtrldat = icutsinglespikedata(StimIn, DataIn, ...
+                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'single');
 
                     elseif matches(Condition{iStimType},'gapASSR')
                         stimList = [2, 4, 6, 8, 10];
                         thisunit = 'gap width [ms]';
                         stimDur  = 2000*sr_mult; % ms
-                        %                         sngtrldat = icutdata(file, StimIn, DataIn, stimList, ...
-                        %                             (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'gapASSRRate');
+                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
+                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'gapASSRRate');
                     end
 
                     clear DataIn StimIn % these are too big to keep around
@@ -126,16 +128,16 @@ for i1 = 1:entries
 
                     for iLay = 1:length(Layers)+1
 
-                        Rasterfig = tiledlayout('flow');
+                        PSTHfig = tiledlayout('flow');
                         if iLay == length(Layers)+1
-                            title(Rasterfig,[file(1:5) ' ' Condition{iStimType}...
+                            title(PSTHfig,[file(1:5) ' ' Condition{iStimType}...
                                 ' ' num2str(iStimCount) ' PSTH All Channels'])
                         else
-                            title(Rasterfig,[file(1:5) ' ' Condition{iStimType}...
+                            title(PSTHfig,[file(1:5) ' ' Condition{iStimType}...
                             ' ' num2str(iStimCount) ' PSTH Layer ' Layers{iLay}])
                         end
-                        xlabel(Rasterfig, 'time [ms]')
-                        ylabel(Rasterfig, 'spike count / spike rate [s]')
+                        xlabel(PSTHfig, 'time [ms]')
+                        ylabel(PSTHfig, 'spike count / spike rate [s]')
 
                         for istim = 1:length(stimList)
 
@@ -150,11 +152,10 @@ for i1 = 1:entries
                                 layersum  = sum(trlsum(L.(Layers{iLay}),:),1);
                             end
 
-                            % get spiking rate per second
+                            % get spiking rate per second 
                             spikerate = sum(layersum) / ((length(layersum)/sr_mult)/1000);
-                            % adjust your raster by spiking rate
+                            %adjust your raster by spiking rate
                             adjlaysum = layersum ./ spikerate;
-
 
                             % now add the tile
                             nexttile
@@ -176,7 +177,32 @@ for i1 = 1:entries
                         close (h)
                     end
 
+                    heatmapfig = tiledlayout('flow');
+                    title(heatmapfig,[file(1:5) ' ' Condition{iStimType}...
+                        ' ' num2str(iStimCount) ' Heatmap'])
+                    xlabel(heatmapfig, 'time [ms]')
+                    ylabel(heatmapfig, 'depth [channels]')
+                    
+                    for istim = 1:length(stimList)
+                        nexttile
+                        % plot so higher activity is darker 
+                        imagesc((sum(sngtrldat{istim},3))*-1)
+                        title([num2str(stimList(istim)) thisunit])          
+                        colormap('gray')
+                        
+                        xlim([0 length(layersum)])
+                        xticks(0:200*sr_mult:length(layersum))
+                        labellist = xticks ./ sr_mult;
+                        xticklabels(labellist)
+                        
+                    end
+                    
+                    colorbar
 
+                    h = gcf;
+                    savefig(h,[name '_' measurement '_Heatmap' ],'compact')
+                    close (h)
+                 
                     %% Save and Quit
                     % identifiers and basic info
                     Data(CondIDX).measurement   = file;
@@ -192,11 +218,9 @@ for i1 = 1:entries
             end
         end
         cd(homedir);
-        %         if ~exist([homedir 'datastructs'],'dir')
-        %             mkdir 'datastructs'
-        %         end
-        cd 'datastructs'
-        save([name '_Data'],'Data');
+        % make these folders if you don't 
+        cd datastructs; cd spikedata
+        save([name '_SpikeData'],'Data');
         clear Data
         cd(homedir)
         toc

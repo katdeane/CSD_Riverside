@@ -14,14 +14,31 @@ end
 homedir = pwd;
 addpath(genpath(homedir));
 
-%% Data generation per subject
-
+% set consistently needed variables
+Groups = {'MKO' 'MWT'};
 % Condition = {'Tonotopy'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
+
+%% Data generation per subject
 
 % subject CSD Script
 DynamicCSD(homedir, Condition)
 
 % subject Spike Script
 DynamicSpike(homedir, Condition)
+
+%% Group pics 
+
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST})
+    end
+end
+
+
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
+    end
+end

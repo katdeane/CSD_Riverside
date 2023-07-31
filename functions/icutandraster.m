@@ -23,25 +23,25 @@ end
 crossover = diff(location);
 onsets = find(crossover == 1);
 
-%% for figuring things out!! Threshold choices for creating the raster
-dataS = Data(10,1:200000);
-plot(dataS)
-hold on
-dat_threshold = -20;
-dat_threshold_line = dat_threshold * ones(1,length(dataS));
-plot(dat_threshold_line)
-spikeloc = (dat_threshold >= dataS)*-30;
-plot(spikeloc)
-hold off
-close
-
-%% Raster data
-for ichan = 1:size(Data,1)
-    dat_threshold = -25;
-    spikeloc = (dat_threshold >= Data(ichan,:));
-    Data(ichan,:) = spikeloc;
+%% Raster data - find MUAs
+Data = abs(Data);
+rasData = NaN(size(Data,1),size(Data,2));
+for ichan = 1:size(rasData,1)
+    
+    dat_threshold = (std(Data(ichan,1:BL))*3) + mean(Data(ichan,1:BL));
+    spikeloc = (dat_threshold <= Data(ichan,:));
+    
+    % look at each plot to figure things out. Is this good? 
+    plot(Data(ichan,1:984666))
+    hold on
+    dat_threshold_line = dat_threshold * ones(1,984666);
+    plot(dat_threshold_line)
+    plot(spikeloc(1:984666)*5)
+    hold off
+    
+    rasData(ichan,:) = spikeloc;
 end
-
+close
 %% timing info 
 
 % stim duration + ITI (ms)
@@ -88,16 +88,16 @@ for istim = 1:length(shortlist)
     
     cutHere = find(stimList == shortlist(istim));
     % create container for stacked data, channel x time(ms) x trials
-    curData = NaN(size(Data,1), stimITI + BL + 1, length(cutHere));
+    curData = NaN(size(rasData,1), stimITI + BL + 1, length(cutHere));
     
     for iOn = 1:length(cutHere)
         
-        if onsets(cutHere(iOn)) + stimITI > size(Data,2) % if last ITI cut short
+        if onsets(cutHere(iOn)) + stimITI > size(rasData,2) % if last ITI cut short
             curData = curData(:,:,1:size(curData,3)-1);
             continue
         end
         
-        curData(:,:,iOn) = Data(:,onsets(cutHere(iOn))-BL:onsets(cutHere(iOn))+stimITI);
+        curData(:,:,iOn) = rasData(:,onsets(cutHere(iOn))-BL:onsets(cutHere(iOn))+stimITI);
         
     end
     
