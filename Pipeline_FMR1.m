@@ -22,23 +22,49 @@ Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 
 %% Data generation per subject
 
-% subject CSD Script
+% per subject CSD Script
 DynamicCSD(homedir, Condition)
 
-% subject Spike Script
+% per subject Spike Script
 DynamicSpike(homedir, Condition)
 
 %% Group pics 
 
+% generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
+        disp(['Average CSDs for ' Group{iGro} ' ' Condtion{iST}])
+        tic
         AvgCSDfig(homedir, Groups{iGro}, Condition{iST})
+        toc
+    end
+end
+
+% generate group averaged spike heatmaps based on stimuli (does not BF sort)
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['Average Heatmaps for ' Group{iGro} ' ' Condtion{iST}])
+        tic
+        AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
+        toc
     end
 end
 
 
+%% trial-averaged AVREC and layer trace generation / peak detection
+
+disp('Producing trial-averaged traces for each group')
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
-        AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+    end
+end
+
+%% Group AVREC and layer traces / average peak detection 
+
+disp('Producing group-averaged traces for each group')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
     end
 end

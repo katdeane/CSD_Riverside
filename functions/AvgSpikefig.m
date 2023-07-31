@@ -22,41 +22,12 @@ entries = length(input);
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
 subjects = length(animals);
 
-% The next part depends on the stimulus
-if matches(stimType,'NoiseBurst') || ...
-        matches(stimType,'postNoise')
-    % non randomized list of dB presentation
-    stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-    thisunit = 'dB';
-    timeaxis = (BL+100+1000)*sr_mult; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Tonotopy')
-    stimList = [1, 2, 4, 8, 16, 24, 32];
-    thisunit = 'kHz';
-    timeaxis = (BL+200+1000)*sr_mult; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Spontaneous') || ...
-        matches(stimType,'postSpont')
-    stimList = 1;
-    thisunit = [];
-    timeaxis = (BL+1000+1000)*sr_mult; % BL + ITI (ms)
-    
-elseif matches(stimType,'ClickTrain')
-    stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-    thisunit = 'dB';
-    timeaxis = (BL+2000+2000)*sr_mult; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Chirp')
-    stimList = 1;
-    thisunit = [];
-    timeaxis = (BL+3000+1000)*sr_mult; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'gapASSR')
-    stimList = [2, 4, 6, 8, 10];
-    thisunit = ' [ms] gap width';
-    timeaxis = (BL+2000+2000)*sr_mult; % BL + stimdur + ITI (ms)
-    
-end
+% The next part depends on the stimulus, pull the relevant details
+[stimList, thisUnit, stimDur, stimITI, ~] = ...
+    StimVariable(stimType,sr_mult);
+
+% put the time axis together with the above info
+timeaxis = (BL * sr_mult) + stimDur + stimITI;
 
 % preallocate csd holders as cells for variability
 CSDhold = cell(1,length(stimList));
@@ -64,7 +35,7 @@ for iStim = 1:length(stimList)
     CSDhold{iStim} = NaN(chanlength,timeaxis,subjects);
 end
 
-% now run through and pull data from each animal into those containers
+%% now run through and pull data from each animal into containers
 for iEnt = 1:entries
     
     % load the animal data in
@@ -105,7 +76,7 @@ for iEnt = 1:entries
 end
 
 
-% produce raster figure
+%% produce raster figure
 heatmapfig = tiledlayout('flow');
 title(heatmapfig,[Group ' Avg Raster to ' stimType])
 xlabel(heatmapfig, 'time [ms]')
@@ -116,7 +87,7 @@ for istim = 1:length(stimList)
     % plot so higher activity is darker
     raster = nanmean((CSDhold{iStim}*-1),3);
     imagesc(raster(1:27,:))
-    title([num2str(stimList(istim)) thisunit])
+    title([num2str(stimList(istim)) thisUnit])
     colormap('gray')
     
     xlim([0 timeaxis])

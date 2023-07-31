@@ -58,54 +58,17 @@ for i1 = 1:entries
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
                     toc
 
-                    % The next part depends on the stimulus
-                    if matches(Condition{iStimType},'NoiseBurst') || ...
-                            matches(Condition{iStimType},'postNoise')
-                        % non randomized list of dB presentation
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 100; % ms
-                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
-                            BL, stimDur, 1000, 'noise');
-                        
-                    elseif matches(Condition{iStimType},'Tonotopy')
-                        stimList = [1, 2, 4, 8, 16, 24, 32];
-                        thisunit = 'kHz';
-                        stimDur  = 200; % ms
-                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
-                            BL, stimDur, 1000, 'Tonotopy');
-                        
-                    elseif matches(Condition{iStimType},'Spontaneous') || ...
-                            matches(Condition{iStimType},'postSpont')
-                        stimList = 1;
-                        thisunit = [];
-                        stimDur  = 1000; % ms
-                        sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
-                            stimDur, 1000, 'spont');
-                       
-                    elseif matches(Condition{iStimType},'ClickTrain')
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 2000; % ms
-                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
-                            BL, stimDur, 2000, 'ClickRate');
-                        
-                    elseif matches(Condition{iStimType},'Chirp')
-                        stimList = 1;
-                        thisunit = [];
-                        stimDur  = 3000; % ms
-                        sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
-                            stimDur, 2000, 'single');
-                        
-                    elseif matches(Condition{iStimType},'gapASSR')
-                        stimList = [2, 4, 6, 8, 10];
-                        thisunit = ' [ms] gap width';
-                        stimDur  = 2000; % ms
-                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
-                            BL, stimDur, 2000, 'gapASSRRate');
-                    end
+                    % The next part depends on the stimulus; pull the
+                    % relevant variables
+                    [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                        StimVariable(Condition{iStimType},1);
+
+                    % and slice the data
+                    sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                        BL, stimDur, stimITI, thisTag);
 
                     clear DataIn StimIn % these are too big to keep around
+                    
                     %% All the data from the LFP now (sngtrl = single trial)
                     [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
@@ -144,7 +107,7 @@ for i1 = 1:entries
                     for istim = 1:length(stimList)
                         nexttile
                         imagesc(mean(sngtrlCSD{istim},3))
-                        title([num2str(stimList(istim)) thisunit])
+                        title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
                         caxis([-0.2 0.2])
                         
@@ -319,7 +282,7 @@ for i1 = 1:entries
                         legend('II', 'IV', 'Va', 'Vb', 'VI')
                     xticklabels(stimList)
                     ylabel('RMS [mV/mm²]')
-                    xlabel([Condition{iStimType} ' [' thisunit ']'])
+                    xlabel([Condition{iStimType} ' [' thisUnit ']'])
                     title([file(1:5) ' ' Condition{iStimType}...
                         ' ' num2str(iStimCount) ' Tuning Curve'])
                     

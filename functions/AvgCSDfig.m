@@ -21,41 +21,12 @@ entries = length(input);
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
 subjects = length(animals);
 
-% The next part depends on the stimulus
-if matches(stimType,'NoiseBurst') || ...
-        matches(stimType,'postNoise')
-    % non randomized list of dB presentation
-    stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-    thisunit = 'dB';
-    timeaxis = BL+100+1000; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Tonotopy')
-    stimList = [1, 2, 4, 8, 16, 24, 32];
-    thisunit = 'kHz';
-    timeaxis = BL+200+1000; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Spontaneous') || ...
-        matches(stimType,'postSpont')
-    stimList = 1;
-    thisunit = [];
-    timeaxis = BL+1000+1000; % BL + ITI (ms)
-    
-elseif matches(stimType,'ClickTrain')
-    stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-    thisunit = 'dB';
-    timeaxis = BL+2000+2000+1; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'Chirp')
-    stimList = 1;
-    thisunit = [];
-    timeaxis = BL+3000+1000; % BL + stimdur + ITI (ms)
-    
-elseif matches(stimType,'gapASSR')
-    stimList = [2, 4, 6, 8, 10];
-    thisunit = ' [ms] gap width';
-    timeaxis = BL+2000+2000; % BL + stimdur + ITI (ms)
-    
-end
+% The next part depends on the stimulus, pull the relevant details
+[stimList, thisUnit, stimDur, stimITI, ~] = ...
+    StimVariable(stimType,1);
+
+% put the time axis together with the above info
+timeaxis = BL + stimDur + stimITI;
 
 % preallocate csd holders as cells for variability
 CSDhold = cell(1,length(stimList));
@@ -63,7 +34,8 @@ for iStim = 1:length(stimList)
     CSDhold{iStim} = NaN(chanlength,timeaxis,subjects);
 end
 
-% now run through and pull data from each animal into those containers
+%% now run through and pull data from each animal into containers
+
 for iEnt = 1:entries
     
     % load the animal data in
@@ -104,7 +76,7 @@ for iEnt = 1:entries
 end
 
 
-% produce CSD figure
+%% produce CSD figure
 CSDfig = tiledlayout('flow');
 title(CSDfig,[Group ' Avg CSD to ' stimType])
 xlabel(CSDfig, 'time [ms]')
@@ -114,7 +86,7 @@ for iStim = 1:length(stimList)
     nexttile
     image = nanmean(CSDhold{iStim},3);
     imagesc(image(1:27,:)) % after 27, all rows NaN in MKO group
-    title([num2str(stimList(iStim)) thisunit])
+    title([num2str(stimList(iStim)) thisUnit])
     caxis([-0.1 0.1])
     colormap('jet')
     colorbar

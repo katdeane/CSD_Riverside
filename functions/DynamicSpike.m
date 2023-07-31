@@ -58,54 +58,16 @@ for i1 = 2:entries
                     [StimIn, DataIn] = FileReaderSpike(file,str2num(channels{iA}));
                     toc
                     sr_mult = 3; % sampling rate 3000, multiply by this to get [ms]
-
-                    % The next part depends on the stimulus
-                    if matches(Condition{iStimType},'NoiseBurst') || ...
-                            matches(Condition{iStimType},'postNoise')
-                        % non randomized list of dB presentation
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 100*sr_mult; % ms
-                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
-                            (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'noise');
-
-                    elseif matches(Condition{iStimType},'Tonotopy')
-                        stimList = [1, 2, 4, 8, 16, 24, 32];
-                        thisunit = 'kHz';
-                        stimDur  = 200*sr_mult; % ms
-                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
-                            (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'Tonotopy');
-
-                    elseif matches(Condition{iStimType},'Spontaneous') || ...
-                            matches(Condition{iStimType},'postSpont')
-                        stimList = 1;
-                        thisunit = [];
-                        stimDur  = 1000*sr_mult; % ms
-                        sngtrldat = icutsinglespikedata(StimIn, DataIn, ...
-                            (BL*sr_mult)-1, stimDur, 1000*sr_mult, 'spont');
-
-                    elseif matches(Condition{iStimType},'ClickTrain')
-                        stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-                        thisunit = 'dB';
-                        stimDur  = 2000*sr_mult; % ms
-                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
-                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'ClickRate');
-                        
-                    elseif matches(Condition{iStimType},'Chirp')
-                        stimList = 1;
-                        thisunit = [];
-                        stimDur  = 3000*sr_mult; % ms
-                        sngtrldat = icutsinglespikedata(StimIn, DataIn, ...
-                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'single');
-
-                    elseif matches(Condition{iStimType},'gapASSR')
-                        stimList = [2, 4, 6, 8, 10];
-                        thisunit = 'gap width [ms]';
-                        stimDur  = 2000*sr_mult; % ms
-                        sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
-                            (BL*sr_mult)-1, stimDur, 2000*sr_mult, 'gapASSRRate');
-                    end
-
+                    
+                    % The next part depends on the stimulus; pull the
+                    % relevant variables
+                    [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                        StimVariable(Condition{iStimType},sr_mult);
+                    
+                    % and slice the data
+                    sngtrldat = icutandraster(file, StimIn, DataIn, stimList, ...
+                        (BL*sr_mult)-1, stimDur, stimITI, thisTag);
+                    
                     clear DataIn StimIn % these are too big to keep around
 
                     % Layers
@@ -160,7 +122,7 @@ for i1 = 2:entries
                             % now add the tile
                             nexttile
                             bar(adjlaysum,30,'histc')
-                            title([num2str(stimList(istim)) thisunit])
+                            title([num2str(stimList(istim)) thisUnit])
                             xlim([0 length(layersum)])
                             xticks(0:200*sr_mult:length(layersum))
                             labellist = xticks ./ sr_mult;
@@ -187,7 +149,7 @@ for i1 = 2:entries
                         nexttile
                         % plot so higher activity is darker 
                         imagesc((sum(sngtrldat{istim},3))*-1)
-                        title([num2str(stimList(istim)) thisunit])          
+                        title([num2str(stimList(istim)) thisUnit])          
                         colormap('gray')
                         
                         xlim([0 length(layersum)])
