@@ -18,7 +18,7 @@ function DynamicCSD(homedir, Condition)
 %   sinks then create a SEPARATE and UNIQUELY NAMED script.
 %
 %   calls homebrew functions: imakeIndexer, FileReaderLFP, StimVariable, 
-%   icutdata, SingleTrialCSD, sink_dura
+%   icutdata, icutsinglestimdata, SingleTrialCSD, sink_dura
 
 cd(homedir); cd groups;
 
@@ -42,7 +42,7 @@ for i1 = 1:entries
     %%
     
     for iA = 1:length(animals)
-        tic
+        
         name = animals{iA}; %#ok<*IDISVAR>
         
         for iStimType = 1:length(Condition)
@@ -60,7 +60,7 @@ for i1 = 1:entries
                 if exist([name '_' measurement '_LFP.xdat.json'],'file')
                     file = [name '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
-                    
+                    tic
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
 
                     % The next part depends on the stimulus; pull the
@@ -69,8 +69,13 @@ for i1 = 1:entries
                         StimVariable(Condition{iStimType},1);
 
                     % and slice the data
-                    sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
+                    if matches(thisTag,'single') || matches(thisTag,'spont')
+                        sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
+                            stimDur, stimITI, thisTag);
+                    else
+                        sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
                         BL, stimDur, stimITI, thisTag);
+                    end
 
                     clear DataIn StimIn % these are too big to keep around
                     
@@ -171,68 +176,7 @@ for i1 = 1:entries
                     Data(CondIDX).RELRES        = AvgRelResCSD;
                     Data(CondIDX).singtrlRelRes = singtrlRelResCSD;
                                         
-                    %% Visualize early tuning (onset between 0:65 ms)
-                    IIcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    IVcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    Vacurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    Vbcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    VIcurve = nan(1,length(Data(CondIDX).SinkRMS));
-                    
-                    for istim = 1:length(Data(CondIDX).SinkRMS)
-                        if (410 < Data(CondIDX).Sinkonset(istim).II(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).II(1) < 460)
-                            IIcurve(istim) = Data(CondIDX).SinkRMS(istim).II(1);
-                        else
-                            IIcurve(istim) = NaN;
-                        end
-                        
-                        if (410 < Data(CondIDX).Sinkonset(istim).IV(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).IV(1) < 460)
-                            IVcurve(istim) = Data(CondIDX).SinkRMS(istim).IV(1);
-                        else
-                            IVcurve(istim) = NaN;
-                        end
-                        
-                        if (410 < Data(CondIDX).Sinkonset(istim).Va(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Va(1) < 460)
-                            Vacurve(istim) = Data(CondIDX).SinkRMS(istim).Va(1);
-                        else
-                            Vacurve(istim) = NaN;
-                        end
-                        
-                        if (410 < Data(CondIDX).Sinkonset(istim).Vb(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).Vb(1) < 460)
-                            Vbcurve(istim) = Data(CondIDX).SinkRMS(istim).Vb(1);
-                        else
-                            Vbcurve(istim) = NaN;
-                        end
-                        
-                        if (410 < Data(CondIDX).Sinkonset(istim).VI(1)) && ...
-                                (Data(CondIDX).Sinkonset(istim).VI(1) < 460)
-                            VIcurve(istim) = Data(CondIDX).SinkRMS(istim).VI(1);
-                        else
-                            VIcurve(istim) = NaN;
-                        end
-                    end
-                    
-                    figure
-                    plot(IIcurve,'LineWidth',2),...
-                        hold on,...
-                        plot(IVcurve,'LineWidth',2),...
-                        plot(Vacurve,'LineWidth',2),...
-                        plot(Vbcurve,'LineWidth',2),...
-                        plot(VIcurve,'LineWidth',2),...
-                        legend('II', 'IV', 'Va', 'Vb', 'VI')
-                    xticklabels(stimList)
-                    ylabel('RMS [mV/mm²]')
-                    xlabel([Condition{iStimType} ' [' thisUnit ']'])
-                    title([file(1:5) ' ' Condition{iStimType}...
-                        ' ' num2str(iStimCount) ' Tuning Curve'])
-                    
-                    hold off
-                    h = gcf;
-                    savefig(h,[name '_' measurement '_RMS Sink tuning' ],'compact')
-                    close (h)
+                    toc
                 end
             end
         end
@@ -245,6 +189,6 @@ for i1 = 1:entries
             cd(homedir)
         end
     end
-    toc
+
 end
 cd(homedir)
