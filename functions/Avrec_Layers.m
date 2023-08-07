@@ -107,12 +107,17 @@ for i_In = 1:entries
             % peak detection over single trials
             if matches(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
-            else % THIS NEEDS TO BE UPDATED TO DO PEAK DETECTION ON gapASSR !!!! Kat
+                BL = 400;
+            elseif matches (Condition, 'gapASSR')
+                reprate = 2; % every 500 ms to detect onset response to gap-noise
+                BL = 400 + 250; % adding noise before first gap-noise
+            else 
                 reprate = 1;
+                BL = 400;
             end
             
             [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...
-                reprate, stimDur, 400);
+                reprate, stimDur, BL);
             
             for iTrial = 1:size(peakout,2)
                 for itab = 1:size(peakout,1)
