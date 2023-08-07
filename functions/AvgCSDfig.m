@@ -7,7 +7,9 @@ function AvgCSDfig(homedir, Group, stimType)
 %Input:     datastructs\ *.mat
 %Output:    \figures\Average_CSD; figures only for representation of
 %           characteristic profile
+
 cd(homedir);
+
 % some presets
 BL         = 400;
 chanlength = 32; % the MAXIMUM amount of channels
@@ -43,27 +45,12 @@ for iEnt = 1:entries
     
     % we need the index of the last noiseburst or the first of any
     % other stim type
-    if matches(stimType,'NoiseBurst')
-        index =  length(Cond.(stimType){iEnt});
-    else
-        anCondList = {Data.Condition};
-        for idirtytrick = 1:length(anCondList)
-            if exist('index','var')
-                continue
-            elseif isempty(anCondList{idirtytrick})
-                continue
-            elseif contains(anCondList{idirtytrick},stimType)
-                index = idirtytrick;
-            else
-                continue
-            end
-        end
-    end
+    index = StimIndex(Cond,iEnt,stimType);
+    
     % if this animal doesn't have a measurement of this type
     if ~exist('index','var')
         continue
     end
-    % now that that nasty business is over...
     
     % pull the data
     for iStim = 1:length(stimList)
