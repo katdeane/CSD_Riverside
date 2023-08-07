@@ -13,7 +13,6 @@ if ~exist('sr_mult','var')
     sr_mult = 1; % 1k sampling rate
 end
 
-
 if matches(Condition,'NoiseBurst') || ...
         matches(Condition,'postNoise')
     stimList = [20, 30, 40, 50, 60, 70, 80, 90];
@@ -22,36 +21,36 @@ if matches(Condition,'NoiseBurst') || ...
     stimITI  = 1000*sr_mult;
     thisTag  = 'noise'; 
     
-elseif matches(Condition{iStimType},'Tonotopy')
+elseif matches(Condition,'Tonotopy')
     stimList = [1, 2, 4, 8, 16, 24, 32];
     thisUnit = 'kHz';
     stimDur  = 200*sr_mult; % ms
     stimITI  = 1000*sr_mult;
     thisTag  = 'Tonotopy'; 
     
-elseif matches(Condition{iStimType},'Spontaneous') || ...
-        matches(Condition{iStimType},'postSpont')
+elseif matches(Condition,'Spontaneous') || ...
+        matches(Condition,'postSpont')
     stimList = 1;
     thisUnit = [];
     stimDur  = 1000*sr_mult; % ms
     stimITI  = 1000*sr_mult;
     thisTag  = 'spont'; 
     
-elseif matches(Condition{iStimType},'ClickTrain')
-    stimList = [20, 30, 40, 50, 60, 70, 80, 90];
-    thisUnit = 'dB';
+elseif matches(Condition,'ClickTrain')
+    stimList = [1, 5, 10, 20, 40, 80, 100, 120];
+    thisUnit = 'Hz';
     stimDur  = 2000*sr_mult; % ms
     stimITI  = 2000*sr_mult;
     thisTag  = 'ClickRate';
     
-elseif matches(Condition{iStimType},'Chirp')
+elseif matches(Condition,'Chirp')
     stimList = 1;
     thisUnit = [];
     stimDur  = 3000*sr_mult; % ms
     stimITI  = 2000*sr_mult;
     thisTag  = 'single';
     
-elseif matches(Condition{iStimType},'gapASSR')
+elseif matches(Condition,'gapASSR')
     stimList = [2, 4, 6, 8, 10];
     thisUnit = ' [ms] gap width';
     stimDur  = 2000*sr_mult; % ms
