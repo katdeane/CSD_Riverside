@@ -35,7 +35,7 @@ for i1 = 1:entries
     %%
     
     for iA = 1:length(animals)
-%         tic
+        tic
         name = animals{iA}; %#ok<*IDISVAR>
         
         for iStimType = 1:length(Condition)
@@ -54,9 +54,7 @@ for i1 = 1:entries
                     file = [name '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     
-                    tic
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
-                    toc
 
                     % The next part depends on the stimulus; pull the
                     % relevant variables
@@ -86,7 +84,7 @@ for i1 = 1:entries
                     Layers = fieldnames(L); 
                     
                     %Generate Sink Boxes
-                    [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_PAMP,PLAT,SINGLE_PLAT] =...
+                    [~,~,~,RMS,~,~,~,~,~] =...
                         sink_dura(L,sngtrlCSD,BL);                        
                     
                     %% Plots 
@@ -110,61 +108,7 @@ for i1 = 1:entries
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
                         caxis([-0.2 0.2])
-                        
-                        hold on
-                        % Layer II
-                        for isink = 1:length(ONSET(istim).II)
-                            y =[(max(L.II)+0.5),(max(L.II)+0.5),(min(L.II)-0.5),...
-                                (min(L.II)-0.5),(max(L.II)+0.5)];
-                            if isempty(y); y = [NaN NaN NaN NaN NaN]; end %in case the upper layer is not there
-                            x = [ONSET(istim).II(isink), OFFSET(istim).II(isink),...
-                                OFFSET(istim).II(isink), ONSET(istim).II(isink),...
-                                ONSET(istim).II(isink)];
-                            plot(x,y,'black','LineWidth',2)
-                        end
-                                                                        
-                        % Layer IV
-                        for isink = 1:length(ONSET(istim).IV)
-                            y =[(max(L.IV)+0.5),(max(L.IV)+0.5),(min(L.IV)-0.5),...
-                                (min(L.IV)-0.5),(max(L.IV)+0.5)];
-                            x = [ONSET(istim).IV(isink), OFFSET(istim).IV(isink),...
-                                OFFSET(istim).IV(isink), ONSET(istim).IV(isink),...
-                                ONSET(istim).IV(isink)];
-                            plot(x,y,'black','LineWidth',2)
-                        end
-                        
-                        % Layer Va
-                        for isink = 1:length(ONSET(istim).Va)
-                            y =[(max(L.Va)+0.5),(max(L.Va)+0.5),(min(L.Va)-0.5),...
-                                (min(L.Va)-0.5),(max(L.Va)+0.5)];
-                            x = [ONSET(istim).Va(isink), OFFSET(istim).Va(isink),...
-                                OFFSET(istim).Va(isink), ONSET(istim).Va(isink),...
-                                ONSET(istim).Va(isink)];
-                            plot(x,y,'black','LineWidth',2)
-                        end
-                        
-                        % Layer Vb
-                        for isink = 1:length(ONSET(istim).Vb)
-                            y =[(max(L.Vb)+0.5),(max(L.Vb)+0.5),(min(L.Vb)-0.5),...
-                                (min(L.Vb)-0.5),(max(L.Vb)+0.5)];
-                            x = [ONSET(istim).Vb(isink), OFFSET(istim).Vb(isink),...
-                                OFFSET(istim).Vb(isink), ONSET(istim).Vb(isink),...
-                                ONSET(istim).Vb(isink)];
-                            plot(x,y,'black','LineWidth',2)
-                        end
-                        
-                        % Layer VI
-                        for isink = 1:length(ONSET(istim).VI)
-                            y =[(max(L.VI)+0.5),(max(L.VI)+0.5),(min(L.VI)-0.5),...
-                                (min(L.VI)-0.5),(max(L.VI)+0.5)];
-                            x = [ONSET(istim).VI(isink), OFFSET(istim).VI(isink),...
-                                OFFSET(istim).VI(isink), ONSET(istim).VI(isink),...
-                                ONSET(istim).VI(isink)];
-                            plot(x,y,'black','LineWidth',2)
-                        end                    
-                        
-                        hold off
-                        
+
                     end
                     
                     colorbar
@@ -205,21 +149,15 @@ for i1 = 1:entries
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % sink data
+                    % sink data removed 08/07/23
+
+                    % BFs
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
                     Data(CondIDX).BF_Va         = BF_Va;
                     Data(CondIDX).BF_Vb         = BF_Vb;
                     Data(CondIDX).BF_VI         = BF_VI;
-                    Data(CondIDX).SinkPeakAmp   = PAMP;
-                    Data(CondIDX).SglSinkPkAmp  = SINGLE_PAMP;
-                    Data(CondIDX).SinkPeakLate  = PLAT;
-                    Data(CondIDX).SglSinkPkLat  = SINGLE_PLAT;
-                    Data(CondIDX).SinkDur       = DUR;
-                    Data(CondIDX).Sinkonset     = ONSET;
-                    Data(CondIDX).Sinkoffset    = OFFSET;
-                    Data(CondIDX).SinkRMS       = RMS;
-                    Data(CondIDX).SingleSinkRMS = SINGLE_RMS;
+
                     % CSD data
                     Data(CondIDX).sngtrlLFP     = sngtrlLFP;
                     Data(CondIDX).sngtrlCSD     = sngtrlCSD;
@@ -296,16 +234,12 @@ for i1 = 1:entries
 
         if exist('Data','var')
             cd(homedir);
-            %         if ~exist([homedir 'datastructs'],'dir')
-            %             mkdir 'datastructs'
-            %         end
-            cd 'datastructs'
+            cd datastructs
             save([name '_Data'],'Data');
             clear Data
             cd(homedir)
         end
-%         toc
     end
-    
+    toc
 end
 cd(homedir)
