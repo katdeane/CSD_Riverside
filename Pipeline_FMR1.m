@@ -1,4 +1,4 @@
-% Pipeline - FMR1 Comparison Study 
+% Pipeline - FMR1 Comparison Study ~( °٢° )~
 
 clear; clc;
 % change for your station
@@ -20,7 +20,7 @@ Groups = {'MKO' 'MWT'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
 
-%% Data generation per subject
+%% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 DynamicCSD(homedir, Condition)
@@ -28,12 +28,12 @@ DynamicCSD(homedir, Condition)
 % per subject Spike Script
 DynamicSpike(homedir, Condition)
 
-%% Group pics 
+%% Group pics (⌐▨_▨)
 
 % generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
-        disp(['Average CSDs for ' Group{iGro} ' ' Condtion{iST}])
+        disp(['Average CSDs for ' Groups{iGro} ' ' Condition{iST}])
         tic
         AvgCSDfig(homedir, Groups{iGro}, Condition{iST})
         toc
@@ -43,7 +43,7 @@ end
 % generate group averaged spike heatmaps based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
-        disp(['Average Heatmaps for ' Group{iGro} ' ' Condtion{iST}])
+        disp(['Average Heatmaps for ' Groups{iGro} ' ' Condition{iST}])
         tic
         AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
         toc
@@ -51,20 +51,25 @@ for iGro = 1:length(Groups)
 end
 
 
-%% trial-averaged AVREC and layer trace generation / peak detection
+%% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
-disp('Producing trial-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
+    for iST = 3:length(Condition)
+        disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
+        tic 
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        toc
     end
 end
 
-%% Group AVREC and layer traces / average peak detection 
+%% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
+        disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
+        tic 
         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        toc
     end
 end
