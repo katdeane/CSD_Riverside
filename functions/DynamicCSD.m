@@ -2,16 +2,23 @@ function DynamicCSD(homedir, Condition)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
-%   This script takes input from the groups and data folders. It calculates 
-%   and stores CSD, sinks, AVREC, LFP, Relres, and basic information in a 
-%   Data struct per animal (eg MWT01_Data.mat) which is saved in the DATA 
-%   folder. 
+%   This script takes input from groups/ and data/. It calculates 
+%   and stores LFP, CSD, AVREC, Relres, and basic information in a 
+%   Data struct per subject (eg MWT01_Data.mat) which is saved in 
+%   datastructs/
+%
+%   Data is from Neuronexus: Allego and Curate, should have *_LFP.xdat.json,
+%   *_LFP_data.xdat, and *_LFP_timestamp.xdat per subject (eg MWT01_01). 
+% 
+%   Condition should be a string matching a condition saved in the group
+%   metadata file (eg MWT.m), such as 'NoiseBurst'
 % 
 %   The sinks list is (II, IV, Va, Vb, VI)
 %   IMPORTANT: DO NOT change sink list here. If you need another set of
 %   sinks then create a SEPARATE and UNIQUELY NAMED script.
-
-%   calls functions: imakeIndexer.m
+%
+%   calls homebrew functions: imakeIndexer, FileReaderLFP, StimVariable, 
+%   icutdata, SingleTrialCSD, sink_dura
 
 cd(homedir); cd groups;
 
@@ -108,11 +115,9 @@ for i1 = 1:entries
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
                         caxis([-0.2 0.2])
-
                     end
                     
                     colorbar
-
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
                     close (h)

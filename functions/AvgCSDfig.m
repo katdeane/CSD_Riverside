@@ -1,8 +1,8 @@
-function AvgCSDfig(homedir, Group, stimType)
+function AvgCSDfig(homedir, Group, Condition)
 %% Averaged CSD
 
-% The purpose of this script is to provide an averaged CSD for visual
-% representation of each analysis group.
+% The purpose of this script is to provide an averaged group CSD for visual
+% representation of each group for each stimulus type
 
 %Input:     datastructs\ *.mat
 %Output:    \figures\Average_CSD; figures only for representation of
@@ -25,7 +25,7 @@ subjects = length(animals);
 
 % The next part depends on the stimulus, pull the relevant details
 [stimList, thisUnit, stimDur, stimITI, ~] = ...
-    StimVariable(stimType,1);
+    StimVariable(Condition,1);
 
 % put the time axis together with the above info
 timeaxis = BL + stimDur + stimITI;
@@ -45,7 +45,7 @@ for iEnt = 1:entries
     
     % we need the index of the last noiseburst or the first of any
     % other stim type
-    index = StimIndex(Cond,iEnt,stimType);
+    index = StimIndex(Cond,iEnt,Condition);
     
     % if this animal doesn't have a measurement of this type
     if ~exist('index','var')
@@ -65,7 +65,7 @@ end
 
 %% produce CSD figure
 CSDfig = tiledlayout('flow');
-title(CSDfig,[Group ' Avg CSD to ' stimType])
+title(CSDfig,[Group ' Avg CSD to ' Condition])
 xlabel(CSDfig, 'time [ms]')
 ylabel(CSDfig, 'depth [channels]')
 
@@ -91,7 +91,7 @@ h = gcf;
 set(h, 'PaperType', 'A4');
 set(h, 'PaperOrientation', 'landscape');
 set(h, 'PaperUnits', 'centimeters');
-savefig(h,[Group ' Avg CSD to ' stimType],'compact')
+savefig(h,[Group ' Avg CSD to ' Condition],'compact')
 close (h)
 
 cd(homedir)

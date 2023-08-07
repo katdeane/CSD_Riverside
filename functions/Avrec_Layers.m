@@ -2,18 +2,21 @@ function Avrec_Layers(homedir, Group, Condition)
 
 % This script takes *.mat files out of the datastructs/ folder.It then plots the
 % Avrecs for each animal over the specified stimulus Condition
-
+%
 %Input:     ..\datastructs\[Group * '_Data.mat']
-
-%Output:    Figures of in "Single_Avrec" are for Click, Amp modulation, and
-%           Spontaneous measurements. Data out as *.mat files for each type
-%           of measurement in "Group_Avrec". mat files contain sorted AVREC
-%           data and the first peak amp detected for each AVREC. These are for
+%
+%Output:    Figures of in "Single_Avrec" are for all stim types. 
+%           Data out as *.mat files for each type of measurement in 
+%           "Group_Avrec". mat files contain sorted AVREC
+%           data and the first peak amp detected for each subject's last
+%           noise condition at 70 db SPL.These are for
 %           normalization and averaging in group scripts (next step)
-
-% NOTE:     full list of frequency for click and amp stim: [2,5,10,20,40].
-%           However, only 5 and 10 are being run here. Update variable:
-%           stimList to pull out the extra data
+% 
+%   Peak detection is only at onset except in the case of ClickTrain, where
+%   it matches the stimList, and of gapASSR where it's alligned to each
+%   onset of gap-interrupted-noise (aka gap-noise). 
+%
+%   Peak detection is already single trial here
 
 cd(homedir)
 

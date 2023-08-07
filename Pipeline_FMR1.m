@@ -1,11 +1,21 @@
 % Pipeline - FMR1 Comparison Study ~( °٢° )~
 
+% This is the master script for the FMR1 KO and WT study, run by Katrina
+% Deane at University of California, Riverside in Khaleel Razak's lab in
+% the Psychology Department. 
+
+% The overall goal of this study is to characterize A1 laminar differences
+% between groups. FMR1 KOs have auditory hypersensitivity and in vitro it
+% was found that their layer 2/3 and 5 were more synchronized in response
+% to stimulation in layer 2/3 specifically (Goswami 2019, Neurobiol Dis)
+
+%% Get started
+
 clear; clc;
-% change for your station
+
+% set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-% elseif exist('C:\Users\RazakLab\Documents\CSD_Riverside','dir')
-%     cd('C:\Users\RazakLab\Documents\CSD_Riverside')
 elseif exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside'); 
 else
@@ -26,7 +36,7 @@ Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 DynamicCSD(homedir, Condition)
 
 % per subject Spike Script
-DynamicSpike(homedir, Condition)
+% DynamicSpike(homedir, Condition)
 
 %% Group pics (⌐▨_▨)
 
@@ -41,14 +51,14 @@ for iGro = 1:length(Groups)
 end
 
 % generate group averaged spike heatmaps based on stimuli (does not BF sort)
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Average Heatmaps for ' Groups{iGro} ' ' Condition{iST}])
-        tic
-        AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
-        toc
-    end
-end
+% for iGro = 1:length(Groups)
+%     for iST = 1:length(Condition)
+%         disp(['Average Heatmaps for ' Groups{iGro} ' ' Condition{iST}])
+%         tic
+%         AvgSpikefig(homedir, Groups{iGro}, Condition{iST})
+%         toc
+%     end
+% end
 
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
@@ -64,12 +74,14 @@ end
 
 %% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
-disp('Producing group-averaged traces for each group')
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
-        tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
-        toc
-    end
-end
+% work in progress: 
+
+% disp('Producing group-averaged traces for each group')
+% for iGro = 1:length(Groups)
+%     for iST = 1:length(Condition)
+%         disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
+%         tic 
+%         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+%         toc
+%     end
+% end

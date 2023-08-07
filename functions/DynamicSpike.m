@@ -2,16 +2,13 @@ function DynamicSpike(homedir, Condition)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
-%   This script takes input from the groups and data folders. It calculates
-%   and stores CSD, sinks, AVREC, LFP, Relres, and basic information in a
-%   Data struct per animal (eg MWT01_Data.mat) which is saved in the DATA
-%   folder.
+%   This script takes input from from groups/ and data/. It might become
+%   obsolete if we get Visere from Neuronexus
 %
 %   The layer list is (II, IV, Va, Vb, VI)
 %   IMPORTANT: DO NOT change sink list here. If you need another set of
 %   sinks then create a SEPARATE and UNIQUELY NAMED script.
 
-%   calls functions: imakeIndexer.m
 
 cd(homedir); cd groups;
 
