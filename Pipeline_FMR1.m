@@ -64,7 +64,7 @@ end
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
 for iGro = 1:length(Groups)
-    for iST = 3:length(Condition)
+    for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST})

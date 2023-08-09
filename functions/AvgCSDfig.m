@@ -45,7 +45,7 @@ for iEnt = 1:entries
     
     % we need the index of the last noiseburst or the first of any
     % other stim type
-    index = StimIndex(Cond,iEnt,Condition);
+    index = StimIndex({Data.Condition},Cond,iEnt,Condition);
     
     % if this animal doesn't have a measurement of this type
     if ~exist('index','var')

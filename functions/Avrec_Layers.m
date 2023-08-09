@@ -48,7 +48,7 @@ for i_In = 1:entries
     % one output per subject
     index = StimIndex({Data.Condition},Cond,i_In,Condition);
     % if no stim of this type for this subject, continue on
-    if isempty('index')
+    if isempty(index)
         continue
     end
     
