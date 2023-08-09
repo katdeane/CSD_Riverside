@@ -48,7 +48,7 @@ for iEnt = 1:entries
     index = StimIndex({Data.Condition},Cond,iEnt,Condition);
     
     % if this animal doesn't have a measurement of this type
-    if ~exist('index','var')
+    if isempty(index)
         continue
     end
     
