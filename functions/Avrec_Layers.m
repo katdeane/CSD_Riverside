@@ -169,6 +169,6 @@ if exist('TracePeaks','dir')
 else
     mkdir TracePeaks, cd TracePeaks;
 end
-writetable(PeakData,'AVRECPeak.csv')
+writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
 
 cd(homedir)
