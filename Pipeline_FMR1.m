@@ -94,10 +94,10 @@ params.sampleRate = 1000; % Hz
 params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
-params.layers = {'II','IV','V','VI'}; 
+params.layers = {'II','IV','Va','Vb','VI'}; 
 
-runCwtCsd('MWT',params,homedir,{'5.28', '36.76'});
-runCwtCsd('MKO',params,homedir,{'5', '40'});
+runCwtCsd(homedir,'MWT',params);
+runCwtCsd(homedir,'MKO',params);
 
 % Run Permutation Analysis
 BatFreq   = {'5.28', '36.76'};

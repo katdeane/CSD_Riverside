@@ -1,65 +1,59 @@
-function runCwtCsd(Group,params,homedir,freqlist)
+function runCwtCsd(homedir,Group,params)
 
-% Input:    group name to match *Data.mat in \Dynamic_CSD\DATA, parameters
-%           set for CWT analysis, home director
+% Input:    group name to match *Data.mat in \datastructs, parameters
+%           set for CWT analysis
 % Output:   Runs CWT analysis using the Wavelet toolbox. figures of
-%           animal-wise scalograms -> Dynamic_CSD\figs\Spectral_MagPlots
+%           animal-wise scalograms -> figures\Spectral_MagPlots
 %           and group table output to be formatted to full scalograms.mat 
+% Note:     I'm setting a hard cap at 50 trials 
 
-% group specific info
-if contains(Group,'CIC')
-    datfolder = 'mouse_output';
-    timeaxis  = 1:1201; % bl 200, 1000 tone
-elseif contains(Group,'FAFAC')
-    datfolder = 'bat_output';
-    timeaxis  = 311:1511; % the last 200 of 510 bl, 1000 ms of tone
-else
-    error('If this is a new group, please work it through the pipeline')
-end
+% set some variables
+condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; 
+BL = 399;
 
-cd(homedir); cd(datfolder);
-
-% Generates variables called animals and Layer
-if contains(Group,'CIC')
-    input = dir('*byFreq.mat');
-else
-    input = dir('FAFAC*.mat');
-end
+% detect data
+cd(homedir); cd datastructs;
+input = dir([Group '*_Data.mat']);
 entries = length(input);
+run([Group '.m']); % brings in animals, channels, Layer, and Cond
 
-cd(homedir); cd Comparison;
+cd(homedir); cd output;
 if exist('WToutput','dir') == 7
     cd WToutput
 else
     mkdir('WToutput'),cd WToutput
 end
 
-
+% and go
 for iAn = 1:entries
     tic
     load(input(iAn).name,'Data');
     
-    if contains(Group,'CIC')
-        Aname = input(iAn).name(1:5);
-    else
-        Aname = input(iAn).name(1:7);
-    end
+    Aname = input(iAn).name(1:5);
+
     disp(['Running for ' Aname])
     
-    nummeas = length(Data(1).SngTrl_CSD);
-    
-    for iFreq = 1:length(freqlist)
+    for iCond = 1:length(condList)
+        
+        disp(['Condition: ' condList{iCond}])
+
         % Init datastruct to pass out
         wtStruct = struct();
-        count = 1;
         
-        disp(['Stimulus Frequency ' freqlist{iFreq} ' Hz'])
-        thisFreq = contains(({Data.ClickFreq}),freqlist{iFreq});
+        % pull the variables and index for this condition
+        [stimList, thisUnit, stimDur, stimITI, ~] = ...
+            StimVariable(condList{iCond},1);
+        timeAxis = BL + stimDur + stimITI; 
+        index = StimIndex({Data.Condition},Cond,iAn,condList{iCond});
         
-        for iMeas = 1:nummeas
-            
-            disp(['Measurement ' num2str(iMeas)])
-            curCSD = Data(thisFreq).SngTrl_CSD{iMeas};
+        if isempty(index)
+            continue
+        end
+
+        for iStim = 1:length(stimList)
+           
+            disp(['For ' num2str(stimList(iStim)) ' ' thisUnit])
+            curCSD = Data(index).sngtrlCSD{iStim};
             
            for iLay = 1:length(params.layers)
                
@@ -68,68 +62,56 @@ for iAn = 1:entries
                % assign the next number and base all other numbers on that. This
                % means that odd numbers (e.g. 7) will use exact middle (e.g. 4), while
                % even (e.g. 6) returns middle/slightly lower (e.g. 3).
-               
-               % Format here forces the use of eval to get channel locs
-               curChan = Data(thisFreq).(['Lay' params.layers{iLay}]){iMeas};
-               if isempty(curChan) % for missing layers
+               curLay = str2num(Layer.(params.layers{iLay}){iAn});
+               if isempty(curLay) % for missing layers
                    continue
                end
-               centerChan = curChan(ceil(length(curChan)/2));
-               theseChans = curChan-centerChan;
-               % Select only center 3 channels
-               curChan = curChan(theseChans >=-1 & theseChans <=1);
+               centerChan = curLay(ceil(length(curLay)/2));
                
-               for itrial = 1:size(curCSD,3)
-                   
-                   hold_cwts = zeros(54,length(timeaxis));
-                   
-                   % Repeat over channels
-                for iChan = 1:length(curChan)
-                    
-                    csdChan = squeeze(curCSD(curChan(iChan),timeaxis,itrial));
-                    
-                    if isnan(sum(csdChan))
-                        continue
-                    end
-                    % Limit the cwt frequency limits
-                    params.frequencyLimits(1) = max(params.frequencyLimits(1),...
-                        cwtfreqbounds(numel(csdChan),params.sampleRate,...
-                        'TimeBandWidth',params.timeBandWidth));
-                    
-                    [WT,F] = cwt(csdChan,params.sampleRate, ...
-                        'VoicesPerOctave',params.voicesPerOctave, ...
-                        'TimeBandWidth',params.timeBandWidth, ...
-                        'FrequencyLimits',params.frequencyLimits);
-                    
-                    if ~exist('cone','var')
-                        cone = F;
-                        save('Cone.mat','cone');
-                    end
-                    
-                    % to get average of channels: add each and divide after loop
-                    hold_cwts = hold_cwts + WT;
-                    
-                end % channel
-                
-                WT = hold_cwts/3;
-           
-                wtStruct(count).scalogram    = WT;
-                wtStruct(count).group        = Group;
-                wtStruct(count).animal       = Aname;
-                wtStruct(count).measurement  = num2str(iMeas);
-                wtStruct(count).layer        = params.layers{iLay};
-                wtStruct(count).trial        = itrial;
-                wtStruct(count).freq         = F;
-                                
-                count = count + 1;
-                clear WT hold_cwts
-                
+               for iTrial = 1:50
+
+                   if iTrial > size(curCSD,3)
+                       continue
+                   end
+                   % current working data 
+                   csdChan = squeeze(curCSD(centerChan,1:timeAxis,iTrial));
+
+                   if isnan(sum(csdChan))
+                       continue
+                   end
+                   % Set the cwt frequency limits
+                   params.frequencyLimits(1) = max(params.frequencyLimits(1),...
+                       cwtfreqbounds(numel(csdChan),params.sampleRate,...
+                       'TimeBandWidth',params.timeBandWidth));
+
+                   [WT,F] = cwt(csdChan,params.sampleRate, ...
+                       'VoicesPerOctave',params.voicesPerOctave, ...
+                       'TimeBandWidth',params.timeBandWidth, ...
+                       'FrequencyLimits',params.frequencyLimits);
+
+                   if ~exist('cone','var')
+                       cone = F;
+                       save('Cone.mat','cone');
+                   end
+
+                   count = iTrial + ((iLay-1)*50 + ((iStim-1)*50*length(params.layers)));
+                   wtStruct(count).scalogram    = WT;
+                   wtStruct(count).group        = Group;
+                   wtStruct(count).animal       = Aname;
+                   wtStruct(count).condition    = condList{iCond};
+                   wtStruct(count).stim         = stimList(iStim);
+                   wtStruct(count).layer        = params.layers{iLay};
+                   wtStruct(count).trial        = iTrial;
+                   wtStruct(count).freq         = F;
+
+                   clear WT 
+
                end % trial
            end % layer
-        end % measurement / penetration 
+        end % stimulus
         wtTable = struct2table(wtStruct);
-        save([Aname '_' freqlist{iFreq} '_WT.mat'],'wtTable');
-    end % frequency, 5 or 40
+        save([Aname '_' condList{iCond} '_WT.mat'],'wtTable');
+    end % condition
     toc
 end % animal 
 
