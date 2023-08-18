@@ -1,5 +1,6 @@
 /data
 /metadata
+/figures
 
 *.asv
 *.json

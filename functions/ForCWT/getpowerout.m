@@ -1,37 +1,30 @@
 function Power = getpowerout(SpectData)
-    %Stack the individual animals' data (animal#x54x600)
-    animals = unique(SpectData.animal);
-    for iAn = 1:length(animals)
-        subWT = SpectData(contains(SpectData.animal,animals{iAn}),:);
-        measurements = unique(subWT.measurement);
-        holdmeas = zeros(length(measurements),size(subWT.scalogram{1},1),size(subWT.scalogram{1},2));
-        for iMeas = 1:length(measurements)
-            supersubWT = subWT(matches(subWT.measurement,measurements{iMeas}),:);
-            % for power plots/permutations, we can average before taking the
-            % power, it's the same. But the measurement trials need to be
-            % averaged before the group can be averaged either way
-            holdtrials = zeros(size(supersubWT.scalogram{1},1),size(supersubWT.scalogram{1},2));
-            for iTrial = 1:size(supersubWT,1)
 
-                if supersubWT.scalogram{iTrial}(1,1) == 0
-                    continue % skip the 0 trial scalograms
-                end
+%Stack the individual animals' data (animal#x54xtimeaxis)
+subjects = unique(SpectData.animal);
+Power    = zeros(length(subjects),size(SpectData.scalogram{1},1),size(SpectData.scalogram{1},2));
 
-                holdtrials = holdtrials + supersubWT.scalogram{iTrial};
+for iSu = 1:length(subjects)
+    subWT = SpectData(contains(SpectData.animal,subjects{iSu}),:);
+    % for power plots/permutations, we can average before taking the
+    % power, it's the same.
+    holdtrials = zeros(size(subWT.scalogram{1},1),size(subWT.scalogram{1},2));
+    for iTrial = 1:size(subWT,1)
 
-            end
-             meantrials = holdtrials / size(supersubWT,1); % take the mean for this measurement
-             powermat   = abs(meantrials) .^ 2; % POWER Calculation - no longer a complex number!
-             % bats and mice have hugely different scales of activity (bats
-             % are way stronger. Therefore we need to normalize per
-             % measurement/penetration. Divide the whole power mat by it's
-             % maximum.
-             holdmeas(iMeas,:,:) = powermat / mean(mean(powermat));
+        if subWT.scalogram{iTrial}(1,1) == 0
+            continue % skip the 0 trial scalograms
         end
-        if iAn == 1
-            Power = holdmeas;
-        else
-            Power = [Power;holdmeas];
-        end
+
+        holdtrials = holdtrials + subWT.scalogram{iTrial};
+
     end
+    meantrials = holdtrials / size(subWT,1); % take the mean for this measurement
+    powermat      = abs(meantrials) .^ 2; % POWER Calculation - no longer a complex number!
+
+    % Option to normalize power here, divide the whole power mat by it's mean:
+    % powermat = powermat / mean(mean(powermat));
+    
+    % place it in the container 
+    Power(iSu,:,:) = powermat;
 end
+

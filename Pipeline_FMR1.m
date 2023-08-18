@@ -95,44 +95,30 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
+params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset
+params.groups = {'MWT','MKO'}; % for permutation test
 
+% Only run when data regeneration is needed:
 runCwtCsd(homedir,'MWT',params);
 runCwtCsd(homedir,'MKO',params);
 
-% Run Permutation Analysis
-BatFreq   = {'5.28', '36.76'};
-MouseFreq = {'5', '40'};
 
-for iFreq = 1:length(BatFreq)
-
-    % specifying Power: trials are averaged and then power is taken from
-    % the complex WT output of runCwtCsd function above. Student's t test
-    % and Cohen'd d effect size are the stats used for observed and
-    % permutation difference
-    % specifying Phase: phase is taken per trial. mwu test and r effect
-    % size are the stats used
-    % Output:   Figures for means and observed difference of comparison; 
-    %           figures for observed t values, clusters
-    %           output; boxplot and significance of permutation test 
-    PermutationTest(homedir,BatFreq{iFreq},MouseFreq{iFreq},'Power')
-    PermutationTest(homedir,BatFreq{iFreq},MouseFreq{iFreq},'Phase')
-
-end
+% specifying Power: trials are averaged and then power is taken from
+% the complex WT output of runCwtCsd function above. Student's t test
+% and Cohen'd d effect size are the stats used for observed and
+% permutation difference
+% specifying Phase: phase is taken per trial. mwu test and r effect
+% size are the stats used
+% Output:   Figures for means and observed difference of comparison;
+%           figures for observed t values, clusters
+%           output; boxplot and significance of permutation test
+PermutationTest(homedir,'Power',params)
+PermutationTest(homedir,'Phase',params)
 
 %% CWT analysis on LFP 
 
-% Output:   Runs CWT analysis using the Wavelet toolbox. 
-params.sampleRate = 1000; % Hz
-params.frequencyLimits = [5 params.sampleRate/2]; % Hz
-params.voicesPerOctave = 8;
-params.timeBandWidth = 54;
-params.layers = {'IV'}; %'II','IV','V','VI'
-
 runCwtCsd_LFP('MWT',params,homedir,{'5.28', '36.76'});
 runCwtCsd_LFP('MKO',params,homedir,{'5', '40'});
-
-BatFreq   = {'5.28', '36.76'};
-MouseFreq = {'5', '40'};
 
 for iFreq = 1:length(BatFreq)
 

@@ -1,31 +1,25 @@
-function PermutationTest(homedir,BatFreq,MouseFreq,whichtest)
+function PermutationTest(homedir,whichtest,params)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
-% Output:   Figures for means and observed difference of awake/ketamine
-%           comparison; figures for observed t values, clusters, ttest line
-%           output; boxplot and significance of permutation test -> Pictures folder
-
+% specifying Power: trials are averaged and then power is taken from
+%           the complex WT output of runCwtCsd function above. Student's t
+%           test and Cohen'd d effect size are the stats used for observed
+%           and permutation difference
+% specifying Phase: phase is taken per trial. mwu test and r effect
+%           size are the stats used
+% Output:   Figures for means and observed difference of comparison;
+%           figures for observed t values, clusters
+%           output; boxplot and significance of permutation test
 %% standard operations
 
-warning('OFF');
-dbstop if error
-
-if ~exist('BatFreq','var') || ~exist('BatFreq','var')
-    error('Please specify the frequencies for your group comparison, e.g. BatFreq = "5.28"')
-end
-
-if ~exist('whichtest','var') 
+if ~exist('whichtest','var')
     whichtest = 'Power'; % or 'Phase'
 end
-
-layers = {'II', 'IV', 'V', 'VI'}; 
-
-cd (homedir); cd Comparison; cd WToutput
-load('Cone.mat','cone'); 
-
+% number of permutations
 nperms = 500;
-% pthresh = nperms*(0.05/7); bonferroni for 6 osci bands and full mat
+pthresh = 0.05/7; %bonferroni for 6 osci bands and full mat
 
+BL = 399;
 % actual intended frequencies commented
 theta = (49:54);        %(4:7);
 alpha = (44:48);        %(8:12);
@@ -38,349 +32,346 @@ osciName = {'theta' 'alpha' 'beta_low' 'beta_high' 'gamma_low' 'gamma_high'};
 osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 
 % the WT was run on the same time scale for both (limited by the mice)
-startTime = -200; % ms 
-limit = 1000; % ms
+% startTime = -200; % ms
+% limit = 1000; % ms
+
 % for the comparison between, they have different frequency stimuli, so we
 % should only directly compared the first stimuli which are matched in time
-if str2double(MouseFreq) > str2double(BatFreq)
-    comptime = 1:1000/str2double(MouseFreq)+200; % comparing BL time also
-else
-    comptime = 1:1000/str2double(BatFreq)+200; % comparing BL time also
-end
+% if str2double(MouseFreq) > str2double(BatFreq)
+%     compTime = 1:1000/str2double(MouseFreq)+200; % comparing BL time also
+% else
+%     compTime = 1:1000/str2double(BatFreq)+200; % comparing BL time also
+% end
 
 %% Load in and concatonate Data
-input = dir(['*_' MouseFreq '_WT.mat']);
-% initialize table with first input
-load(input(1).name, 'wtTable')
-MouseWT = wtTable; clear wtTable
-% start on 2 and add further input to full tables
-for iIn = 2:length(input) 
-    load(input(iIn).name, 'wtTable')
-    MouseWT = [MouseWT; wtTable];
-end
+cd (homedir); cd output; cd WToutput
+load('Cone.mat','cone');
 
-input = dir(['*_' BatFreq '_WT.mat']);
-% initialize table with first input
-load(input(1).name, 'wtTable')
-BatWT = wtTable; clear wtTable
-% start on 2 and add further input to full tables
-for iIn = 2:length(input)
-    load(input(iIn).name, 'wtTable')
-    BatWT = [BatWT; wtTable];
-end
-clear wtTable
+for iCond = 1:length(params.condList)
+    tic
+    disp(['For condition: ' params.condList{iCond}])
 
-% Let's do this Layerwise 
-BatWTII = BatWT(matches(BatWT.layer,'II'),:);
-BatWTIV = BatWT(matches(BatWT.layer,'IV'),:);
-BatWTV  = BatWT(matches(BatWT.layer,'V'),:); 
-BatWTVI = BatWT(matches(BatWT.layer,'VI'),:);
-clear BatWT
+    % condition specific info
+    [stimList, thisUnit, stimDur, stimITI, ~] = ...
+        StimVariable(params.condList{iCond},1);
+    timeAxis = BL + stimDur + stimITI; % time axis for visualization
+    compTime = BL:BL+stimDur; % time of permutation comparison
 
-MouseWTII = MouseWT(matches(MouseWT.layer,'II'),:);
-MouseWTIV = MouseWT(matches(MouseWT.layer,'IV'),:);
-MouseWTV  = MouseWT(matches(MouseWT.layer,'V'),:); 
-MouseWTVI = MouseWT(matches(MouseWT.layer,'VI'),:);
-clear MouseWT
 
-% loop through layers here
-%Stack the individual animals' data (animal#x54x600)
-for iLay = 1:length(layers)
-    % split out the one you want and get the power or phase mats
-    if contains(whichtest, 'Power')
-        if matches(layers{iLay},'II')
-            BatOut   = getpowerout(BatWTII);
-            MouseOut = getpowerout(MouseWTII);
-        elseif matches(layers{iLay},'IV')
-            BatOut   = getpowerout(BatWTIV);
-            MouseOut = getpowerout(MouseWTIV);
-        elseif matches(layers{iLay},'V')
-            BatOut   = getpowerout(BatWTV);
-            MouseOut = getpowerout(MouseWTV);
-        elseif matches(layers{iLay},'VI')
-            BatOut   = getpowerout(BatWTVI);
-            MouseOut = getpowerout(MouseWTVI);
-        end
-    elseif contains(whichtest, 'Phase')
-        if matches(layers{iLay},'II')
-            BatOut   = getphaseout(BatWTII);
-            MouseOut = getphaseout(MouseWTII);
-        elseif matches(layers{iLay},'IV')
-            BatOut   = getphaseout(BatWTIV);
-            MouseOut = getphaseout(MouseWTIV);
-        elseif matches(layers{iLay},'V')
-            BatOut   = getphaseout(BatWTV);
-            MouseOut = getphaseout(MouseWTV);
-        elseif matches(layers{iLay},'VI')
-            BatOut   = getphaseout(BatWTVI);
-            MouseOut = getphaseout(MouseWTVI);
-        end
+    % stack first group data
+    input = dir([params.groups{1} '*_' params.condList{iCond} '_WT.mat']);
+    % initialize table with first input
+    load(input(1).name, 'wtTable')
+    group1WT = wtTable; clear wtTable
+    % start on 2 and add further input to full tables
+    for iIn = 2:length(input)
+        load(input(iIn).name, 'wtTable')
+        group1WT = [group1WT; wtTable]; %#ok<AGROW>
     end
-    
-    grpsizeB = size(BatOut,1);
-    grpsizeM = size(MouseOut,1);
 
-    %% Permutation Step 1 - Observed Differences
+    % stack second group data
+    input = dir([params.groups{2} '*_' params.condList{iCond} '_WT.mat']);
+    % initialize table with first input
+    load(input(1).name, 'wtTable')
+    group2WT = wtTable; clear wtTable
+    % start on 2 and add further input to full tables
+    for iIn = 2:length(input)
+        load(input(iIn).name, 'wtTable')
+        group2WT = [group2WT; wtTable]; %#ok<AGROW>
+    end
+    clear wtTable
 
-    obs1_mean = squeeze(nanmean(BatOut,1));
-    obs1_std = squeeze(nanstd(BatOut,0,1));
-
-    obs2_mean = squeeze(nanmean(MouseOut,1));
-    obs2_std = squeeze(nanstd(MouseOut,0,1));
-
-    obs_difmeans = obs1_mean - obs2_mean;
-
-    %% Permutation Step 2 - t test or mwu test 
-    %find the t values along all data points for each frequency bin
-
-    % Student's t test and cohen's d effect size
-    if contains(whichtest,'Power')
-        % t Threshold
-        t_thresh = 1.99; % df ~80 (actual 66-72) = two tailed: 1.99, one tailed: 1.664
-        % Check this link: http://www.ttable.org/
-    
-        [obs_stat, effectsize, obs_clusters] = powerStats(obs1_mean, ...
-            obs2_mean, obs1_std, obs2_std, grpsizeB, grpsizeM, t_thresh);
+    for iStim = 1:length(stimList)
+        % take just this stim
+        grp1Stim = group1WT(group1WT.stim == stimList(iStim),:);
+        grp2Stim = group2WT(group2WT.stim == stimList(iStim),:);
         
-        % effect size colormap
-        ESmap = [250/255 240/255 240/255
-            230/255 179/255 179/255
-            209/255 117/255 120/255
-            184/255 61/255 65/255
-            122/255 41/255 44/255
-            61/255 20/255 22/255];
-        % clusters colormap 
-        statmap = [189/255 64/255 6/255
-            205/255 197/255 180/255
-            5/255 36/255 56/255];
-    end
-    
-    % Mann-Whitney U test and r effect size
-    if contains(whichtest,'Phase')
-        [obs_stat, effectsize, obs_clusters] = phaseStats(BatOut, MouseOut);
-        
-        % effect size colormap
-        ESmap = [250/255 240/255 240/255
-            230/255 179/255 179/255
-            184/255 61/255 65/255
-            61/255 20/255 22/255];
-        % clusters colormap (This is 2 because I know we won't get negative
-        % values!)
-        statmap = [205/255 197/255 180/255
-            5/255 36/255 56/255];
-    end
-    
-    %% pull out clustermass only at specific time point! 
-    % - 5.28 hz 189 ms, 40 hz 25 ms
-    
-    % check cluster mass for 300 ms from tone onset
-    obs_clustermass = nansum(nansum(obs_clusters(:,comptime)));
+        disp(['For stimulus: ' num2str(stimList(iStim))])
 
-    % for layer specific: 
-    obs_layer = struct;
+        % loop through layers here
+        %Stack the individual animals' data (animal#x54x600)
+        for iLay = 1:length(params.layers)
+            % split out the one you want and get the power or phase mats
+            grp1Lay = grp1Stim(matches(grp1Stim.layer, params.layers{iLay}),:);
+            grp2Lay = grp2Stim(matches(grp2Stim.layer, params.layers{iLay}),:);
 
-    for ispec = 1:length(osciName)
-        obs_layer.(osciName{ispec}) = obs_clusters(osciRows{ispec},comptime);
+            if contains(whichtest, 'Power')
 
-        % % sum clusters (twice to get final value)
-        for i = 1:2
-            obs_layer.(osciName{ispec}) = nansum(obs_layer.(osciName{ispec}));
-        end
-    end
+                grp1Out = getpowerout(grp1Lay);
+                grp2Out = getpowerout(grp2Lay);
 
-    cd(homedir); cd Comparison; cd figures;
-    if exist('CWT','dir') == 7
-        cd CWT
-    else
-        mkdir('CWT'),cd CWT
-    end
-    %% dif fig
-    [X,Y]=meshgrid(cone,startTime:limit);
-    figure('Name','Observed Difference Values BF'); %,'Position',[-1070 500 1065 400]
-    BatFig = subplot(131);
-    surf(Y,X,obs1_mean','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Bat')
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colorbar
-    clim = get(gca,'clim');
+            elseif contains(whichtest, 'Phase')
 
-    MouseFig = subplot(132);
-    surf(Y,X,obs2_mean','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Mouse')
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colorbar
-    %clim = get(gca,'clim');
-    clim = [clim; get(gca,'clim')]; %#ok<AGROW>
+                grp1Out = getphaseout(grp1Lay);
+                grp2Out = getphaseout(grp2Lay);
 
-    diffFig = subplot(133);
-    surf(Y,X,obs_difmeans','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Observed Diff')
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colorbar;
-    clim = [clim; get(gca,'clim')]; %#ok<AGROW>
-
-    newC = [min(clim(:)) max(clim(:))];
-
-    % scale clims the same
-    set(MouseFig,'Clim',newC);colorbar;
-    set(BatFig,'Clim',newC);colorbar;
-    set(diffFig,'Clim',newC);colorbar;
-
-    h = gcf;
-    h.Renderer = 'Painters';
-    set(h, 'PaperType', 'A4');
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'centimeters');
-    savefig(['Observed Difference ' whichtest ' ' layers{iLay} ' ' MouseFreq])
-    saveas(gcf, ['Observed Difference ' whichtest ' ' layers{iLay} ' ' MouseFreq '.pdf'])
-    close(h)
-    
-    %% t fig 
-
-    figure('Name','Observed t Values BF'); 
-    subplot(131);
-    surf(Y,X,obs_stat','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Stats Mat')
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colorbar
-
-    statfig = subplot(132);
-    surf(Y,X,obs_clusters','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Clusters where p>0.05')
-    colormap(statfig,statmap)
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colorbar
-        
-    ESfig = subplot(133);
-    surf(Y,X,effectsize','EdgeColor','None'); view(2);
-    set(gca,'YScale','log'); title('Effect Size')
-    yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-    colormap(ESfig,ESmap)
-    colorbar
-
-    h = gcf;
-    h.Renderer = 'Painters';
-    set(h, 'PaperType', 'A4');
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'centimeters');
-    savefig(['Observed t and p ' whichtest ' '  layers{iLay} ' ' MouseFreq ])
-    saveas(gcf, ['Observed t and p ' whichtest ' '  layers{iLay} ' ' MouseFreq  '.pdf'])
-    close(h)
-
-    %% Permutation Step 3 - do the permute
-    mass_clustermass = NaN([1 nperms]);
-    % put the whole group in one container
-    contAll = [BatOut;MouseOut];
-    perm_layer = struct;
-
-    for ispec = 1:length(osciName)
-        perm_layer.(osciName{ispec}) = NaN([1 nperms]);
-    end
-
-    for iperm = 1:nperms
-        % determine random list order to pull
-        order = randperm(grpsizeB+grpsizeM);
-        % pull based on random list order
-        Grp1Out = contAll(order(1:grpsizeB),:,:);
-        Grp2Out = contAll(order(grpsizeB+1:end),:,:);
-
-        per1_mean = squeeze(nanmean(Grp1Out,1));
-        per1_std = squeeze(nanstd(Grp1Out,0,1));
-
-        per2_mean = squeeze(nanmean(Grp2Out,1));
-        per2_std = squeeze(nanstd(Grp2Out,0,1));
-
-        % Student's t test and cohen's d effect size
-        if contains(whichtest,'Power')
-            [~, ~, per_clusters] = powerStats(per1_mean, ...
-                per2_mean, per1_std, per2_std, grpsizeB, grpsizeM, t_thresh);
-        end
-
-        % Mann-Whitney U test and z effect size
-        if contains(whichtest,'Phase')
-            [~, ~, per_clusters] = phaseStats(Grp1Out, Grp2Out);
-        end
-    
-        % check cluster mass for 300 ms from tone onset
-        per_clustermass = nansum(nansum(per_clusters(:,comptime)));
-        mass_clustermass(iperm) = per_clustermass;
-
-        % for layer specific: %%%
-        % % pull out clusters
-
-        for ispec = 1:length(osciName)
-            hold_permlayer = per_clusters(osciRows{ispec},comptime);
-
-            % % sum clusters (twice to get final value)
-            for i = 1:2
-                hold_permlayer = nansum(hold_permlayer);
             end
-            perm_layer.(osciName{ispec})(iperm) = hold_permlayer;
+
+            grp1size = size(grp1Out,1);
+            grp2size = size(grp2Out,1);
+
+            %% Permutation Step 1 - Observed Differences
+
+            obs1_mean = squeeze(mean(grp1Out,1));
+            obs1_std = squeeze(std(grp1Out,0,1));
+
+            obs2_mean = squeeze(mean(grp2Out,1));
+            obs2_std = squeeze(std(grp2Out,0,1));
+
+            obs_difmeans = obs1_mean - obs2_mean;
+
+            %% Permutation Step 2 - t test or mwu test
+            %find the t values along all data points for each frequency bin
+
+            % Student's t test and cohen's d effect size
+            if contains(whichtest,'Power')
+                % t Threshold
+                t_thresh = 2.132; % one-tailed, df = 4 (not actualy, just very conservative for now)
+                % Check this link: http://www.ttable.org/
+
+                [obs_stat, effectsize, obs_clusters] = powerStats(obs1_mean, ...
+                    obs2_mean, obs1_std, obs2_std, grp1size, grp2size, t_thresh);
+
+                % effect size colormap
+                ESmap = [250/255 240/255 240/255
+                    230/255 179/255 179/255
+                    209/255 117/255 120/255
+                    184/255 61/255 65/255
+                    122/255 41/255 44/255
+                    61/255 20/255 22/255];
+                % clusters colormap
+                statmap = [189/255 64/255 6/255
+                    205/255 197/255 180/255
+                    5/255 36/255 56/255];
+            end
+
+            % Mann-Whitney U test and r effect size
+            if contains(whichtest,'Phase')
+                [obs_stat, effectsize, obs_clusters] = phaseStats(grp1Out, grp2Out);
+
+                % effect size colormap
+                ESmap = [250/255 240/255 240/255
+                    230/255 179/255 179/255
+                    184/255 61/255 65/255
+                    61/255 20/255 22/255];
+                % clusters colormap (This is 2 because I know we won't get negative
+                % values!)
+                statmap = [205/255 197/255 180/255
+                    5/255 36/255 56/255];
+            end
+
+            %% pull out clustermass only at specific time point!
+            % - 5.28 hz 189 ms, 40 hz 25 ms
+
+            % check cluster mass for 300 ms from tone onset
+            obs_clustermass = sum(sum(obs_clusters(:,compTime)));
+
+            % for layer specific:
+            obs_layer = struct;
+
+            for ispec = 1:length(osciName)
+                obs_layer.(osciName{ispec}) = obs_clusters(osciRows{ispec},compTime);
+
+                % % sum clusters (twice to get final value)
+                for i = 1:2
+                    obs_layer.(osciName{ispec}) = sum(obs_layer.(osciName{ispec}));
+                end
+            end
+
+            cd(homedir); cd figures;
+            if exist('CWT','dir') == 7
+                cd CWT
+            else
+                mkdir('CWT'),cd CWT
+            end
+            %% dif fig
+            [X,Y]=meshgrid(cone,1:timeAxis);
+            figure('Name',['Group data ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' thisUnit]); 
+            grp1Fig = subplot(131);
+            surf(Y,X,obs1_mean','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title(params.groups{1})
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colorbar
+            clim = get(gca,'clim');
+
+            grp2Fig = subplot(132);
+            surf(Y,X,obs2_mean','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title(params.groups{1})
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colorbar
+            clim = [clim; get(gca,'clim')]; %#ok<AGROW>
+
+            diffFig = subplot(133);
+            surf(Y,X,obs_difmeans','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title('Observed Diff')
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colorbar;
+            clim = [clim; get(gca,'clim')]; %#ok<AGROW>
+
+            newC = [min(clim(:)) max(clim(:))];
+
+            % scale clims the same
+            set(grp2Fig,'Clim',newC);colorbar;
+            set(grp1Fig,'Clim',newC);colorbar;
+            set(diffFig,'Clim',newC);colorbar;
+
+            h = gcf;
+            h.Renderer = 'Painters';
+            set(h, 'PaperType', 'A4');
+            set(h, 'PaperOrientation', 'landscape');
+            set(h, 'PaperUnits', 'centimeters');
+            savefig(['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            close(h)
+
+            %% t fig
+
+            figure('Name','Observed t Values BF');
+            subplot(131);
+            surf(Y,X,obs_stat','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title('Stats Mat')
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colorbar
+
+            statfig = subplot(132);
+            surf(Y,X,obs_clusters','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title('Clusters where p>0.05')
+            colormap(statfig,statmap)
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colorbar
+
+            ESfig = subplot(133);
+            surf(Y,X,effectsize','EdgeColor','None'); view(2);
+            set(gca,'YScale','log'); title('Effect Size')
+            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            colormap(ESfig,ESmap)
+            colorbar
+
+            h = gcf;
+            h.Renderer = 'Painters';
+            set(h, 'PaperType', 'A4');
+            set(h, 'PaperOrientation', 'landscape');
+            set(h, 'PaperUnits', 'centimeters');
+            savefig(['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            close(h)
+
+            %% Permutation Step 3 - do the permute
+            mass_clustermass = NaN([1 nperms]);
+            % put the whole group in one container
+            contAll = [grp1Out;grp2Out];
+            perm_layer = struct;
+
+            for ispec = 1:length(osciName)
+                perm_layer.(osciName{ispec}) = NaN([1 nperms]);
+            end
+
+            for iperm = 1:nperms
+                % determine random list order to pull
+                order = randperm(grp1size+grp2size);
+                % pull based on random list order
+                Grp1Out = contAll(order(1:grp1size),:,:);
+                Grp2Out = contAll(order(grp1size+1:end),:,:);
+
+                per1_mean = squeeze(mean(Grp1Out,1));
+                per1_std = squeeze(std(Grp1Out,0,1));
+
+                per2_mean = squeeze(mean(Grp2Out,1));
+                per2_std = squeeze(std(Grp2Out,0,1));
+
+                % Student's t test and cohen's d effect size
+                if contains(whichtest,'Power')
+                    [~, ~, per_clusters] = powerStats(per1_mean, ...
+                        per2_mean, per1_std, per2_std, grp1size, grp2size, t_thresh);
+                end
+
+                % Mann-Whitney U test and z effect size
+                if contains(whichtest,'Phase')
+                    [~, ~, per_clusters] = phaseStats(Grp1Out, Grp2Out);
+                end
+
+                % check cluster mass for 300 ms from tone onset
+                per_clustermass = sum(sum(per_clusters(:,compTime)));
+                mass_clustermass(iperm) = per_clustermass;
+
+                % for layer specific: %%%
+                % % pull out clusters
+
+                for ispec = 1:length(osciName)
+                    hold_permlayer = per_clusters(osciRows{ispec},compTime);
+
+                    % % sum clusters (twice to get final value)
+                    for i = 1:2
+                        hold_permlayer = sum(hold_permlayer);
+                    end
+                    perm_layer.(osciName{ispec})(iperm) = hold_permlayer;
+                end
+
+            end
+
+            %% Check Significance of full clustermass
+
+            % In how many instances is the observed clustermass MORE than
+            % the permuted clustermasses (obs clustermass sig above chance)
+            sig_mass = sum(mass_clustermass>obs_clustermass,2);
+            pVal = sig_mass/nperms;
+            permMean = mean(mass_clustermass);
+            permSTD = std(mass_clustermass);
+
+            figure('Name',['Observed cluster vs Permutation ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
+            boxplot(mass_clustermass); hold on;
+
+            if pVal < 0.007
+                plot(1,obs_clustermass,'go','LineWidth',4)
+                legend('p<0.007')
+            else
+                plot(1,obs_clustermass,'ro','LineWidth',4)
+                legend('ns')
+            end
+
+            h = gcf;
+            h.Renderer = 'Painters';
+            set(h, 'PaperType', 'A4');
+            set(h, 'PaperOrientation', 'landscape');
+            set(h, 'PaperUnits', 'centimeters');
+            savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            saveas(gcf, ['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
+            close(h)
+            save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+
+            %% Check Significance of layers' clustermass
+
+            for ispec = 1:length(osciName)
+                % In how many instances is the observed clustermass MORE than
+                % the permuted clustermasses (obs clustermass sig above chance)
+                sig_mass = sum(perm_layer.(osciName{ispec})>obs_layer.(osciName{ispec}),2);
+                pVal = sig_mass/nperms;
+                permMean = mean(perm_layer.(osciName{ispec}));
+                permSTD = std(perm_layer.(osciName{ispec}));
+
+                figure('Name',['Observed cluster vs Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
+                boxplot(perm_layer.(osciName{ispec})); hold on;
+
+                if pVal < pthresh
+                    plot(1,obs_layer.(osciName{ispec}),'go','LineWidth',4)
+                    legend('p<0.05 bf corr')
+                else
+                    plot(1,obs_layer.(osciName{ispec}),'ro','LineWidth',4)
+                    legend('ns')
+                end
+
+                h = gcf;
+                h.Renderer = 'Painters';
+                set(h, 'PaperType', 'A4');
+                set(h, 'PaperOrientation', 'landscape');
+                set(h, 'PaperUnits', 'centimeters');
+                savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+                saveas(gcf, ['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
+                close(h)
+                save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+
+            end
         end
-
-    end
-
-    %% Check Significance of full clustermass
-
-    % In how many instances is the observed clustermass MORE than
-    % the permuted clustermasses (obs clustermass sig above chance)
-    sig_mass = sum(mass_clustermass>obs_clustermass,2); 
-    pVal = sig_mass/nperms;
-    permMean = mean(mass_clustermass);
-    permSTD = std(mass_clustermass);
-
-    figure('Name',['Observed cluster vs Permutation ' layers{iLay}]); 
-    boxplot(mass_clustermass); hold on;
-
-    if pVal < 0.007
-        plot(1,obs_clustermass,'go','LineWidth',4)
-        legend('p<0.007')
-    else
-        plot(1,obs_clustermass,'ro','LineWidth',4)
-        legend('ns')
-    end
-
-    h = gcf;
-    h.Renderer = 'Painters';
-    set(h, 'PaperType', 'A4');
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'centimeters');
-    savefig(['Full Permutation ' layers{iLay} ' ' MouseFreq])
-    saveas(gcf, ['Full Permutation ' whichtest ' ' layers{iLay} ' ' MouseFreq '.pdf'])
-    close(h)
-    save(['Permutation ' whichtest ' ' layers{iLay} ' ' MouseFreq '.mat'],'pVal','permMean','permSTD')
-
-    %% Check Significance of layers' clustermass
-
-    for ispec = 1:length(osciName)
-    % In how many instances is the observed clustermass MORE than
-    % the permuted clustermasses (obs clustermass sig above chance)
-    sig_mass = sum(perm_layer.(osciName{ispec})>obs_layer.(osciName{ispec}),2); 
-    pVal = sig_mass/nperms;
-    permMean = mean(perm_layer.(osciName{ispec}));
-    permSTD = std(perm_layer.(osciName{ispec}));
-
-    figure('Name',['Observed cluster vs Permutation ' layers{iLay} ' ' osciName{ispec}]); 
-    boxplot(perm_layer.(osciName{ispec})); hold on;
-
-    if pVal < 0.007
-        plot(1,obs_layer.(osciName{ispec}),'go','LineWidth',4)
-        legend('p<0.007')
-    else
-        plot(1,obs_layer.(osciName{ispec}),'ro','LineWidth',4)
-        legend('ns')
-    end
-
-    h = gcf;
-    h.Renderer = 'Painters';
-    set(h, 'PaperType', 'A4');
-    set(h, 'PaperOrientation', 'landscape');
-    set(h, 'PaperUnits', 'centimeters');
-    savefig(['Permutation ' whichtest ' ' layers{iLay} ' ' osciName{ispec} ' ' MouseFreq])
-    saveas(gcf, ['Permutation ' whichtest ' ' layers{iLay} ' ' osciName{ispec} ' ' MouseFreq '.pdf'])
-    close(h)
-    save(['Permutation ' whichtest ' ' layers{iLay} ' ' osciName{ispec} ' ' MouseFreq '.mat'],'pVal','permMean','permSTD')
-
-    end
-
-end
+    end % stimulus order
+    toc
+end % condition

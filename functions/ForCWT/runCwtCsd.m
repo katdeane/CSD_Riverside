@@ -8,7 +8,6 @@ function runCwtCsd(homedir,Group,params)
 % Note:     I'm setting a hard cap at 50 trials 
 
 % set some variables
-condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; 
 BL = 399;
 
 % detect data
@@ -33,18 +32,18 @@ for iAn = 1:entries
 
     disp(['Running for ' Aname])
     
-    for iCond = 1:length(condList)
+    for iCond = 1:length(params.condList)
         
-        disp(['Condition: ' condList{iCond}])
+        disp(['Condition: ' params.condList{iCond}])
 
         % Init datastruct to pass out
         wtStruct = struct();
         
         % pull the variables and index for this condition
         [stimList, thisUnit, stimDur, stimITI, ~] = ...
-            StimVariable(condList{iCond},1);
+            StimVariable(params.condList{iCond},1);
         timeAxis = BL + stimDur + stimITI; 
-        index = StimIndex({Data.Condition},Cond,iAn,condList{iCond});
+        index = StimIndex({Data.Condition},Cond,iAn,params.condList{iCond});
         
         if isempty(index)
             continue
@@ -98,7 +97,7 @@ for iAn = 1:entries
                    wtStruct(count).scalogram    = WT;
                    wtStruct(count).group        = Group;
                    wtStruct(count).animal       = Aname;
-                   wtStruct(count).condition    = condList{iCond};
+                   wtStruct(count).condition    = params.condList{iCond};
                    wtStruct(count).stim         = stimList(iStim);
                    wtStruct(count).layer        = params.layers{iLay};
                    wtStruct(count).trial        = iTrial;
@@ -110,7 +109,7 @@ for iAn = 1:entries
            end % layer
         end % stimulus
         wtTable = struct2table(wtStruct);
-        save([Aname '_' condList{iCond} '_WT.mat'],'wtTable');
+        save([Aname '_' params.condList{iCond} '_WT.mat'],'wtTable');
     end % condition
     toc
 end % animal 
