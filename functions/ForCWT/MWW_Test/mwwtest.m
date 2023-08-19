@@ -77,7 +77,7 @@ if nargout
     STATS.mr=[T1/n1 T2/n2];
     STATS.U=[U1 U2];
 end    
-if round(exp(gammaln(N1)-gammaln(k+1)-gammaln(N1-k))) > 20000
+if round(exp(gammaln(N1)-gammaln(k+1)-gammaln(N1-k))) > 10 % 20000 KD CHANGED THIS TO HACK THE Z SCORE OUT 08.18.23
     mU=NP/2;
     if B==0
         sU=realsqrt(NP*N1/12);

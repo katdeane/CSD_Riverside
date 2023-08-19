@@ -32,12 +32,13 @@ for iAn = 1:entries
 
     disp(['Running for ' Aname])
     
-    for iCond = 1:length(params.condList)
+    for iCond = 4:length(params.condList)
         
         disp(['Condition: ' params.condList{iCond}])
 
         % Init datastruct to pass out
         wtStruct = struct();
+        correction = 0;
         
         % pull the variables and index for this condition
         [stimList, thisUnit, stimDur, stimITI, ~] = ...
@@ -70,8 +71,13 @@ for iAn = 1:entries
                for iTrial = 1:50
 
                    if iTrial > size(curCSD,3)
+                       % need a way to account for less than 50 trials so
+                       % it doesn't save an empty row and change doubles to
+                       % cells in the table
+                       correction = correction + 1;
                        continue
                    end
+
                    % current working data 
                    csdChan = squeeze(curCSD(centerChan,1:timeAxis,iTrial));
 
@@ -93,7 +99,8 @@ for iAn = 1:entries
                        save('Cone.mat','cone');
                    end
 
-                   count = iTrial + ((iLay-1)*50 + ((iStim-1)*50*length(params.layers)));
+                   count = iTrial + ((iLay-1)*50 + ...
+                       ((iStim-1)*50*length(params.layers))) - correction;
                    wtStruct(count).scalogram    = WT;
                    wtStruct(count).group        = Group;
                    wtStruct(count).animal       = Aname;

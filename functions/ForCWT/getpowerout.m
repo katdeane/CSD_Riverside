@@ -19,7 +19,7 @@ for iSu = 1:length(subjects)
 
     end
     meantrials = holdtrials / size(subWT,1); % take the mean for this measurement
-    powermat      = abs(meantrials) .^ 2; % POWER Calculation - no longer a complex number!
+    powermat   = abs(meantrials) .^ 2; % POWER Calculation - no longer a complex number!
 
     % Option to normalize power here, divide the whole power mat by it's mean:
     % powermat = powermat / mean(mean(powermat));

@@ -196,7 +196,7 @@ for iCond = 1:length(params.condList)
 
             grp2Fig = subplot(132);
             surf(Y,X,obs2_mean','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title(params.groups{1})
+            set(gca,'YScale','log'); title(params.groups{2})
             yticks([0 10 20 30 40 50 60 80 100 200 300 500])
             colorbar
             clim = [clim; get(gca,'clim')]; %#ok<AGROW>
@@ -334,8 +334,7 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
-            saveas(gcf, ['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
+            savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])            
             close(h)
             save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
@@ -365,8 +364,7 @@ for iCond = 1:length(params.condList)
                 set(h, 'PaperType', 'A4');
                 set(h, 'PaperOrientation', 'landscape');
                 set(h, 'PaperUnits', 'centimeters');
-                savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
-                saveas(gcf, ['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
+                savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])                
                 close(h)
                 save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
@@ -374,4 +372,6 @@ for iCond = 1:length(params.condList)
         end
     end % stimulus order
     toc
+    clear group1WT group2WT
+    cd (homedir); cd output; cd WToutput
 end % condition
