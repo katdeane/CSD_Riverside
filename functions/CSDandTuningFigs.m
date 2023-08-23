@@ -77,7 +77,7 @@ if multiple == 1
 
     end
 
-    figname = ['CSD_' file '_' stimtype '.fig'];
+    figname = ['CSD_' file(end-11:end) '_' stimtype '.fig'];
     cd(homedir); cd figures
     savefig(gcf,figname)   % save CSD fig
     close
@@ -88,7 +88,7 @@ if multiple == 1
     xlabel(thisunit)
     ylabel('RMS [mV/mm2]')
 
-    figname = ['Tuning_' file '_' stimtype '.fig'];
+    figname = ['Tuning_' file(end-11:end) '_' stimtype '.fig'];
     cd(homedir); cd figures
     savefig(gcf,figname)   % save CSD fig
     close
@@ -97,7 +97,7 @@ elseif multiple == 0
     % set up CSD figure
     figure
     CSDfig = tiledlayout('flow');
-    title(CSDfig,['CSD ' file(1:5) ' ' file(7:8)])
+    title(CSDfig,['CSD ' file(end-11:end)])
     xlabel(CSDfig, 'time [ms]')
     ylabel(CSDfig, 'depth [channels]')
 
@@ -122,7 +122,7 @@ elseif multiple == 0
     caxis([-0.2 0.2])
     colorbar
 
-    figname = ['CSD_' file '_' stimtype '.fig'];
+    figname = ['CSD_' file(end-11:end) '_' stimtype '.fig'];
     cd(homedir); cd figures
     savefig(gcf,figname)   % save CSD fig
     close
