@@ -19,7 +19,7 @@ addpath(genpath(homedir));
 
 %% Pull Meta Data
 
-run('CF.m') % adds animals, channels, measurements to the workspace
+run('CF.m') % adds animals, channels, measurements, and metafile to the workspace
 
 %% Get the tuning curves of each 
 
@@ -28,9 +28,9 @@ for iAn = 1:length(animals)
     for iMe = 1:length(meList)
         % generate which data file this will be
         fileCSD = [animals{iAn} '_' meList{iMe} '_LFP'];
-        disp(['Analyzing animal: ' file])
+        disp(['Analyzing animal: ' fileCSD])
         % run CF on CSD data
-        CF_CSD(homedir,fileCSD,str2num(channels{iAn}))
+        CF_CSD(homedir,fileCSD,str2num(channels{iAn}),metafile{iAn})
         % run CF on Spike data
     end
 end

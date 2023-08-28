@@ -7,7 +7,7 @@ animals = {'VMC03'};
 %% Channels
 
 channels = {...
-    '[1 32]',... %VMC03
+    '[4 30]',... %VMC03
     };
 
 %% Measurements taken
@@ -16,6 +16,10 @@ measurements = {...
     };
 
 %% Which File 
+
+metafile = {...
+    '2023-08-08.txt',... %VMC03
+    };
 
 % something to add if I do ever make another version of the CF level and
 % tones lists

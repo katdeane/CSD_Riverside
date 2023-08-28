@@ -22,9 +22,10 @@ stimtype = questdlg('What type of stimulus?', ...
 prompt   = {'File name (-.xdat.json):'};
 dlgtitle = 'File Name';
 dims     = [1 35];
-definput = {'MWT05_01_LFP'}; % replace with current 
+definput = {'MWT07_01_LFP'}; % replace with current 
 file = inputdlg(prompt,dlgtitle,dims,definput);
 file = file{1}; % clean it up
+file = ['C:\Users\RazakLab\CurateOutput\' file];
 
 %% Get data from .xdat files
  
