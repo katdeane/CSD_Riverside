@@ -1,12 +1,12 @@
 function [obs_t, cohensD, obs_clusters] = powerStats(obs1_mean, obs2_mean, ...
-        obs1_std, obs2_std, grpsizeB, grpsizeM, t_thresh)
+        obs1_std, obs2_std, grpsize1, grpsize2, t_thresh)
     
     obs_t = (obs1_mean - obs2_mean)./...
-        sqrt((obs1_std.^2/grpsizeB) + (obs2_std.^2/grpsizeM));
+        sqrt((obs1_std.^2/grpsize1) + (obs2_std.^2/grpsize2));
     
     % cohen's d mat
-    S = sqrt((((grpsizeB - 1).*obs1_std.^2)+((grpsizeM-1).*obs2_std.^2))/...
-        (grpsizeB + grpsizeM - 2));
+    S = sqrt((((grpsize1 - 1).*obs1_std.^2)+((grpsize2-1).*obs2_std.^2))/...
+        (grpsize1 + grpsize2 - 2));
     cohensD = (obs1_mean-obs2_mean)./S;
     % bin for effect size
     cohensD(cohensD<0.5  & cohensD>-0.5) = 0; % small or very small

@@ -1,55 +1,62 @@
-function [obs_stat, effectsize, obs_clusters] = phaseStats(BatOut, MouseOut)
+function [obs_stat, effectsize, obs_clusters] = phaseStats(Grp1, Grp2, grpsize1, grpsize2)
 
 % data coming in is shaped like : measurement x spectral frequency x time
-% the mwwtest only takes vectors as input so we'll pull out measurement
-% vectors at each time and frequency point
+% do it matrix-wise
+
+% data out is the Z stat, r effect size, clusters where p < 0.05
 
 %% Mann Whitney U Test (ranksum)
 
-% initialize containers for each result point
-obs_stat     = zeros(size(BatOut,2),size(BatOut,3));
-effectsize   = zeros(size(BatOut,2),size(BatOut,3)); % spect freq x time
-obs_clusters = zeros(size(BatOut,2),size(BatOut,3));
+NP=grpsize1*grpsize2; 
+N=grpsize1+grpsize2; 
+% N1=N+1; 
+% k=min([grpsize1 grpsize2]);
 
-% this test works on vectors. so we're doing it pointwise. Awyis.
-for timepoint = 1:size(BatOut,3)
-    for freqpoint = 1:size(BatOut,2)
-        
-        % take out the point of interest
-        pointB = BatOut(:,freqpoint,timepoint)';
-        pointM = MouseOut(:,freqpoint,timepoint)';
-        
-        % two-tailed test (stats.p(2)) like with the ttest2 used in power plots, the
-        % samples are large enough to use method 'normal approximation'
-        stats = mwwtest(pointB,pointM);
-        obs_stat(freqpoint,timepoint) = stats.Z;
-        
-        if stats.p(2) <= 0.05
-            if stats.Z < 0
-                sigtest = -1;
-            elseif stats.Z > 0
-                sigtest = 1;
-            end
-        else
-            sigtest = 0;
-        end
-        obs_clusters(freqpoint,timepoint) = sigtest;
-        
-        % effect size of mwwtest is r = abs(z/sqrt(n1+n2)) / 0.1 is small, 0.3 is
-        % medium, 0.5 is large
-        Esize = abs(stats.Z/sqrt(size(BatOut,1)+size(MouseOut,1)));
-        if Esize < 0.1
-            ESout = 0;
-        elseif Esize >= 0.1 && Esize < 0.3
-            ESout = 1;
-        elseif Esize >= 0.3 && Esize < 0.5
-            ESout = 2;
-        elseif Esize >= 0.5
-            ESout = 3;
-        end
-        effectsize(freqpoint,timepoint) = ESout;
-    end
-end
+X = cat(1, Grp1, Grp2);
 
+[r,adj]=tiedrank(X); %compute the ranks and the ties
+R1=r(1:grpsize1); %R2=r(grpsize1+1:end); 
+T1=sum(R1); %T2=sum(R2);
+U1=NP+(grpsize1*(grpsize1+1))/2-T1; %U2=NP-U1;
+
+% corrected sd based on rank ties
+sU=realsqrt((NP/(N^2-N))*((N^3-N-2*adj)/12));
+
+% extra things
+% W=[T1 T2];
+% mr=[T1/n1 T2/n2];
+% U=[U1 U2];
+
+% round(exp(gammaln(N1)-gammaln(k+1)-gammaln(N1-k))) > 20000 -> should be
+% true to assume normal distribution and calculate the next steps
+
+% method=Normal approximation:
+mU=NP/2;
+% Z results of mww test
+obs_stat = (abs(U1-mU)-0.5)/sU;
+obs_stat = squeeze(obs_stat);
+p=1-normcdf(obs_stat); % one tailed; two tailed: p*2
+
+% mark where significant
+obs_clusters = zeros(size(obs_stat,1),size(obs_stat,2),size(obs_stat,3));
+obs_clusters(obs_stat>0) = 1; % directional
+obs_clusters(obs_stat<0) = -1;
+obs_clusters(p>0.05)     = 0; % significant
+
+% effect size of mwwtest is r = abs(z/sqrt(n1+n2)) / 0.1 is small, 0.3 is
+% medium, 0.5 is large
+effectsize = abs(obs_stat/sqrt(grpsize1+grpsize2));
+effectsize(effectsize<0.1  & effectsize>-0.1) = 0; % negligeable
+effectsize(effectsize>0.1  & effectsize<0.3)  = 0.2; % small
+effectsize(effectsize<-0.1 & effectsize>-0.3) = 0.2; % small
+effectsize(effectsize>0.3  & effectsize<0.5)  = 0.4; % medium
+effectsize(effectsize<-0.3 & effectsize>-0.5) = 0.4; % medium
+effectsize(effectsize>0.5)                    = 0.6; % large
+effectsize(effectsize<-0.5)                   = 0.6; % large
+
+% method=Exact distribution;
+% T=w;
+% p=[p 2*p];
+% no Z
 
 end

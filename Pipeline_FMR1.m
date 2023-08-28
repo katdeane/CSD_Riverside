@@ -23,6 +23,7 @@ else
 end
 homedir = pwd;
 addpath(genpath(homedir));
+set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'MKO' 'MWT'};
@@ -112,8 +113,9 @@ runCwtCsd(homedir,'MKO',params);
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-PermutationTest(homedir,'Power',params)
-PermutationTest(homedir,'Phase',params)
+yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
+PermutationTest(homedir,'Power',params,yespermute)
+PermutationTest(homedir,'Phase',params,yespermute)
 
 %% CWT analysis on LFP 
 

@@ -1,4 +1,4 @@
-function PermutationTest(homedir,whichtest,params)
+function PermutationTest(homedir,whichtest,params,yespermute)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -47,7 +47,7 @@ osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 cd (homedir); cd output; cd WToutput
 load('Cone.mat','cone');
 
-for iCond = 1:length(params.condList)
+for iCond = 4:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
@@ -81,7 +81,7 @@ for iCond = 1:length(params.condList)
     end
     clear wtTable
 
-    for iStim = 1:length(stimList)
+    for iStim = 5:length(stimList)
         % take just this stim
         grp1Stim = group1WT(group1WT.stim == stimList(iStim),:);
         grp2Stim = group2WT(group2WT.stim == stimList(iStim),:);
@@ -90,7 +90,7 @@ for iCond = 1:length(params.condList)
 
         % loop through layers here
         %Stack the individual animals' data (animal#x54x600)
-        for iLay = 1:length(params.layers)
+        for iLay = 5:length(params.layers)
             % split out the one you want and get the power or phase mats
             grp1Lay = grp1Stim(matches(grp1Stim.layer, params.layers{iLay}),:);
             grp2Lay = grp2Stim(matches(grp2Stim.layer, params.layers{iLay}),:);
@@ -147,16 +147,18 @@ for iCond = 1:length(params.condList)
 
             % Mann-Whitney U test and r effect size
             if contains(whichtest,'Phase')
-                [obs_stat, effectsize, obs_clusters] = phaseStats(grp1Out, grp2Out);
+                t_thresh = NaN;
+                [obs_stat, effectsize, obs_clusters] = phaseStats(grp1Out, ...
+                    grp2Out, grp1size, grp2size);
 
                 % effect size colormap
                 ESmap = [250/255 240/255 240/255
                     230/255 179/255 179/255
                     184/255 61/255 65/255
                     61/255 20/255 22/255];
-                % clusters colormap (This is 2 because I know we won't get negative
-                % values!)
-                statmap = [205/255 197/255 180/255
+                % clusters colormap 
+                statmap = [189/255 64/255 6/255
+                    205/255 197/255 180/255
                     5/255 36/255 56/255];
             end
 
@@ -235,7 +237,7 @@ for iCond = 1:length(params.condList)
 
             statfig = subplot(132);
             surf(Y,X,obs_clusters','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title('Clusters where p>0.05')
+            set(gca,'YScale','log'); title('Clusters where p<0.05')
             colormap(statfig,statmap)
             yticks([0 10 20 30 40 50 60 80 100 200 300 500])
             colorbar
@@ -256,106 +258,28 @@ for iCond = 1:length(params.condList)
             saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             close(h)
 
-            %% Permutation Step 3 - do the permute
-            mass_clustermass = NaN([1 nperms]);
-            % put the whole group in one container
-            contAll = [grp1Out;grp2Out];
-            perm_layer = struct;
+            if yespermute == 1
+                %% Permutation Step 3 - do the permute
+                mass_clustermass = dothepermute(whichtest,grp1Out,grp2Out,grp1size,...
+                    grp2size,compTime,osciName,osciRows,t_thresh,nperms);
 
-            for ispec = 1:length(osciName)
-                perm_layer.(osciName{ispec}) = NaN([1 nperms]);
-            end
+                %% Check Significance of full clustermass
 
-            for iperm = 1:nperms
-                % determine random list order to pull
-                order = randperm(grp1size+grp2size);
-                % pull based on random list order
-                Grp1Out = contAll(order(1:grp1size),:,:);
-                Grp2Out = contAll(order(grp1size+1:end),:,:);
-
-                per1_mean = squeeze(mean(Grp1Out,1));
-                per1_std = squeeze(std(Grp1Out,0,1));
-
-                per2_mean = squeeze(mean(Grp2Out,1));
-                per2_std = squeeze(std(Grp2Out,0,1));
-
-                % Student's t test and cohen's d effect size
-                if contains(whichtest,'Power')
-                    [~, ~, per_clusters] = powerStats(per1_mean, ...
-                        per2_mean, per1_std, per2_std, grp1size, grp2size, t_thresh);
-                end
-
-                % Mann-Whitney U test and z effect size
-                if contains(whichtest,'Phase')
-                    [~, ~, per_clusters] = phaseStats(Grp1Out, Grp2Out);
-                end
-
-                % check cluster mass for 300 ms from tone onset
-                per_clustermass = sum(sum(per_clusters(:,compTime)));
-                mass_clustermass(iperm) = per_clustermass;
-
-                % for layer specific: %%%
-                % % pull out clusters
-
-                for ispec = 1:length(osciName)
-                    hold_permlayer = per_clusters(osciRows{ispec},compTime);
-
-                    % % sum clusters (twice to get final value)
-                    for i = 1:2
-                        hold_permlayer = sum(hold_permlayer);
-                    end
-                    perm_layer.(osciName{ispec})(iperm) = hold_permlayer;
-                end
-
-            end
-
-            %% Check Significance of full clustermass
-
-            % In how many instances is the observed clustermass MORE than
-            % the permuted clustermasses (obs clustermass sig above chance)
-            sig_mass = sum(mass_clustermass>obs_clustermass,2);
-            pVal = sig_mass/nperms;
-            permMean = mean(mass_clustermass);
-            permSTD = std(mass_clustermass);
-
-            figure('Name',['Observed cluster vs Permutation ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
-            boxplot(mass_clustermass); hold on;
-
-            if pVal < 0.007
-                plot(1,obs_clustermass,'go','LineWidth',4)
-                legend('p<0.007')
-            else
-                plot(1,obs_clustermass,'ro','LineWidth',4)
-                legend('ns')
-            end
-
-            h = gcf;
-            h.Renderer = 'Painters';
-            set(h, 'PaperType', 'A4');
-            set(h, 'PaperOrientation', 'landscape');
-            set(h, 'PaperUnits', 'centimeters');
-            savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])            
-            close(h)
-            save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
-
-            %% Check Significance of layers' clustermass
-
-            for ispec = 1:length(osciName)
                 % In how many instances is the observed clustermass MORE than
                 % the permuted clustermasses (obs clustermass sig above chance)
-                sig_mass = sum(perm_layer.(osciName{ispec})>obs_layer.(osciName{ispec}),2);
+                sig_mass = sum(mass_clustermass>obs_clustermass,2);
                 pVal = sig_mass/nperms;
-                permMean = mean(perm_layer.(osciName{ispec}));
-                permSTD = std(perm_layer.(osciName{ispec}));
+                permMean = mean(mass_clustermass);
+                permSTD = std(mass_clustermass);
 
-                figure('Name',['Observed cluster vs Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
-                boxplot(perm_layer.(osciName{ispec})); hold on;
+                figure('Name',['Observed cluster vs Permutation ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
+                boxplot(mass_clustermass); hold on;
 
-                if pVal < pthresh
-                    plot(1,obs_layer.(osciName{ispec}),'go','LineWidth',4)
-                    legend('p<0.05 bf corr')
+                if pVal < 0.007
+                    plot(1,obs_clustermass,'go','LineWidth',4)
+                    legend('p<0.007')
                 else
-                    plot(1,obs_layer.(osciName{ispec}),'ro','LineWidth',4)
+                    plot(1,obs_clustermass,'ro','LineWidth',4)
                     legend('ns')
                 end
 
@@ -364,14 +288,47 @@ for iCond = 1:length(params.condList)
                 set(h, 'PaperType', 'A4');
                 set(h, 'PaperOrientation', 'landscape');
                 set(h, 'PaperUnits', 'centimeters');
-                savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])                
+                savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
                 close(h)
                 save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
+                %% Check Significance of layers' clustermass
+
+                for ispec = 1:length(osciName)
+                    % In how many instances is the observed clustermass MORE than
+                    % the permuted clustermasses (obs clustermass sig above chance)
+                    sig_mass = sum(perm_layer.(osciName{ispec})>obs_layer.(osciName{ispec}),2);
+                    pVal = sig_mass/nperms;
+                    permMean = mean(perm_layer.(osciName{ispec}));
+                    permSTD = std(perm_layer.(osciName{ispec}));
+
+                    figure('Name',['Observed cluster vs Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}]);
+                    boxplot(perm_layer.(osciName{ispec})); hold on;
+
+                    if pVal < pthresh
+                        plot(1,obs_layer.(osciName{ispec}),'go','LineWidth',4)
+                        legend('p<0.05 bf corr')
+                    else
+                        plot(1,obs_layer.(osciName{ispec}),'ro','LineWidth',4)
+                        legend('ns')
+                    end
+
+                    h = gcf;
+                    h.Renderer = 'Painters';
+                    set(h, 'PaperType', 'A4');
+                    set(h, 'PaperOrientation', 'landscape');
+                    set(h, 'PaperUnits', 'centimeters');
+                    savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+                    close(h)
+                    save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+
+                end
             end
+            clear grp1Lay gr2Lay
         end
+        clear grp1Stim grp2Stim
     end % stimulus order
     toc
-    clear group1WT group2WT
+    clear group1WT group2WT 
     cd (homedir); cd output; cd WToutput
 end % condition
