@@ -10,7 +10,7 @@ for ispec = 1:length(osciName)
     perm_layer.(osciName{ispec}) = NaN([1 nperms]);
 end
 
-for iperm = 1:nperms
+parfor iperm = 1:nperms
     % determine random list order to pull
     order = randperm(grp1size+grp2size);
     % pull based on random list order

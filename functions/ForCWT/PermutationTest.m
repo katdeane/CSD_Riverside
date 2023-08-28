@@ -45,16 +45,16 @@ osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 
 %% Load in and concatonate Data
 cd (homedir); cd output; cd WToutput
-load('Cone.mat','cone');
+% load('Cone.mat','cone');
 
-for iCond = 4:length(params.condList)
+for iCond = 1:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
     % condition specific info
     [stimList, thisUnit, stimDur, stimITI, ~] = ...
         StimVariable(params.condList{iCond},1);
-    timeAxis = BL + stimDur + stimITI; % time axis for visualization
+    % timeAxis = BL + stimDur + stimITI; % time axis for visualization
     compTime = BL:BL+stimDur; % time of permutation comparison
 
 
@@ -81,7 +81,7 @@ for iCond = 4:length(params.condList)
     end
     clear wtTable
 
-    for iStim = 5:length(stimList)
+    for iStim = 1:length(stimList)
         % take just this stim
         grp1Stim = group1WT(group1WT.stim == stimList(iStim),:);
         grp2Stim = group2WT(group2WT.stim == stimList(iStim),:);
@@ -90,7 +90,7 @@ for iCond = 4:length(params.condList)
 
         % loop through layers here
         %Stack the individual animals' data (animal#x54x600)
-        for iLay = 5:length(params.layers)
+        for iLay = 1:length(params.layers)
             % split out the one you want and get the power or phase mats
             grp1Lay = grp1Stim(matches(grp1Stim.layer, params.layers{iLay}),:);
             grp2Lay = grp2Stim(matches(grp2Stim.layer, params.layers{iLay}),:);
@@ -187,35 +187,38 @@ for iCond = 4:length(params.condList)
                 mkdir('CWT'),cd CWT
             end
             %% dif fig
-            [X,Y]=meshgrid(cone,1:timeAxis);
             figure('Name',['Group data ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' thisUnit]); 
             grp1Fig = subplot(131);
-            surf(Y,X,obs1_mean','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title(params.groups{1})
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            imagesc(flipud(obs1_mean(19:54,:))) % the cwt function gives us back a yaxis flipped result
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) % 42 47 54 (for 200 300 500)
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
             colorbar
             clim = get(gca,'clim');
 
             grp2Fig = subplot(132);
-            surf(Y,X,obs2_mean','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title(params.groups{2})
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            imagesc(flipud(obs2_mean(19:54,:)))
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
             colorbar
             clim = [clim; get(gca,'clim')]; %#ok<AGROW>
 
-            diffFig = subplot(133);
-            surf(Y,X,obs_difmeans','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title('Observed Diff')
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-            colorbar;
-            clim = [clim; get(gca,'clim')]; %#ok<AGROW>
+            subplot(133);
+            imagesc(flipud(obs_difmeans(19:54,:)))
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
+            colorbar
 
             newC = [min(clim(:)) max(clim(:))];
 
             % scale clims the same
-            set(grp2Fig,'Clim',newC);colorbar;
-            set(grp1Fig,'Clim',newC);colorbar;
-            set(diffFig,'Clim',newC);colorbar;
+            set(grp2Fig,'Clim',newC); colorbar
+            set(grp1Fig,'Clim',newC); colorbar
 
             h = gcf;
             h.Renderer = 'Painters';
@@ -223,31 +226,35 @@ for iCond = 4:length(params.condList)
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
             savefig(['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
-            saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            % saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
             %% t fig
 
             figure('Name','Observed t Values BF');
             subplot(131);
-            surf(Y,X,obs_stat','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title('Stats Mat')
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
+            imagesc(flipud(obs_stat(19:54,:)))
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
             colorbar
 
             statfig = subplot(132);
-            surf(Y,X,obs_clusters','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title('Clusters where p<0.05')
-            colormap(statfig,statmap)
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-            colorbar
+            imagesc(flipud(obs_clusters(19:54,:)))
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
+            colormap(statfig,statmap); colorbar
 
             ESfig = subplot(133);
-            surf(Y,X,effectsize','EdgeColor','None'); view(2);
-            set(gca,'YScale','log'); title('Effect Size')
-            yticks([0 10 20 30 40 50 60 80 100 200 300 500])
-            colormap(ESfig,ESmap)
-            colorbar
+            imagesc(flipud(effectsize(19:54,:)))
+            set(gca,'Ydir','normal')
+            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticklabels({'0','10','20','30','40','50','60','80','100'})
+            title(params.groups{1})
+            colormap(ESfig,ESmap); colorbar
 
             h = gcf;
             h.Renderer = 'Painters';
@@ -255,7 +262,7 @@ for iCond = 4:length(params.condList)
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
             savefig(['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
-            saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            % saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
             if yespermute == 1
