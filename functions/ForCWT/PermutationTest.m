@@ -52,11 +52,10 @@ for iCond = 1:length(params.condList)
     disp(['For condition: ' params.condList{iCond}])
 
     % condition specific info
-    [stimList, thisUnit, stimDur, stimITI, ~] = ...
+    [stimList, thisUnit, stimDur, ~, ~] = ...
         StimVariable(params.condList{iCond},1);
     % timeAxis = BL + stimDur + stimITI; % time axis for visualization
     compTime = BL:BL+stimDur; % time of permutation comparison
-
 
     % stack first group data
     input = dir([params.groups{1} '*_' params.condList{iCond} '_WT.mat']);
@@ -267,7 +266,7 @@ for iCond = 1:length(params.condList)
 
             if yespermute == 1
                 %% Permutation Step 3 - do the permute
-                mass_clustermass = dothepermute(whichtest,grp1Out,grp2Out,grp1size,...
+                [mass_clustermass,perm_layer] = dothepermute(whichtest,grp1Out,grp2Out,grp1size,...
                     grp2size,compTime,osciName,osciRows,t_thresh,nperms);
 
                 %% Check Significance of full clustermass

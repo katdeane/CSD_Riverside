@@ -75,18 +75,15 @@ end
 
 %% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
-% work in progress: 
-
-% disp('Producing group-averaged traces for each group')
-% for iGro = 1:length(Groups)
-%     for iST = 1:length(Condition)
-%         disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
-%         tic 
-%         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
-%         toc
-%     end
-% end
-
+disp('Producing group-averaged traces for each group')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
+        tic 
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        toc
+    end
+end
 
 %% CWT analysis 
 
@@ -103,7 +100,6 @@ params.groups = {'MWT','MKO'}; % for permutation test
 runCwtCsd(homedir,'MWT',params);
 runCwtCsd(homedir,'MKO',params);
 
-
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
 % and Cohen'd d effect size are the stats used for observed and
@@ -114,26 +110,7 @@ runCwtCsd(homedir,'MKO',params);
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
+parpool(4) % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
-
-%% CWT analysis on LFP 
-
-runCwtCsd_LFP('MWT',params,homedir,{'5.28', '36.76'});
-runCwtCsd_LFP('MKO',params,homedir,{'5', '40'});
-
-for iFreq = 1:length(BatFreq)
-
-    % specifying Power: trials are averaged and then power is taken from
-    % the complex WT output of runCwtCsd function above. Student's t test
-    % and Cohen'd d effect size are the stats used for observed and
-    % permutation difference
-    % specifying Phase: phase is taken per trial. mwu test and r effect
-    % size are the stats used
-    % Output:   Figures for means and observed difference of comparison; 
-    %           figures for observed t values, clusters
-    %           output; boxplot and significance of permutation test 
-    PermutationTest_LFP(homedir,BatFreq{iFreq},MouseFreq{iFreq},'Power')
-    PermutationTest_LFP(homedir,BatFreq{iFreq},MouseFreq{iFreq},'Phase')
-
-end
+delete(gcp('nocreate')) % end this par session

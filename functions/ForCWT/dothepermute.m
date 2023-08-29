@@ -1,16 +1,32 @@
-function mass_clustermass = dothepermute(whichtest,grp1Out,grp2Out,grp1size,grp2size,...
+function [mass_clustermass, perm_layer] = dothepermute(whichtest,grp1Out,grp2Out,grp1size,grp2size,...
     compTime,osciName,osciRows,t_thresh,nperms)
 
-mass_clustermass = NaN([1 nperms]);
-% put the whole group in one container
-contAll = [grp1Out;grp2Out];
-perm_layer = struct;
-
-for ispec = 1:length(osciName)
-    perm_layer.(osciName{ispec}) = NaN([1 nperms]);
+if length(osciName) ~= 6
+    warning('Your frequency bands dont match what they should. You should look into that.')
+    keyboard 
 end
 
+% preallocate
+mass_clustermass        = NaN([1 nperms]);
+theta_clustermass       = NaN([1 nperms]);
+alpha_clustermass       = NaN([1 nperms]);
+betalow_clustermass     = NaN([1 nperms]);
+betahigh_clustermass    = NaN([1 nperms]);
+gammalow_clustermass    = NaN([1 nperms]);
+gammahigh_clustermass   = NaN([1 nperms]);
+
+% open the frequency bands back out (avoid overhead global struct use in
+% parloop)
+theta      = osciRows{1};
+alpha      = osciRows{2};
+beta_low   = osciRows{3};
+beta_high  = osciRows{4};
+gamma_low  = osciRows{5};
+gamma_high = osciRows{6};
+
 parfor iperm = 1:nperms
+    % put the whole group in one container
+    contAll = [grp1Out;grp2Out];
     % determine random list order to pull
     order = randperm(grp1size+grp2size);
     % pull based on random list order
@@ -34,21 +50,22 @@ parfor iperm = 1:nperms
         [~, ~, per_clusters] = phaseStats(grp1perm, grp2perm, grp1size, grp2size);
     end
 
-    % check cluster mass for 300 ms from tone onset
-    per_clustermass = sum(sum(per_clusters(:,compTime)));
-    mass_clustermass(iperm) = per_clustermass;
-
-    % for layer specific: %%%
-    % % pull out clusters
-
-    for ispec = 1:length(osciName)
-        hold_permlayer = per_clusters(osciRows{ispec},compTime);
-
-        % % sum clusters (twice to get final value)
-        for i = 1:2
-            hold_permlayer = sum(hold_permlayer);
-        end
-        perm_layer.(osciName{ispec})(iperm) = hold_permlayer;
-    end
+    % check cluster mass for compTime (BL:stimDur)
+    mass_clustermass(iperm)        = sum(sum(per_clusters(:,compTime)));
+    theta_clustermass(iperm)       = sum(sum(per_clusters(theta,compTime)));
+    alpha_clustermass(iperm)       = sum(sum(per_clusters(alpha,compTime)));
+    betalow_clustermass(iperm)     = sum(sum(per_clusters(beta_low,compTime)));
+    betahigh_clustermass(iperm)    = sum(sum(per_clusters(beta_high,compTime)));
+    gammalow_clustermass(iperm)    = sum(sum(per_clusters(gamma_low,compTime)));
+    gammahigh_clustermass(iperm)   = sum(sum(per_clusters(gamma_high,compTime)));
 
 end
+
+% make it an output struct
+perm_layer = struct;
+perm_layer.(osciName{1}) = theta_clustermass;
+perm_layer.(osciName{2}) = alpha_clustermass;
+perm_layer.(osciName{3}) = betalow_clustermass;
+perm_layer.(osciName{4}) = betahigh_clustermass;
+perm_layer.(osciName{5}) = gammalow_clustermass;
+perm_layer.(osciName{6}) = gammahigh_clustermass;
