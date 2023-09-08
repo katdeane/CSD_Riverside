@@ -50,7 +50,6 @@ if yesnorm == 1
         end
     end
 end
-clear AvrecAll
 
 %% generate figures
 
@@ -72,7 +71,7 @@ for iLay = 1:length(layers)
     end
 
     h = gcf;
-    savefig(h,[Group '_Traces_' Condition layers{iLay}],'compact')
+    savefig(h,[Group '_Traces_' Condition '_' layers{iLay}],'compact')
     close (h)
 end
 

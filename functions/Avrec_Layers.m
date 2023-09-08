@@ -163,7 +163,7 @@ PeakData.Properties.VariableNames = {'Group','Animal','Layer','trial',...
 
 % save the table in the main folder - needs to be moved to the Julia folder
 % for stats
-cd(homedir); cd datastructs;
+cd(homedir); cd output;
 if exist('TracePeaks','dir')
     cd TracePeaks;
 else

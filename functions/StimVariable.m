@@ -40,14 +40,14 @@ elseif matches(Condition,'ClickTrain')
     stimList = [1, 5, 10, 20, 40, 80, 100, 120];
     thisUnit = 'Hz';
     stimDur  = 2000*sr_mult; % ms
-    stimITI  = 2000*sr_mult;
+    stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
     thisTag  = 'ClickRate';
     
 elseif matches(Condition,'Chirp')
     stimList = 1;
     thisUnit = [];
     stimDur  = 3000*sr_mult; % ms
-    stimITI  = 2000*sr_mult;
+    stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
     thisTag  = 'single';
     
 elseif matches(Condition,'gapASSR')
@@ -58,7 +58,7 @@ elseif matches(Condition,'gapASSR')
     % gaponset = [250, 750, 1250, 1750, 2250, 2750, 3250, 3750, 4250, 4750];
     stimList = [2, 4, 6, 8, 10];
     thisUnit = ' [ms] gap width';
-    stimDur  = 5250*sr_mult; % ms
+    stimDur  = 3250*sr_mult; % ms
     stimITI  = 500*sr_mult;
     thisTag  = 'gapASSRRate';
 

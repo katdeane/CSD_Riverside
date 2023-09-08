@@ -27,7 +27,7 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'MKO' 'MWT'};
-% Condition = {'Tonotopy'};
+% Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
 
@@ -75,12 +75,30 @@ end
 
 %% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
+% to do: some stackedgroup concatonation not working (spont and gapASSR 6
+% ms)
+
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Group traces for ' Group{iGro} ' ' Condition{iST}])
+    for iST = 4:length(Condition)
+        disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        toc
+    end
+end
+
+%% Determine strength of response over EACH trial 
+
+% this is specifically to explore temporal dynamics over recording day and
+% uses single trial peak detection CSVs created by Avrec_Layers.m
+
+disp('Determining cortical strength over time')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['For ' Groups{iGro} ' ' Condition{iST}])
+        tic 
+        StrengthxTime(homedir, Groups{iGro}, Condition{iST})
         toc
     end
 end
