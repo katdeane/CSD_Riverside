@@ -6,7 +6,9 @@ function StrengthxTime(homedir, Group, Condition)
     StimVariable(Condition,1);
 
 % load current table, includes all group data for this condition
+cd(homedir);cd output; cd TracePeaks
 Table = readtable([Group '_' Condition '_AVRECPeak.csv']);
+cd(homedir)
 
 % we'll focus on just AVREC peak amplitude for OVERALL strength of activity
 Table = Table(matches(Table.Layer,'All'),:);
@@ -52,14 +54,15 @@ for iSub = 1:length(subList)
             thisUnit ' reponse strength over time'])
 
         % calculate the percent drop in strength
-        firstfive = mean(PeakAmp(1:5)); % max of first 10
-        lastfive  = mean(PeakAmp(end-4:end)); % min of last 10 trials
+        third = ceil(length(PeakAmp)/3);
+        firstthird = nanmean(PeakAmp(1:third)); % max of first third of trials
+        lastthird  = nanmean(PeakAmp(end-(third-1):end)); % min of last third
 
-        drop = 100 - (lastfive/firstfive * 100);
+        drop = 100 - (lastthird/firstthird * 100);
 
         % add it to the figure
-        legend(['avg first 5 = ' sprintf('%0.2f', firstfive) ...
-            '; avg end 5 = ' sprintf('%0.2f', lastfive) '; ' ...
+        legend(['avg first 1/3 = ' sprintf('%0.2f', firstthird) ...
+            '; avg end 1/3 = ' sprintf('%0.2f', lastthird) '; ' ...
             sprintf('%0.2f', drop) '% drop of response strength'],...
             'Location','south')
 

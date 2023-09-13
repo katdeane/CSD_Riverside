@@ -80,7 +80,7 @@ end
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 4:length(Condition)
+    for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
