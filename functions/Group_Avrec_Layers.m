@@ -51,6 +51,8 @@ if yesnorm == 1
     end
 end
 
+% preaverage trials
+AvrecAvg = cellfun(@(x) mean(x,3),AvrecAll,'UniformOutput',false);
 %% generate figures
 
 
@@ -63,8 +65,7 @@ for iLay = 1:length(layers)
         subplot(length(stimList),1,iStim);
         title([num2str(stimList(iStim)) ' ' thisUnit])
 
-        stackgroup = cat(1,AvrecAll{iStim,iLay,:});
-        stackgroup = mean(stackgroup,3);
+        stackgroup = cat(1,AvrecAvg{iStim,iLay,:});
         
         shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
         xticks(0:200:timeaxis)
