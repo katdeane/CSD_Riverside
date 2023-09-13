@@ -32,13 +32,13 @@ for iAn = 1:entries
 
     disp(['Running for ' Aname])
     
-    for iCond = 4:length(params.condList)
+    for iCond = 1:length(params.condList)
         
         disp(['Condition: ' params.condList{iCond}])
 
-        % Init datastruct to pass out
-        wtStruct = struct();
-        correction = 0;
+        % % Init datastruct to pass out
+        % wtStruct = struct();
+        % correction = 0;
         
         % pull the variables and index for this condition
         [stimList, thisUnit, stimDur, stimITI, ~] = ...
@@ -52,6 +52,10 @@ for iAn = 1:entries
 
         for iStim = 1:length(stimList)
            
+            % Init datastruct to pass out
+            wtStruct = struct();
+            correction = 0;
+
             disp(['For ' num2str(stimList(iStim)) ' ' thisUnit])
             curCSD = Data(index).sngtrlCSD{iStim};
             
@@ -99,8 +103,7 @@ for iAn = 1:entries
                        save('Cone.mat','cone');
                    end
 
-                   count = iTrial + ((iLay-1)*50 + ...
-                       ((iStim-1)*50*length(params.layers))) - correction;
+                   count = iTrial + (iLay-1)*50  - correction;
                    wtStruct(count).scalogram    = WT;
                    wtStruct(count).group        = Group;
                    wtStruct(count).animal       = Aname;
@@ -114,9 +117,11 @@ for iAn = 1:entries
 
                end % trial
            end % layer
+           wtTable = struct2table(wtStruct);
+           save([Aname '_' params.condList{iCond} '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable');
         end % stimulus
-        wtTable = struct2table(wtStruct);
-        save([Aname '_' params.condList{iCond} '_WT.mat'],'wtTable');
+        % wtTable = struct2table(wtStruct);
+        % save([Aname '_' params.condList{iCond} '_WT.mat'],'wtTable');
     end % condition
     toc
 end % animal 

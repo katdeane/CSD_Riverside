@@ -47,7 +47,7 @@ osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 cd (homedir); cd output; cd WToutput
 % load('Cone.mat','cone');
 
-for iCond = 1:length(params.condList)
+for iCond = 4:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
@@ -57,42 +57,40 @@ for iCond = 1:length(params.condList)
     % timeAxis = BL + stimDur + stimITI; % time axis for visualization
     compTime = BL:BL+stimDur; % time of permutation comparison
 
-    % stack first group data
-    input = dir([params.groups{1} '*_' params.condList{iCond} '_WT.mat']);
-    % initialize table with first input
-    load(input(1).name, 'wtTable')
-    group1WT = wtTable; clear wtTable
-    % start on 2 and add further input to full tables
-    for iIn = 2:length(input)
-        load(input(iIn).name, 'wtTable')
-        group1WT = [group1WT; wtTable]; %#ok<AGROW>
-    end
-
-    % stack second group data
-    input = dir([params.groups{2} '*_' params.condList{iCond} '_WT.mat']);
-    % initialize table with first input
-    load(input(1).name, 'wtTable')
-    group2WT = wtTable; clear wtTable
-    % start on 2 and add further input to full tables
-    for iIn = 2:length(input)
-        load(input(iIn).name, 'wtTable')
-        group2WT = [group2WT; wtTable]; %#ok<AGROW>
-    end
-    clear wtTable
-
     for iStim = 1:length(stimList)
-        % take just this stim
-        grp1Stim = group1WT(group1WT.stim == stimList(iStim),:);
-        grp2Stim = group2WT(group2WT.stim == stimList(iStim),:);
-        
         disp(['For stimulus: ' num2str(stimList(iStim))])
+
+        % stack first group data
+        input = dir([params.groups{1} '*_' params.condList{iCond}...
+            '_' num2str(stimList(iStim)) '_WT.mat']);
+        % initialize table with first input
+        load(input(1).name, 'wtTable')
+        group1WT = wtTable; clear wtTable
+        % start on 2 and add further input to full tables
+        for iIn = 2:length(input)
+            load(input(iIn).name, 'wtTable')
+            group1WT = [group1WT; wtTable]; %#ok<AGROW>
+        end
+
+        % stack second group data
+        input = dir([params.groups{2} '*_' params.condList{iCond}...
+            '_' num2str(stimList(iStim)) '_WT.mat']);
+        % initialize table with first input
+        load(input(1).name, 'wtTable')
+        group2WT = wtTable; clear wtTable
+        % start on 2 and add further input to full tables
+        for iIn = 2:length(input)
+            load(input(iIn).name, 'wtTable')
+            group2WT = [group2WT; wtTable]; %#ok<AGROW>
+        end
+        clear wtTable
 
         % loop through layers here
         %Stack the individual animals' data (animal#x54x600)
         for iLay = 1:length(params.layers)
             % split out the one you want and get the power or phase mats
-            grp1Lay = grp1Stim(matches(grp1Stim.layer, params.layers{iLay}),:);
-            grp2Lay = grp2Stim(matches(grp2Stim.layer, params.layers{iLay}),:);
+            grp1Lay = group1WT(matches(group1WT.layer, params.layers{iLay}),:);
+            grp2Lay = group2WT(matches(group2WT.layer, params.layers{iLay}),:);
 
             if contains(whichtest, 'Power')
 
@@ -125,8 +123,9 @@ for iCond = 1:length(params.condList)
             % Student's t test and cohen's d effect size
             if contains(whichtest,'Power')
                 % t Threshold
-                t_thresh = 2.132; % one-tailed, df = 4 (not actualy, just very conservative for now)
-                % Check this link: http://www.ttable.org/
+
+                [t_thresh, ~] = givetThresh(grp1size, grp2size);
+                % Check this link to verify: http://www.ttable.org/
 
                 [obs_stat, effectsize, obs_clusters] = powerStats(obs1_mean, ...
                     obs2_mean, obs1_std, obs2_std, grp1size, grp2size, t_thresh);
@@ -155,7 +154,7 @@ for iCond = 1:length(params.condList)
                     230/255 179/255 179/255
                     184/255 61/255 65/255
                     61/255 20/255 22/255];
-                % clusters colormap 
+                % clusters colormap
                 statmap = [189/255 64/255 6/255
                     205/255 197/255 180/255
                     5/255 36/255 56/255];
@@ -186,7 +185,7 @@ for iCond = 1:length(params.condList)
                 mkdir('CWT'),cd CWT
             end
             %% dif fig
-            figure('Name',['Group data ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' thisUnit]); 
+            figure('Name',['Group data ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' thisUnit]);
             grp1Fig = subplot(131);
             imagesc(flipud(obs1_mean(19:54,:))) % the cwt function gives us back a yaxis flipped result
             set(gca,'Ydir','normal')
@@ -199,7 +198,7 @@ for iCond = 1:length(params.condList)
             grp2Fig = subplot(132);
             imagesc(flipud(obs2_mean(19:54,:)))
             set(gca,'Ydir','normal')
-            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             title(params.groups{1})
             colorbar
@@ -208,7 +207,7 @@ for iCond = 1:length(params.condList)
             subplot(133);
             imagesc(flipud(obs_difmeans(19:54,:)))
             set(gca,'Ydir','normal')
-            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             title(params.groups{1})
             colorbar
@@ -234,7 +233,7 @@ for iCond = 1:length(params.condList)
             subplot(131);
             imagesc(flipud(obs_stat(19:54,:)))
             set(gca,'Ydir','normal')
-            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             title(params.groups{1})
             colorbar
@@ -242,7 +241,7 @@ for iCond = 1:length(params.condList)
             statfig = subplot(132);
             imagesc(flipud(obs_clusters(19:54,:)))
             set(gca,'Ydir','normal')
-            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             title(params.groups{1})
             colormap(statfig,statmap); colorbar
@@ -250,7 +249,7 @@ for iCond = 1:length(params.condList)
             ESfig = subplot(133);
             imagesc(flipud(effectsize(19:54,:)))
             set(gca,'Ydir','normal')
-            yticks([0 8 16 21 24 26 29 32 35]) 
+            yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             title(params.groups{1})
             colormap(ESfig,ESmap); colorbar
@@ -332,9 +331,8 @@ for iCond = 1:length(params.condList)
             end
             clear grp1Lay gr2Lay
         end
-        clear grp1Stim grp2Stim
+        clear group1WT group2WT
     end % stimulus order
     toc
-    clear group1WT group2WT 
     cd (homedir); cd output; cd WToutput
 end % condition
