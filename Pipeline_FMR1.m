@@ -132,3 +132,8 @@ parpool(4) % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
+
+
+%% Fast fourier transform of the spontaneous data 
+runFftCsd(homedir,params)
+plotFft(homedir,params)
