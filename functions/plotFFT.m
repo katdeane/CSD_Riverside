@@ -29,15 +29,34 @@ for iLay = 1:length(params.layers)
     grp2 = layTab.fft(matches(layTab.group,params.groups{2}),:);
 
     % divide KO (grp2) by WT (grp1) 
-    ratioWT = mean(grp2,1) ./ mean(grp1,1); 
+    grp1m   = mean(grp1,1);
+    grp2m   = mean(grp2,1);
+    ratioWT = grp2m ./ grp1m; 
+
+    % gaussian filter for visualization
+    grp1g   = imgaussfilt(grp1m,10);
+    grp2g   = imgaussfilt(grp2m,10);
     ratioWT = imgaussfilt(ratioWT,10);
+    
 
     % plot
     nexttile 
-    plot(Fs/L*(0:L-1),ratioWT,'-')
-    title(['Layer ' params.layers{iLay}])
-    ylabel("ratio of WT")
+    plot(Fs/L*(0:L-1),grp1g,'-')
+    title(['Layer ' params.layers{iLay} ' WT'])
     xlim([0 100])
+    xticks(0:10:100)
+
+    nexttile 
+    plot(Fs/L*(0:L-1),grp2g,'-')
+    title(['Layer ' params.layers{iLay} ' KO'])
+    xlim([0 100])
+    xticks(0:10:100)
+
+    nexttile 
+    plot(Fs/L*(0:L-1),ratioWT,'-')
+    title(['Layer ' params.layers{iLay} ' KO/WT'])
+    xlim([0 100])
+    xticks(0:10:100)
     hold on 
     line('XData', [0 100], 'YData', [1 1])
     hold off

@@ -59,7 +59,8 @@ for iGr = 1:length(params.groups)
             chanCSD = curCSD(centerChan,:);
 
             fftcsd = fft(chanCSD);
-            fftcsd = abs(fftcsd) .^2 ; % just take power
+            fftcsd = abs(fftcsd) .^2 ; % take power
+            fftcsd = fftcsd ./ sum(fftcsd);
 
             fftStruct(count).group        = Group;
             fftStruct(count).animal       = Aname;

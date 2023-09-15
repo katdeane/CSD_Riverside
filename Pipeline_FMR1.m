@@ -136,4 +136,4 @@ delete(gcp('nocreate')) % end this par session
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params)
-plotFft(homedir,params)
+plotFFT(homedir,params)
