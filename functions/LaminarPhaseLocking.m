@@ -1,28 +1,17 @@
+function LaminarPhaseLocking(homedir,params)
+% this function calculates phase coherence between layers based off of data
+% from \output\WToutput. It saves table of traces averaged over phase
+% coherence matrix: spectral frequency x time. Tables are saved with all
+% subjects from both groups per condition and stimulus in \output\InterLam_PhaseCo
 
-clear; clc;
+% This is a novel analysis method developed by Katrina Deane for the
+% purpose of exploring phase-phase relationships throughout the laminar
+% profile. It only compares same frequency bands across designated layers,
+% e.g.: high gamma coherence between Lay II and IV. This will be called
+% interlaminar phase coherence and it is based on the calculation of
+% intertrial phase coherence.
 
-% set working directory; change for your station
-if exist('F:\CSD_Riverside','dir')
-    cd('F:\CSD_Riverside'); 
-elseif exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside'); 
-else
-    error('add your local repository as shown above')
-end
-homedir = pwd;
-addpath(genpath(homedir));
 
-params.sampleRate = 1000; % Hz
-params.frequencyLimits = [5 params.sampleRate/2]; % Hz
-params.voicesPerOctave = 8;
-params.timeBandWidth = 54;
-params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset
-params.groups = {'MWT','MKO'};
-
-% function start
-
-BL = 399;
 % actual intended frequencies commented
 theta = (49:54);        %(4:7);
 alpha = (44:48);        %(8:12);
@@ -31,71 +20,116 @@ beta_high = (34:38);    %(19:30);
 gamma_low = (26:33);    %(31:60);
 gamma_high = (19:25);   %(61:100);
 
-osciName = {'theta' 'alpha' 'beta_low' 'beta_high' 'gamma_low' 'gamma_high'};
-osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 
+for iCond = 1:length(params.condList) 
 
+    [stimList, ~, ~, ~, ~] = ...
+        StimVariable(params.condList{iCond},1);
 
-cd (homedir); cd output; cd WToutput
-iCond = 1; %forloop
+    for iStim = 1:length(stimList) 
 
-[stimList, thisUnit, stimDur, ~, ~] = ...
-    StimVariable(params.condList{iCond},1);
-% timeAxis = BL + stimDur + stimITI; % time axis for visualization
-compTime = BL:BL+stimDur; % time of permutation comparison
+        cd (homedir); cd output; cd WToutput
+        input = dir(['*_' params.condList{iCond}...
+            '_' num2str(stimList(iStim)) '_WT.mat']);
 
-iStim = 1; % forloop
+        % initialize table out
+        sz = [10000 12]; % length will be cut at the end
+        varTypes = ["string" ,"string"   ,"double","string","string","double","cell",...
+            "cell"  ,"cell"    ,"cell"   ,"cell"  ,"cell"];
+        varNames = ["Subject","Condition","Stim","Lay1","Lay2","trial","GHtrace",...
+            "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"];
+        dTab = table('Size',sz,'VariableTypes',varTypes,'VariableNames',varNames);
+        count = 1; % I'm sorry 
 
-input = dir([params.groups{1} '*_' params.condList{iCond}...
-    '_' num2str(stimList(iStim)) '_WT.mat']);
-% initialize table with first input
-load(input(1).name, 'wtTable')
-% group1WT = wtTable; clear wtTable
-% % start on 2 and add further input to full tables
-% for iIn = 2:length(input)
-%     load(input(iIn).name, 'wtTable')
-%     group1WT = [group1WT; wtTable]; %#ok<AGROW>
-% end
+        for iIn = 1:length(input) 
+            load(input(iIn).name, 'wtTable')
 
+            % loop through layer comparisons (if iLay == 'II', iComp -> 'IV' - 'VI')
+            for iLay = 1:(length(params.layers)-1) 
+                for iComp = iLay+1:length(params.layers)
 
-% look at first trial scalogram of layers
-LayIIall = wtTable(matches(wtTable.layer, 'II'),:);
-LayIItrl = LayIIall((LayIIall.trial == 1),1).scalogram{:};
+                    % look at first trial scalogram of layers
+                    Lay1 = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
+                    Lay2 = wtTable(matches(wtTable.layer, params.layers{iComp}),:);
 
-LayIVall = wtTable(matches(wtTable.layer, 'IV'),:);
-LayIVtrl = LayIVall((LayIVall.trial == 1),1).scalogram{:};
+                    for iTr = 1:size(Lay1,1)
+                        Lay1trl = Lay1((Lay1.trial == iTr),1).scalogram{:};
+                        Lay2trl = Lay2((Lay2.trial == iTr),1).scalogram{:};
 
-% calculate interlaminar phase coherence
-LIIph = LayIItrl./abs(LayIItrl);
-LIVph = LayIVtrl./abs(LayIVtrl);
+                        % calculate single trial interlaminar phase coherence
+                        % (this is the SAME calculation as intertrial phase coherence)
+                        Lay1ph = Lay1trl./abs(Lay1trl);
+                        Lay2ph = Lay2trl./abs(Lay2trl);
 
-Phaseco = LIIph + LIVph;
-Phaseco =  abs(Phaseco / 2); % this is the SAME calculation as intertrial phase coherence
+                        Phaseco = Lay1ph + Lay2ph;
+                        Phaseco = abs(Phaseco / 2); % 2 for only 2 datapoints, lay 1 and 2
 
-% sanity check
-Phasefig = tiledlayout('flow');
+                        GHtrace = mean(Phaseco(gamma_high,:),1);
+                        GLtrace = mean(Phaseco(gamma_low,:),1);
+                        BHtrace = mean(Phaseco(beta_high,:),1);
+                        BLtrace = mean(Phaseco(beta_low,:),1);
+                        Atrace  = mean(Phaseco(alpha,:),1);
+                        Ttrace  = mean(Phaseco(theta,:),1);
 
-nexttile
-imagesc(flipud(Phaseco(19:54,:))) 
-set(gca,'Ydir','normal')
-yticks([0 8 16 21 24 26 29 32 35]) % 42 47 54 (for 200 300 500)
-yticklabels({'0','10','20','30','40','50','60','80','100'})
-colorbar
+                        % sanity check %
+                        % Phasefig = tiledlayout('flow');
+                        % title(Phasefig,[input(1).name])
+                        % xlabel(Phasefig, 'time [ms]')
+                        % 
+                        % nexttile
+                        % title('Phase Coherence')
+                        % imagesc(flipud(Phaseco(19:54,:)))
+                        % set(gca,'Ydir','normal')
+                        % yticks([0 8 16 21 24 26 29 32 35]) % 42 47 54 (for 200 300 500)
+                        % yticklabels({'0','10','20','30','40','50','60','80','100'})
+                        % ylabel('Frequency [Hz]')
+                        % xline(400,'LineWidth',2)
+                        % colorbar
+                        % 
+                        % nexttile
+                        % plot(GHtrace,'LineWidth',2);
+                        % hold on
+                        % plot(GLtrace,'LineWidth',2)
+                        % plot(BHtrace,'LineWidth',2);
+                        % plot(BLtrace,'LineWidth',2);
+                        % plot(Atrace,'LineWidth',2);
+                        % plot(Ttrace,'LineWidth',2);
+                        % xline(400,'LineWidth',2)
+                        % legend('High Gamma', 'Low Gamma', 'High Beta', 'Low Beta','Alpha','Theta','Onset')
+                        % ylabel('Phase Coherence')
+                        % close
 
-nexttile
-gammahightrace = mean(Phaseco(gamma_high,:),1);
-plot(gammahightrace);
-hold on 
-gammalowtrace  = mean(Phaseco(gamma_low,:),1);
-plot(gammalowtrace)
-betahightrace = mean(Phaseco(beta_high,:),1);
-plot(betahightrace);
-betalowtrace = mean(Phaseco(beta_low,:),1);
-plot(betalowtrace);
-alphatrace = mean(Phaseco(alpha,:),1);
-plot(alphatrace);
-thetatrace = mean(Phaseco(theta,:),1);
-plot(thetatrace);
-legend('High Gamma', 'Low Gamma', 'High Beta', 'Low Beta','Alpha','Theta')
+                        % "Subject","Condition","Stim",
+                        % "Lay 1","Lay 2","trial","GHtrace",
+                        % "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"
+                        dTab(count,:) = {input(iIn).name(1:5),params.condList{iCond},stimList(iStim)...
+                            params.layers{iLay},params.layers{iComp},iTr,{GHtrace},...
+                            {GLtrace},{BHtrace},{BLtrace},{Atrace},{Ttrace}};
+                        count = count + 1;
 
+                        clear Lay1trl Lay2trl
+                    end % trial
+                    clear Lay1 Lay2
+                end % layer 2
+            end % layer 1
+            clear wtTable
+        end % data input
+
+        % remove all unfilled rows (trial column filled with 0 but 
+        % trial == 0 is not possible)
+        dTab = dTab(dTab.trial ~= 0,:);
+
+        % save out per condition/stimulus
+        cd(homedir);cd output
+        if ~exist('InterLam_PhaseCo','dir')
+            mkdir('InterLam_PhaseCo');
+        end
+        cd InterLam_PhaseCo
+        savename = ['InterLam_' params.condList{iCond} '_' num2str(stimList(iStim)) '.mat'];
+        save(savename, 'dTab')
+
+    end % stimulus
+end % condition
+
+cd(homedir)
 

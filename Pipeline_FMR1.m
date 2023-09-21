@@ -137,3 +137,7 @@ delete(gcp('nocreate')) % end this par session
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params)
 plotFFT(homedir,params)
+
+%% Interlaminar Phase Coherence
+LaminarPhaseLocking(homedir,params)
+interlamPhaseFig(homedir,params)
