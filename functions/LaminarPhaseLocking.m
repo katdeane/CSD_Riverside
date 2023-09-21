@@ -33,10 +33,10 @@ for iCond = 1:length(params.condList)
             '_' num2str(stimList(iStim)) '_WT.mat']);
 
         % initialize table out
-        sz = [10000 12]; % length will be cut at the end
-        varTypes = ["string" ,"string"   ,"double","string","string","double","cell",...
+        sz = [10000 11]; % length will be cut at the end
+        varTypes = ["string" ,"string"   ,"double","string","string","cell",...
             "cell"  ,"cell"    ,"cell"   ,"cell"  ,"cell"];
-        varNames = ["Subject","Condition","Stim","Lay1","Lay2","trial","GHtrace",...
+        varNames = ["Subject","Condition","Stim","Lay1","Lay2","GHtrace",...
             "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"];
         dTab = table('Size',sz,'VariableTypes',varTypes,'VariableNames',varNames);
         count = 1; % I'm sorry 
@@ -52,6 +52,14 @@ for iCond = 1:length(params.condList)
                     Lay1 = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
                     Lay2 = wtTable(matches(wtTable.layer, params.layers{iComp}),:);
 
+                    % initialize container for trials
+                    GHtracehold = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+                    GLtracehold = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+                    BHtracehold = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+                    BLtracehold = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+                    Atracehold  = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+                    Ttracehold  = NaN(size(Lay1,1), size(Lay1.scalogram{1},2));
+
                     for iTr = 1:size(Lay1,1)
                         Lay1trl = Lay1((Lay1.trial == iTr),1).scalogram{:};
                         Lay2trl = Lay2((Lay2.trial == iTr),1).scalogram{:};
@@ -64,12 +72,12 @@ for iCond = 1:length(params.condList)
                         Phaseco = Lay1ph + Lay2ph;
                         Phaseco = abs(Phaseco / 2); % 2 for only 2 datapoints, lay 1 and 2
 
-                        GHtrace = mean(Phaseco(gamma_high,:),1);
-                        GLtrace = mean(Phaseco(gamma_low,:),1);
-                        BHtrace = mean(Phaseco(beta_high,:),1);
-                        BLtrace = mean(Phaseco(beta_low,:),1);
-                        Atrace  = mean(Phaseco(alpha,:),1);
-                        Ttrace  = mean(Phaseco(theta,:),1);
+                        GHtracehold(iTr,:) = mean(Phaseco(gamma_high,:),1);
+                        GLtracehold(iTr,:) = mean(Phaseco(gamma_low,:),1);
+                        BHtracehold(iTr,:) = mean(Phaseco(beta_high,:),1);
+                        BLtracehold(iTr,:) = mean(Phaseco(beta_low,:),1);
+                        Atracehold(iTr,:)  = mean(Phaseco(alpha,:),1);
+                        Ttracehold(iTr,:)  = mean(Phaseco(theta,:),1);
 
                         % sanity check %
                         % Phasefig = tiledlayout('flow');
@@ -99,16 +107,25 @@ for iCond = 1:length(params.condList)
                         % ylabel('Phase Coherence')
                         % close
 
-                        % "Subject","Condition","Stim",
-                        % "Lay 1","Lay 2","trial","GHtrace",
-                        % "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"
-                        dTab(count,:) = {input(iIn).name(1:5),params.condList{iCond},stimList(iStim)...
-                            params.layers{iLay},params.layers{iComp},iTr,{GHtrace},...
-                            {GLtrace},{BHtrace},{BLtrace},{Atrace},{Ttrace}};
-                        count = count + 1;
-
                         clear Lay1trl Lay2trl
                     end % trial
+
+                    % average the trial traces
+                    GHtrace = mean(GHtracehold);
+                    GLtrace = mean(GLtracehold);
+                    BHtrace = mean(BHtracehold);
+                    BLtrace = mean(BLtracehold);
+                    Atrace  = mean(Atracehold);
+                    Ttrace  = mean(Ttracehold);
+
+                    % "Subject","Condition","Stim",
+                    % "Lay 1","Lay 2","GHtrace",
+                    % "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"
+                    dTab(count,:) = {input(iIn).name(1:5),params.condList{iCond},stimList(iStim)...
+                        params.layers{iLay},params.layers{iComp},{GHtrace},...
+                        {GLtrace},{BHtrace},{BLtrace},{Atrace},{Ttrace}};
+                    count = count + 1;
+
                     clear Lay1 Lay2
                 end % layer 2
             end % layer 1
@@ -117,7 +134,7 @@ for iCond = 1:length(params.condList)
 
         % remove all unfilled rows (trial column filled with 0 but 
         % trial == 0 is not possible)
-        dTab = dTab(dTab.trial ~= 0,:);
+        dTab = dTab(dTab.Stim ~= 0,:);
 
         % save out per condition/stimulus
         cd(homedir);cd output
