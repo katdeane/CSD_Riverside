@@ -47,7 +47,7 @@ osciRows = {theta alpha beta_low beta_high gamma_low gamma_high};
 cd (homedir); cd output; cd WToutput
 % load('Cone.mat','cone');
 
-for iCond = 4:length(params.condList)
+for iCond = 1:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
@@ -332,7 +332,7 @@ for iCond = 4:length(params.condList)
             clear grp1Lay gr2Lay
         end
         clear group1WT group2WT
+        cd (homedir); cd output; cd WToutput
     end % stimulus order
     toc
-    cd (homedir); cd output; cd WToutput
 end % condition
