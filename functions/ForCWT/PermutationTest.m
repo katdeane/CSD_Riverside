@@ -200,7 +200,7 @@ for iCond = 4:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title(params.groups{1})
+            title(params.groups{2})
             colorbar
             clim = [clim; get(gca,'clim')]; %#ok<AGROW>
 
@@ -209,7 +209,7 @@ for iCond = 4:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title(params.groups{1})
+            title('Difference')
             colorbar
 
             newC = [min(clim(:)) max(clim(:))];
@@ -235,7 +235,7 @@ for iCond = 4:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title(params.groups{1})
+            title('students t')
             colorbar
 
             statfig = subplot(132);
@@ -243,7 +243,7 @@ for iCond = 4:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title(params.groups{1})
+            title('significant')
             colormap(statfig,statmap); colorbar
 
             ESfig = subplot(133);
@@ -251,7 +251,7 @@ for iCond = 4:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title(params.groups{1})
+            title('effect size')
             colormap(ESfig,ESmap); colorbar
 
             h = gcf;
