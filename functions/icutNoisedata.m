@@ -46,8 +46,16 @@ for idB = 1:length(dBList)
     
     for iOn = 1:length(cutHere)
         
-        if onsets(cutHere(iOn)) + stimITI > size(Data,2) % if last ITI cut short
+        if (onsets(cutHere(iOn)) + stimITI) > size(Data,2) % if last ITI cut short
             curData = curData(:,:,1:size(curData,3)-1);
+            continue
+        end
+        
+        if (onsets(cutHere(iOn)) - BL) < 0 % first stim too fast! no BL (fastest fingers in the west)
+            fakeBL = zeros(size(Data,1),((onsets(cutHere(iOn)) - BL)*-1)+1);
+            data   = Data(:,1:onsets(cutHere(iOn))+stimITI);
+            curData(:,:,iOn) = horzcat(fakeBL,data);
+            clear data fakeBL
             continue
         end
         
