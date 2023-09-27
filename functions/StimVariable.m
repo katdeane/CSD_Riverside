@@ -62,4 +62,11 @@ elseif matches(Condition,'gapASSR')
     stimITI  = 500*sr_mult;
     thisTag  = 'gapASSRRate';
 
+elseif matches(Condition,'Pupcall')
+    stimList = 1;
+    thisUnit = [];
+    stimDur  = 25000*sr_mult; % ms
+    stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 5s
+    thisTag  = 'single';
+
 end
