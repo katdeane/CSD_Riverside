@@ -15,6 +15,9 @@ function PermutationTest(homedir,whichtest,params,yespermute)
 if ~exist('whichtest','var')
     whichtest = 'Power'; % or 'Phase'
 end
+
+disp(['Observed ' whichtest ' and maybe permutations'])
+
 % number of permutations
 nperms = 500;
 pthresh = 0.05/7; %bonferroni for 6 osci bands and full mat
@@ -185,26 +188,30 @@ for iCond = 1:length(params.condList)
                 mkdir('CWT'),cd CWT
             end
             %% dif fig
-            figure('Name',['Group data ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' thisUnit]);
-            grp1Fig = subplot(131);
+            tiledlayout('vertical')
+            grp1Fig = nexttile;
             imagesc(flipud(obs1_mean(19:54,:))) % the cwt function gives us back a yaxis flipped result
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35]) % 42 47 54 (for 200 300 500)
             yticklabels({'0','10','20','30','40','50','60','80','100'})
+            xline(BL+1,'LineWidth',2) % onset
+            xline(BL+stimDur+1,'LineWidth',2) % offset
             title(params.groups{1})
             colorbar
             clim = get(gca,'clim');
 
-            grp2Fig = subplot(132);
+            grp2Fig = nexttile;
             imagesc(flipud(obs2_mean(19:54,:)))
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
+            xline(BL+1,'LineWidth',2,'Color','w') % onset
+            xline(BL+stimDur+1,'LineWidth',2,'Color','w') % offset
             title(params.groups{2})
             colorbar
             clim = [clim; get(gca,'clim')]; %#ok<AGROW>
 
-            subplot(133);
+            nexttile
             imagesc(flipud(obs_difmeans(19:54,:)))
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
@@ -223,14 +230,14 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig(['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            savefig([params.groups{1} 'v' params.groups{1} '_Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
             %% t fig
 
-            figure('Name','Observed t Values BF');
-            subplot(131);
+            tiledlayout('vertical');
+            nexttile;
             imagesc(flipud(obs_stat(19:54,:)))
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
@@ -238,7 +245,7 @@ for iCond = 1:length(params.condList)
             title('students t')
             colorbar
 
-            statfig = subplot(132);
+            statfig = nexttile;
             imagesc(flipud(obs_clusters(19:54,:)))
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
@@ -246,7 +253,7 @@ for iCond = 1:length(params.condList)
             title('significant')
             colormap(statfig,statmap); colorbar
 
-            ESfig = subplot(133);
+            ESfig = nexttile;
             imagesc(flipud(effectsize(19:54,:)))
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
@@ -259,7 +266,8 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig(['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            savefig([params.groups{1} 'v' params.groups{1} '_Observed t and p ' ...
+                whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
@@ -295,7 +303,7 @@ for iCond = 1:length(params.condList)
                 set(h, 'PaperUnits', 'centimeters');
                 savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
                 close(h)
-                save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+                save([params.groups{1} 'v' params.groups{1} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
                 %% Check Significance of layers' clustermass
 
@@ -325,7 +333,7 @@ for iCond = 1:length(params.condList)
                     set(h, 'PaperUnits', 'centimeters');
                     savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
                     close(h)
-                    save(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+                    save([params.groups{1} 'v' params.groups{1} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
                 end
             end

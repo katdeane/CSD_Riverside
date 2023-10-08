@@ -10,7 +10,7 @@ function [peakout,latencyout,rmsout] = consec_peaks(datain, stim_freq, dur_stim,
 % trials)
 
 if ~exist('BL','var')
-    BL  = 400; % ms before the first stim onset
+    BL  = 399; % ms before the first stim onset
 end
 if ~exist('stim_freq','var')
     stim_freq  = 2; % Hz of stim presentation
@@ -32,7 +32,7 @@ det_jump   = round(dur_stim/numreps);
 % fill detection window containers
 for idet = 1:round(numreps)
     if idet == 1
-        det_on(idet) = BL;
+        det_on(idet) = BL+1;
     else
         det_on(idet) = det_on(idet-1) + det_jump;
     end

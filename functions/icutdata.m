@@ -84,6 +84,14 @@ for istim = 1:length(shortlist)
             continue
         end
         
+        if (onsets(cutHere(iOn)) - BL) < 0 % first stim too fast! no BL (fastest fingers in the west)
+            fakeBL = zeros(size(Data,1),((onsets(cutHere(iOn)) - BL)*-1)+1);
+            data   = Data(:,1:onsets(cutHere(iOn))+stimITI);
+            curData(:,:,iOn) = horzcat(fakeBL,data);
+            clear data fakeBL
+            continue
+        end
+        
         curData(:,:,iOn) = Data(:,onsets(cutHere(iOn))-BL:onsets(cutHere(iOn))+stimITI);
         
     end

@@ -14,7 +14,8 @@ if ~exist('sr_mult','var')
 end
 
 if matches(Condition,'NoiseBurst') || ...
-        matches(Condition,'postNoise')
+        matches(Condition,'postNoise') || ...
+        matches(Condition, 'PostNoiseBurst')
     stimList = [20, 30, 40, 50, 60, 70, 80, 90];
     thisUnit = 'dB';
     stimDur  = 100*sr_mult; % ms
@@ -65,7 +66,7 @@ elseif matches(Condition,'gapASSR')
 elseif matches(Condition,'Pupcall')
     stimList = 1;
     thisUnit = [];
-    stimDur  = 25000*sr_mult; % ms
+    stimDur  = 25027*sr_mult; % 25.027 s
     stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 5s
     thisTag  = 'single';
 

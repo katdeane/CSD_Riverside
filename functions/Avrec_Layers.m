@@ -31,6 +31,7 @@ layers = {'All', 'II', 'IV', 'Va', 'Vb', 'VI'};
 % The next part depends on the stimulus, pull the relevant details
 [stimList, thisUnit, stimDur, ~, ~] = ...
     StimVariable(Condition,1);
+BL = 399;
 
 % set up simple cell sheets to hold all data: avrec of total/layers and
 % peaks of pre conditions
@@ -83,19 +84,23 @@ for i_In = 1:entries
                 
                 % plot them with shaded error bar
                 shadedErrorBar(1:size(traceCSD,2),mean(traceCSD,3),std(traceCSD,0,3),'lineprops','b');
+                xline(BL+1,'LineWidth',2) % onset
+                xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
             else
                 % Layers take the nan-sourced CSD (also flipped)
                 thislay = str2num(Layer.(layers{iLay}){i_In});
                 curLay  = curCSD(thislay,:,:);
-                
+
                 traceCSD = curLay * -1;         % flip it
                 traceCSD(traceCSD < 0) = NaN;   % nan-source it
                 traceCSD = nanmean(traceCSD,1); % average it (with nans)
                 traceCSD(isnan(traceCSD)) = 0;  % replace nans with 0s for consecutive line
-                
+
                 % plot them with shaded error bar
                 shadedErrorBar(1:size(traceCSD,2),mean(traceCSD,3),std(traceCSD,0,3),'lineprops','b');
+                xline(BL+1,'LineWidth',2) % onset
+                xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
             end
             
@@ -110,13 +115,11 @@ for i_In = 1:entries
             % peak detection over single trials
             if matches(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
-                BL = 400;
             elseif matches (Condition, 'gapASSR')
                 reprate = 2; % every 500 ms to detect onset response to gap-noise
-                BL = 400 + 250; % adding noise before first gap-noise
+                BL = BL + 250; % adding noise before first gap-noise
             else 
                 reprate = 1;
-                BL = 400;
             end
             
             [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...

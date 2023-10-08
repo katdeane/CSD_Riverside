@@ -16,14 +16,83 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'VMP'}; % 'PMP' % virgin male pupcall & paired male pupcall
-% Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'Pupcall'};
+Condition = {'Pupcall'};
+% Condition = {'NoiseBurst' 'Pupcall' 'PostNoiseBurst'};
+cbar = [-0.8 0.8]; % species specific based on experience, color axis
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-DynamicCSD(homedir, Condition)
+DynamicCSD(homedir, Condition, cbR)
 
-% per subject Spike Script
-% DynamicSpike(homedir, Condition)
+%% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
+
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
+        tic 
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        toc
+    end
+end
+
+%% Determine strength of response over EACH trial 
+
+% this is specifically to explore temporal dynamics over recording day and
+% uses single trial peak detection CSVs created by Avrec_Layers.m
+
+disp('Determining cortical strength over time')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['For ' Groups{iGro} ' ' Condition{iST}])
+        tic 
+        StrengthxTime(homedir, Groups{iGro}, Condition{iST})
+        toc
+    end
+end
+
+%% CWT analysis 
+
+% Output:   Runs CWT analysis using the Wavelet toolbox. 
+params.sampleRate = 1000; % Hz
+params.frequencyLimits = [5 params.sampleRate/2]; % Hz
+params.voicesPerOctave = 8;
+params.timeBandWidth = 54;
+params.layers = {'II','IV','Va','Vb','VI'}; 
+params.condList = {'Pupcall'}; % subset %'NoiseBurst',
+params.groups = {'VMP','VMP'}; % for permutation test
+
+% Only run when data regeneration is needed:
+runCwtCsd(homedir,'VMP',params);
+
+% specifying Power: trials are averaged and then power is taken from
+% the complex WT output of runCwtCsd function above. Student's t test
+% and Cohen'd d effect size are the stats used for observed and
+% permutation difference
+% specifying Phase: phase is taken per trial. mwu test and r effect
+% size are the stats used
+% Output:   Figures for means and observed difference of comparison;
+%           figures for observed t values, clusters
+%           output; boxplot and significance of permutation test
+yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
+if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
+PermutationTest(homedir,'Power',params,yespermute)
+PermutationTest(homedir,'Phase',params,yespermute)
+delete(gcp('nocreate')) % end this par session
+
+%% Fast fourier transform of the spontaneous data 
+runFftCsd(homedir,params)
+plotFFT(homedir,params)
+
+%% Interlaminar Phase Coherence
+LaminarPhaseLocking(homedir,params)
+interlamPhaseFig(homedir,params)
+
+%% Subject specific pup call visualization
+subject = 'VMP01';
+
+PupcallCSD(homedir,subject,cbar)
+PupcallTraces(homedir,subject)
+PupcallCWT(homedir,subject,params)
+
 

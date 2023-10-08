@@ -43,8 +43,8 @@ elseif matches(thistype, 'single')
     % now we can cut out the time points around onsets corresponding to
     % specific dB
     for iOn = 1:length(onsets)
-
-        curData(:,:,iOn) = Data(:,onsets(iOn)-BL:onsets(iOn)+stimITI);
+        % 400 ms = exact onset "1" 
+        curData(:,:,iOn) = Data(:,onsets(iOn)-BL-1:onsets(iOn)+stimITI-1);
 
     end
 
