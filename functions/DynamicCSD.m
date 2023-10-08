@@ -1,4 +1,4 @@
-function DynamicCSD(homedir, Condition)
+function DynamicCSD(homedir, Condition, cbar)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -6,6 +6,8 @@ function DynamicCSD(homedir, Condition)
 %   and stores LFP, CSD, AVREC, Relres, and basic information in a 
 %   Data struct per subject (eg MWT01_Data.mat) which is saved in 
 %   datastructs/
+%  
+%   cbar variable sets caxis, flexible for different species
 %
 %   Data is from Neuronexus: Allego and Curate, should have *_LFP.xdat.json,
 %   *_LFP_data.xdat, and *_LFP_timestamp.xdat per subject (eg MWT01_01). 
@@ -119,7 +121,9 @@ for i1 = 1:entries
                         imagesc(mean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
-                        caxis([-0.2 0.2])
+                        caxis(cbar)
+                        xline(BL+1,'LineWidth',2) % onset
+                        xline(BL+stimDur+1,'LineWidth',2) % offset
                     end
                     
                     colorbar

@@ -34,7 +34,7 @@ Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-DynamicCSD(homedir, Condition)
+DynamicCSD(homedir, Condition, [-0.2 0.2])
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
