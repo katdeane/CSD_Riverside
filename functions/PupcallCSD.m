@@ -15,7 +15,7 @@ pupCondList = Cond(subID).Pupcall{:};
 
 for iMeas = 1:length(pupCondList)
     
-    index = find(matches([subject '_' pupCondList{iMeas} '_LFP'],{Data.measurement}));
+    index = find(strcmp({Data.measurement},[subject '_' pupCondList{iMeas} '_LFP']));
     CSD = Data(index).sngtrlCSD{:}; %#ok<FNDSB>
     CSD = mean(CSD,3); % trial average it
     
