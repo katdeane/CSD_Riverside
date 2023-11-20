@@ -23,7 +23,7 @@ cbar = [-0.8 0.8]; % species specific based on experience, color axis
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-DynamicCSD(homedir, Condition, cbR)
+DynamicCSD(homedir, Condition, cbar)
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -89,10 +89,10 @@ LaminarPhaseLocking(homedir,params)
 interlamPhaseFig(homedir,params)
 
 %% Subject specific pup call visualization
-subject = 'VMP01';
+subject = 'VMP02';
 
-PupcallCSD(homedir,subject,cbar)
+PupcallCSD(homedir,subject,cbar) % having run DynamicCSD
 PupcallTraces(homedir,subject)
-PupcallCWT(homedir,subject,params)
+PupcallCWT(homedir,subject,params) % having run runCwtCsd
 
 
