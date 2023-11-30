@@ -26,7 +26,7 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'MKO' 'MWT'};
+Groups = {'MWT'}; %'MKO' 
 % Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
@@ -116,7 +116,7 @@ params.groups = {'MWT','MKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'MWT',params);
-runCwtCsd(homedir,'MKO',params);
+% runCwtCsd(homedir,'MKO',params);
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test

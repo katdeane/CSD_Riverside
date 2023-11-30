@@ -54,7 +54,7 @@ for iEnt = 1:entries
     
     % pull the data
     for iStim = 1:length(stimList)
-        
+
         CurCSD = mean(Data(index).sngtrlCSD{1, iStim},3);
         CSDhold{iStim}(1:size(CurCSD,1),1:size(CurCSD,2),iEnt) = CurCSD;
         
