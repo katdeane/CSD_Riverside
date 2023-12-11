@@ -1,7 +1,9 @@
 function index = StimIndex(dataList,Cond,Subject,Condition)
 
 % this function gives back the index that should be taken to pull the data
-% for this subject for this condiiton. 
+% for this subject for this condition.
+
+% will give index for last noiseburst and first of any other condition
 
 % Cond is the Condition list pulled in from running the group meta script
 % (e.g. 'MKO.m')
