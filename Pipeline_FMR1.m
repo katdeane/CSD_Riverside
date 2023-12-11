@@ -27,7 +27,7 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'MWT'}; %'MKO' 
-% Condition = {'NoiseBurst'};
+% Condition = {'ClickTrain'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
 
@@ -103,6 +103,8 @@ for iGro = 1:length(Groups)
     end
 end
 
+%% SPECTRAL ANALYSIS %%
+
 %% CWT analysis 
 
 % Output:   Runs CWT analysis using the Wavelet toolbox. 
@@ -133,7 +135,6 @@ PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
 
-
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params)
 plotFFT(homedir,params)
@@ -141,3 +142,33 @@ plotFFT(homedir,params)
 %% Interlaminar Phase Coherence
 LaminarPhaseLocking(homedir,params)
 interlamPhaseFig(homedir,params)
+
+%% Phase amplitude coupling
+
+% % it's been a while
+Groups = {'MWT','MWT'}; %'MKO' 
+Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
+
+% based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
+disp('CSD Phase Amplitude Coupling Analysis')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['Phase Amp coupling for ' Groups{iGro} ' ' Condition{iST}])
+        tic 
+        runPAC(homedir, Groups{iGro}, Condition{iST}, 'CSD')
+        toc
+    end
+end
+
+% save all of the visual data output and some data files
+for iST = 1:length(Condition)
+    disp(['Phase Amp coupling figures for ' Condition{iST}])
+    tic
+    visualize_PAC(homedir,Groups, Condition{iST}, 'CSD')
+    toc
+end
+
+
+
+% run a permutation test and save the output results (no figures)
+permtest_PAC(homedir,'CSD')
