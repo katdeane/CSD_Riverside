@@ -152,6 +152,10 @@ for iCond = 1:length(params.condList)
                 [obs_stat, effectsize, obs_clusters] = phaseStats(grp1Out, ...
                     grp2Out, grp1size, grp2size);
 
+                % make sure the range is captured
+                obs_clusters(19,1) = 1;
+                obs_clusters(20,1) = -1; 
+
                 % effect size colormap
                 ESmap = [250/255 240/255 240/255
                     230/255 179/255 179/255
@@ -230,7 +234,7 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig([params.groups{1} 'v' params.groups{1} '_Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            savefig([params.groups{1} 'v' params.groups{2} '_Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
@@ -242,7 +246,7 @@ for iCond = 1:length(params.condList)
             set(gca,'Ydir','normal')
             yticks([0 8 16 21 24 26 29 32 35])
             yticklabels({'0','10','20','30','40','50','60','80','100'})
-            title('students t')
+            title('statistic')
             colorbar
 
             statfig = nexttile;
@@ -266,7 +270,7 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig([params.groups{1} 'v' params.groups{1} '_Observed t and p ' ...
+            savefig([params.groups{1} 'v' params.groups{2} '_Observed t and p ' ...
                 whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
@@ -303,7 +307,7 @@ for iCond = 1:length(params.condList)
                 set(h, 'PaperUnits', 'centimeters');
                 savefig(['Full Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
                 close(h)
-                save([params.groups{1} 'v' params.groups{1} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+                save([params.groups{1} 'v' params.groups{2} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
                 %% Check Significance of layers' clustermass
 
@@ -333,7 +337,7 @@ for iCond = 1:length(params.condList)
                     set(h, 'PaperUnits', 'centimeters');
                     savefig(['Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
                     close(h)
-                    save([params.groups{1} 'v' params.groups{1} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
+                    save([params.groups{1} 'v' params.groups{2} '_Permutation ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.mat'],'pVal','permMean','permSTD')
 
                 end
             end
