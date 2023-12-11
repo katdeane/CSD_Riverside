@@ -15,12 +15,12 @@ N=grpsize1+grpsize2;
 X = cat(1, Grp1, Grp2);
 
 [r,adj]=tiedrank(X); %compute the ranks and the ties
-R1=r(1:grpsize1); %R2=r(grpsize1+1:end); 
+R1=r(1:grpsize1,:,:); %R2=r(grpsize1+1:end); 
 T1=sum(R1); %T2=sum(R2);
 U1=NP+(grpsize1*(grpsize1+1))/2-T1; %U2=NP-U1;
 
 % corrected sd based on rank ties
-sU=realsqrt((NP/(N^2-N))*((N^3-N-2*adj)/12));
+sU=realsqrt((NP/(N^2-N)).*((N^3-N-2*adj)/12));
 
 % extra things
 % W=[T1 T2];
@@ -33,7 +33,7 @@ sU=realsqrt((NP/(N^2-N))*((N^3-N-2*adj)/12));
 % method=Normal approximation:
 mU=NP/2;
 % Z results of mww test
-obs_stat = (abs(U1-mU)-0.5)/sU;
+obs_stat = (abs(U1-mU)-0.5)./sU;
 obs_stat = squeeze(obs_stat);
 p=1-normcdf(obs_stat); % one tailed; two tailed: p*2
 
@@ -41,7 +41,7 @@ p=1-normcdf(obs_stat); % one tailed; two tailed: p*2
 obs_clusters = zeros(size(obs_stat,1),size(obs_stat,2),size(obs_stat,3));
 obs_clusters(obs_stat>0) = 1; % directional
 obs_clusters(obs_stat<0) = -1;
-obs_clusters(p>0.05)     = 0; % significant
+obs_clusters(p>0.05)     = 0; % not significant
 
 % effect size of mwwtest is r = abs(z/sqrt(n1+n2)) / 0.1 is small, 0.3 is
 % medium, 0.5 is large
