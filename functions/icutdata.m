@@ -37,6 +37,12 @@ if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
     shortlist = unique(stimList);
     shortlist = shortlist(shortlist ~= 0);
 
+    % click list is of duration between clicks so 8.33 = 120 Hz
+    % we want 1 hz (1000) first:
+    if matches(thistype, 'ClickRate')
+        shortlist =  sort(shortlist,"descend");
+    end
+
     % this should match or something is wrong
     if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
 
