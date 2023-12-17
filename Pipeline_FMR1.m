@@ -26,8 +26,8 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'MWT'}; %'MKO' 
-% Condition = {'ClickTrain'};
+Groups = {'MWT' 'MKO'}; %'MKO' 
+% Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise' 'postSpont'};
 
@@ -118,7 +118,7 @@ params.groups = {'MWT','MKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'MWT',params);
-% runCwtCsd(homedir,'MKO',params);
+runCwtCsd(homedir,'MKO',params);
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -146,7 +146,6 @@ interlamPhaseFig(homedir,params)
 %% Phase amplitude coupling
 
 % % it's been a while
-Groups = {'MWT','MWT'}; %'MKO' 
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
 
 % based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
@@ -168,7 +167,5 @@ for iST = 1:length(Condition)
     toc
 end
 
-
-
 % run a permutation test and save the output results (no figures)
-permtest_PAC(homedir,'CSD')
+% permtest_PAC(homedir,'CSD')
