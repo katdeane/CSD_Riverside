@@ -18,7 +18,7 @@ stimIn = signalStruct.signals(33,:); % microvolts
 % data channels:
 if exist('channels','var')
     % take the channels input variable
-    data = signalStruct.signals(channels(1):channels(2),:);
+    data = signalStruct.signals(channels,:);
 else % or
     % allow the user to change how many channels are analyzed
     prompt   = {'First Chan:','Last Chan:'};
