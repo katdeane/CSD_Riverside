@@ -9,14 +9,14 @@ load([subject '_Data.mat'],'Data');
 % load group info to know how many noisebursts there are
 run([subject(1:3) '.m']); % brings in animals, channels, Layer, and Cond
 % get subject number
-subID = find(matches('VMP01',animals)); % need to check this when it's more than 1 subject in list
+subID = find(matches(subject,animals)); % need to check this when it's more than 1 subject in list
 % get pupcall measurement number(s)
-pupCondList = Cond(subID).Pupcall{:};
+pupCondList = Cond(subID).Pupcall30{:};
 
 for iMeas = 1:length(pupCondList)
     
-    index = find(matches([subject '_' pupCondList{iMeas} '_LFP'],{Data.measurement}));
-    CSD = Data(index).sngtrlCSD{:};
+    index = find(strcmp({Data.measurement},[subject '_' pupCondList{iMeas} '_LFP']));
+    CSD = Data(index).sngtrlCSD{:}; %#ok<FNDSB>
     % Get the traces ready
     % pull out and average rectify each measurement
     recCSD  = abs(CSD);
@@ -49,14 +49,18 @@ for iMeas = 1:length(pupCondList)
     VItrace(isnan(VItrace)) = 0;  % replace nans with 0s for consecutive line
 
     % prep the wave file
-    [y,fs] = audioread('PupCall25s.wav');
+     [y,~] = audioread('PupCall25s.wav');
+    % audio file has fs of 192000. However, the software is slightly
+    % slowing the stimulus down as it plays it. Therefore, the following fs
+    % is based on the RPvdsEx playing (this is at max fs in the software)
+    fs = 194800;
     y = y(:,1);
     % CSD has a 399 BL and 1 s post stim time window
-    prebuff = zeros((BL/1000)*fs,1);
-    postbuff = zeros(1*fs,1);
-    ymod = vertcat(prebuff,y,postbuff);
-    dt = 1/fs;
-    t = 0:dt:(length(ymod)*dt)-dt;
+    prebuff  = zeros(round((BL/1000)*fs),1);
+    % postbuff = zeros(1*fs,1);
+    ymod = vertcat(prebuff,y); %,postbuff
+    dt   = 1/fs;
+    t    = 0:dt:(length(ymod)*dt)-dt;
 
     % draw!
     figure
@@ -143,8 +147,9 @@ for iMeas = 1:length(pupCondList)
 
     % Time to get choppy my friend 
     load('PupTimes.mat','PupTimes')
-    PupTimes    = PupTimes + 0.399;
-    PupTimesCSD = PupTimes .* 1000;
+    PupTimes    = PupTimes .* 0.9856; % 192000/194800 (fixing fs)
+    PupTimes    = PupTimes + 0.400; % add the prestimulus time
+    PupTimesCSD = PupTimes .* 1000; % match axes
 
     % sanity checks 
     % plot(t,ymod,'k'); xlabel('Seconds'); ylabel('PupCall');
@@ -156,7 +161,9 @@ for iMeas = 1:length(pupCondList)
     % xline(PupTimes(:,1).*1000,'b')
     % xline(PupTimes(:,2).*1000,'r')
 
-    for iCall = 1:size(PupTimes,1)
+    callList = [1 3 18 21 26 49];
+
+    for iCall = callList
 
         callCSD = PupTimesCSD(iCall,1);
         callWAV = PupTimes(iCall,1);

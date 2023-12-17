@@ -9,9 +9,9 @@ load([subject '_Data.mat'],'Data');
 % load group info to know how many noisebursts there are
 run([subject(1:3) '.m']); % brings in animals, channels, Layer, and Cond
 % get subject number
-subID = find(matches(subject,animals)); % need to check this when it's more than 1 subject in list
+subID = strcmp(subject,animals); % need to check this when it's more than 1 subject in list
 % get pupcall measurement number(s)
-pupCondList = Cond(subID).Pupcall{:};
+pupCondList = Cond.Pupcall30{subID};
 
 for iMeas = 1:length(pupCondList)
     
@@ -81,7 +81,9 @@ for iMeas = 1:length(pupCondList)
     % xline(PupTimes(:,1).*1000,'b')
     % xline(PupTimes(:,2).*1000,'r')
 
-    for iCall = 1:size(PupTimes,1)
+    callList = [1 3 18 21 26 49];
+
+    for iCall = callList
 
         callCSD = PupTimesCSD(iCall,1);
         figure;
