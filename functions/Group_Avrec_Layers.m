@@ -53,6 +53,7 @@ end
 
 % preaverage trials
 AvrecAvg = cellfun(@(x) mean(x,3),AvrecAll,'UniformOutput',false);
+
 %% generate figures
 
 

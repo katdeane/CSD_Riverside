@@ -25,6 +25,7 @@ for iSu = 1:length(subjects)
     % powermat = powermat / mean(mean(powermat));
     
     % place it in the container 
+    
     Power(iSu,:,:) = powermat;
 end
 

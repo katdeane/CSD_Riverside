@@ -63,7 +63,7 @@ elseif matches(Condition,'gapASSR')
     stimITI  = 500*sr_mult;
     thisTag  = 'gapASSRRate';
 
-elseif matches(Condition,'Pupcall')
+elseif contains(Condition,'Pupcall') 
     stimList = 1;
     thisUnit = [];
     stimDur  = 25027*sr_mult; % 25.027 s
