@@ -108,15 +108,18 @@ PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
 
 %% Fast fourier transform of the spontaneous data 
-% runFftCsd(homedir,params)
-% plotFFT(homedir,params)
+runFftCsd(homedir,params,'Pupcall')
+plotFFT(homedir,params,'Pupcall')
+
+runFftCsd(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous')
 
 %% Interlaminar Phase Coherence
 % LaminarPhaseLocking(homedir,params)
 % interlamPhaseFig(homedir,params)
 
 %% Subject specific pup call visualization
-subject = 'PMP01';
+subject = 'PMP03';
 
 PupcallCSD(homedir,subject,cbar) % having run DynamicCSD
 PupcallTraces(homedir,subject) % having run DynamicCSD
@@ -128,8 +131,8 @@ GroupPupcallCSD(homedir,'VMP',cbar) % having run DynamicCSD
 GroupPupcallTraces(homedir,'VMP') % having run Avrec_Layers
 GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 
-GroupPupcallCSD(homedir,'VMP',cbar) % having run DynamicCSD
-GroupPupcallTraces(homedir,'VMP') % having run Avrec_Layers
-GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
+GroupPupcallCSD(homedir,'PMP',cbar) % having run DynamicCSD
+GroupPupcallTraces(homedir,'PMP') % having run Avrec_Layers
+GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
 
 

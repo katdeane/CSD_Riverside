@@ -1,4 +1,4 @@
-function runFftCsd(homedir,params)
+function runFftCsd(homedir,params,Condition)
 
 % Input:    group name to match *Data.mat in \datastructs, parameters
 %           set for CWT analysis, ONLY Spontaneous data used here
@@ -17,19 +17,18 @@ count = 1;
 for iGr = 1:length(params.groups)
 
     Group = params.groups{iGr};
-    input = dir([Group '*_Data.mat']);
-    entries = length(input);
     run([Group '.m']); % brings in animals, channels, Layer, and Cond
+    entries = length(animals);
 
     for iAn = 1:entries
-        load(input(iAn).name,'Data');
+        load([animals{iAn} '_Data.mat'],'Data'); 
 
-        Aname = input(iAn).name(1:5);
+        Aname = animals{iAn};
 
         disp(['Running for ' Aname])
 
         % pull the data for this subject
-        index = StimIndex({Data.Condition},Cond,iAn,'Spontaneous');
+        index = StimIndex({Data.Condition},Cond,iAn,Condition);
         if isempty(index)
             continue
         end
@@ -65,7 +64,11 @@ for iGr = 1:length(params.groups)
             fftStruct(count).group        = Group;
             fftStruct(count).animal       = Aname;
             fftStruct(count).layer        = params.layers{iLay};
-            fftStruct(count).fft          = fftcsd(1,1:120000); % limit to my recording min, 2 min
+            if matches(Condition,'Spontaneous')
+                fftStruct(count).fft      = {fftcsd(1:120000)}; % limit to my recording min, 2 min
+            else
+                fftStruct(count).fft      = {fftcsd};
+            end
             count = count + 1;
 
         end % layer
@@ -79,4 +82,5 @@ else
     mkdir('FFT'); cd FFT
 end
 
-save('FFT.mat','fftStruct')
+savename = [params.groups{1} 'v' params.groups{2} '_FFT.mat'];
+save(savename,'fftStruct')
