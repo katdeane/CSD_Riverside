@@ -20,15 +20,15 @@ for iCond = 1:length(params.condList)
     end
 
     % during baseline
-    pretime   = (BL-299):(BL-199);
+    pretime   = (BL-299):(BL-249);
     xpre = [pretime(1);pretime(1);pretime(end);pretime(end)];
     ypre = [0;         1;         1;           0];
     % directly at stim onset
-    onsettime = (BL+delay+1):(BL+delay+101);
+    onsettime = (BL+delay+1):(BL+delay+51);
     xonset = [onsettime(1);onsettime(1);onsettime(end);onsettime(end)];
     yonset = [0;         1;         1;           0];
     % 300 ms after onset (after stim in NB, during stim in others)
-    posttime  = (BL+delay+301):(BL+delay+401);
+    posttime  = (BL+delay+301):(BL+delay+351);
     xpost = [posttime(1);posttime(1);posttime(end);posttime(end)];
     ypost = [0;         1;         1;           0];
 
