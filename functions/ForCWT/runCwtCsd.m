@@ -10,11 +10,9 @@ function runCwtCsd(homedir,Group,params)
 % set some variables
 BL = 399;
 
-% detect data
-cd(homedir); cd datastructs;
-input = dir([Group '*_Data.mat']);
-entries = length(input);
+% load group info to know how many noisebursts there are
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
+subjects = length(animals); %#ok<*USENS>
 
 cd(homedir); cd output;
 if exist('WToutput','dir') == 7
@@ -24,11 +22,11 @@ else
 end
 
 % and go
-for iAn = 1:entries
+for iAn = 1:subjects
     tic
-    load(input(iAn).name,'Data');
-    
-    Aname = input(iAn).name(1:5);
+    % load the animal data in
+    load([animals{iAn} '_Data.mat'],'Data');
+    Aname = animals{iAn};
 
     disp(['Running for ' Aname])
     

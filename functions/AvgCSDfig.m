@@ -15,13 +15,10 @@ BL         = 400;
 chanlength = 32; % the MAXIMUM amount of channels
 
 %% Load in info
-cd datastructs
-input = dir([Group '*.mat']);
-entries = length(input);
 
 % load group info to know how many noisebursts there are
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
-subjects = length(animals);
+subjects = length(animals); %#ok<*USENS>
 
 % The next part depends on the stimulus, pull the relevant details
 [stimList, thisUnit, stimDur, stimITI, ~] = ...
@@ -38,14 +35,14 @@ end
 
 %% now run through and pull data from each animal into containers
 
-for iEnt = 1:entries
+for iSub = 1:length(animals)
     
     % load the animal data in
-    load(input(iEnt).name,'Data');
+    load([animals{iSub} '_Data.mat'],'Data');
     
     % we need the index of the last noiseburst or the first of any
     % other stim type
-    index = StimIndex({Data.Condition},Cond,iEnt,Condition);
+    index = StimIndex({Data.Condition},Cond,iSub,Condition);
     
     % if this animal doesn't have a measurement of this type
     if isempty(index)
@@ -56,7 +53,7 @@ for iEnt = 1:entries
     for iStim = 1:length(stimList)
 
         CurCSD = mean(Data(index).sngtrlCSD{1, iStim},3);
-        CSDhold{iStim}(1:size(CurCSD,1),1:size(CurCSD,2),iEnt) = CurCSD;
+        CSDhold{iStim}(1:size(CurCSD,1),1:size(CurCSD,2),iSub) = CurCSD;
         
     end
     clear index
@@ -72,7 +69,7 @@ ylabel(CSDfig, 'depth [channels]')
 for iStim = 1:length(stimList)
     nexttile
     image = nanmean(CSDhold{iStim},3);
-    imagesc(image(1:27,:)) % after 27, all rows NaN in MKO group
+    imagesc(image) % after 27, all rows NaN in MKO group
     title([num2str(stimList(iStim)) thisUnit])
     caxis([-0.1 0.1])
     colormap('jet')

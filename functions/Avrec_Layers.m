@@ -21,10 +21,8 @@ function Avrec_Layers(homedir, Group, Condition)
 cd(homedir)
 
 %% Load in
-cd datastructs
-input = dir([Group '*.mat']);
-entries = length(input);
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
+subjects = length(animals); %#ok<*NASGU>
 
 layers = {'All', 'II', 'IV', 'Va', 'Vb', 'VI'};
 
@@ -35,19 +33,19 @@ BL = 399;
 
 % set up simple cell sheets to hold all data: avrec of total/layers and
 % peaks of pre conditions
-AvrecAll = cell(length(stimList),length(layers),entries);
-PeakofAvg = cell(1,entries);
+AvrecAll = cell(length(stimList),length(layers),subjects);
+PeakofAvg = cell(1,subjects);
 PeakData = array2table(zeros(0,9));
 
 % loop through number of Data mats in folder
-for i_In = 1:entries
+for iSub = 1:subjects
     
     % load the animal data in
-    load(input(i_In).name,'Data')
-    AnName = input(i_In).name(1:5);
+    load([animals{iSub} '_Data.mat'],'Data');
+    AnName = animals{iSub};
     
     % one output per subject
-    index = StimIndex({Data.Condition},Cond,i_In,Condition);
+    index = StimIndex({Data.Condition},Cond,iSub,Condition);
     % if no stim of this type for this subject, continue on
     if isempty(index)
         continue
@@ -89,7 +87,7 @@ for i_In = 1:entries
                 title([num2str(stimList(iStim)) ' ' thisUnit])
             else
                 % Layers take the nan-sourced CSD (also flipped)
-                thislay = str2num(Layer.(layers{iLay}){i_In});
+                thislay = str2num(Layer.(layers{iLay}){iSub});
                 curLay  = curCSD(thislay,:,:);
 
                 traceCSD = curLay * -1;         % flip it
@@ -109,7 +107,7 @@ for i_In = 1:entries
                 % store the highest peak of each measurement for later correction;
                 % correction will be per animal so all layers
                 % and frequencies will be corrected by this output
-                PeakofAvg(i_In) = {max(max(traceCSD,[],2))};
+                PeakofAvg(iSub) = {max(max(traceCSD,[],2))};
             end
             
             % peak detection over single trials
@@ -139,7 +137,7 @@ for i_In = 1:entries
             end
             
             % and store the it single trial
-            AvrecAll{iStim,iLay,i_In} = traceCSD;
+            AvrecAll{iStim,iLay,iSub} = traceCSD;
             hold off
         end
         
