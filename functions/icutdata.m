@@ -69,7 +69,11 @@ end
 if throwoutfirst == 1
     stimList = stimList(3:length(onsets)+2);
 elseif throwoutfirst == 0
-    stimList = stimList(2:length(onsets)+1);
+    if (length(onsets)+1) > length(stimList)
+        stimList = stimList(2:length(onsets));
+    else
+        stimList = stimList(2:length(onsets)+1);
+    end
 end
 
 %% finally, pull the data
