@@ -26,10 +26,10 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'MWT' 'MKO'}; %'MKO' 
+Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
 % Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    'gapASSR' 'postNoise' 'postSpont'};
+Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+    'gapASSR' 'postNoise'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -130,14 +130,14 @@ runCwtCsd(homedir,'MKO',params);
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
-parpool(4) % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
+if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
 
 %% Fast fourier transform of the spontaneous data 
-runFftCsd(homedir,params)
-plotFFT(homedir,params)
+runFftCsd(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous')
 
 %% Interlaminar Phase Coherence
 LaminarPhaseLocking(homedir,params)
@@ -146,6 +146,7 @@ interlamPhaseFig(homedir,params)
 %% Phase amplitude coupling
 
 % % it's been a while
+Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
 
 % based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
