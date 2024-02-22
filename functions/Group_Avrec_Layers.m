@@ -22,7 +22,7 @@ timeaxis = BL + stimDur + stimITI;
 
 %% Choose Type
 
-yesnorm = 0;            % 1 = normalize to highest Pre peak; 0 = don't
+yesnorm = 1;            % 1 = normalize to highest Pre peak; 0 = don't
 
 cd(homedir), cd figures, cd Group_Avrec
 
@@ -73,7 +73,12 @@ for iLay = 1:length(layers)
     end
 
     h = gcf;
-    savefig(h,[Group '_Traces_' Condition '_' layers{iLay}],'compact')
+    if yesnorm == 1
+        savename = ['Norm ' Group '_Traces_' Condition '_' layers{iLay}];
+    else
+        savename = [Group '_Traces_' Condition '_' layers{iLay}];
+    end
+    savefig(h,savename,'compact')
     close (h)
 end
 
@@ -83,40 +88,43 @@ end
 % frequency / layer / subject. That would take an average of 13 traces for
 % the CIC group for example, find the max of the signal, and divid all 13
 % by that maximum
-if yesnorm == 1
-    PeakData = array2table(zeros(0,9));
-    % Avrec { stimulus frequency , layer , subject }
-    run([Group '.m']) % run group for animal names
-    % loop through the avrec and layer traces
-    for iLay = 1:length(layers)
-        % loop through stimulus frequencies
-        for iStim = 1:length(freqlist)
-            for iAn = 1:size(AvrecAll,3)
-                
-                thisMeas = AvrecAll{iStim,iLay,iAn};
-                % pull out consecutive peak data
-                [peakout,latencyout,rmsout] = consec_peaks(thisMeas, ...
-                    str2double(freqlist{iStim}(1:end-2)), BL);
-                
-                for iMeas = 1:size(peakout,1)
-                    for itab = 1:size(peakout,2)
-                        CurPeakData = table({animals{iAn}(1:end-2)}, animals(iAn), {layers{iLay}}, ...
-                            {iMeas}, freqlist(iStim), {itab}, peakout(iMeas,itab), ...
-                            latencyout(iMeas,itab),rmsout(iMeas,itab) );
-                        
-                        PeakData = [PeakData; CurPeakData];
-                    end
-                end % measurement
-                % got it for this Avrec entry here
-            end % subject
-        end % stimulus frequency
-    end % layer
-    PeakData.Properties.VariableNames = {'Group','Animal','Layer','Measurement',...
-        'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
-    
-    cd(homedir); cd(datfolder)
-    writetable(PeakData,'normAVRECPeak.csv')
-end
+
+% TO DO - write this up for stats, still from legacy code
+
+% if yesnorm == 1
+%     PeakData = array2table(zeros(0,9));
+%     % Avrec { stimulus frequency , layer , subject }
+%     run([Group '.m']) % run group for animal names
+%     % loop through the avrec and layer traces
+%     for iLay = 1:length(layers)
+%         % loop through stimulus frequencies
+%         for iStim = 1:length(freqlist)
+%             for iAn = 1:size(AvrecAll,3)
+% 
+%                 thisMeas = AvrecAll{iStim,iLay,iAn};
+%                 % pull out consecutive peak data
+%                 [peakout,latencyout,rmsout] = consec_peaks(thisMeas, ...
+%                     str2double(freqlist{iStim}(1:end-2)), BL);
+% 
+%                 for iMeas = 1:size(peakout,1)
+%                     for itab = 1:size(peakout,2)
+%                         CurPeakData = table({animals{iAn}(1:end-2)}, animals(iAn), {layers{iLay}}, ...
+%                             {iMeas}, freqlist(iStim), {itab}, peakout(iMeas,itab), ...
+%                             latencyout(iMeas,itab),rmsout(iMeas,itab) );
+% 
+%                         PeakData = [PeakData; CurPeakData];
+%                     end
+%                 end % measurement
+%                 % got it for this Avrec entry here
+%             end % subject
+%         end % stimulus frequency
+%     end % layer
+%     PeakData.Properties.VariableNames = {'Group','Animal','Layer','Measurement',...
+%         'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
+% 
+%     cd(homedir); cd(datfolder)
+%     writetable(PeakData,'normAVRECPeak.csv')
+% end
 cd(homedir)
 
 
