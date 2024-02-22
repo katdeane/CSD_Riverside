@@ -4,12 +4,8 @@ function LaminarPhaseLocking(homedir,params)
 % coherence matrix: spectral frequency x time. Tables are saved with all
 % subjects from both groups per condition and stimulus in \output\InterLam_PhaseCo
 
-% This is a novel analysis method developed by Katrina Deane for the
-% purpose of exploring phase-phase relationships throughout the laminar
-% profile. It only compares same frequency bands across designated layers,
-% e.g.: high gamma coherence between Lay II and IV. This will be called
-% interlaminar phase coherence and it is based on the calculation of
-% intertrial phase coherence.
+%It only compares same frequency bands across designated layers,
+% e.g.: high gamma coherence between Lay II and IV. 
 
 
 % actual intended frequencies commented
