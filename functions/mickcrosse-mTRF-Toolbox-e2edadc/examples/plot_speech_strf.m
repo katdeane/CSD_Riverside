@@ -46,11 +46,11 @@ model = mTRFtrain(stim,resp,fs,1,tmin,tmax,lambda,'method','ridge',...
 
 % Plot STRF
 figure, subplot(1,2,1)
-mTRFplot(model,'mtrf','all',85,[-50,350]);
+mTRFplot(model,'mtrf','all',1,[-50,350]); % channel input here!
 title('Speech STRF (Fz)')
 ylabel('Frequency band')
 
 % Plot GFP
 subplot(1,2,2)
-mTRFplot(model,'mgfp','all','all',[-50,350]);
+mTRFplot(model,'mgfp','all','all',[-50,350]); % all channels!
 title('Global Field Power')

@@ -1,4 +1,10 @@
 function plot_contrast_trf
+% Katrina's notes:
+% mTRF = Multivariate Temporal Response Function :) 
+% contrast TRF (VESPA) = Lalor 2006 The Vespa: ...
+% global field power (GFP) = constitutes a reference-independent measure of 
+%   response strength across the entire scalp at each time lag (Lehmann and Skrandies, 1980; Murray et al., 2008)
+
 %PLOT_CONTRAST_TRF  Plot example contrast TRF (VESPA).
 %   PLOT_CONTRAST_TRF loads an example dataset, estimates and plots a
 %   contrast TRF (VESPA) and the global field power (GFP) from 2 minutes of
