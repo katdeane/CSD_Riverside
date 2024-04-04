@@ -1,8 +1,8 @@
-function plot_speech_trf
-%PLOT_SPEECH_TRF  Plot example speech TRF.
-%   PLOT_SPEECH_TRF loads an example dataset, estimates and plots a speech
-%   TRF and the global field power (GFP) from 2 minutes of 128-channel EEG
-%   data as per Lalor and Foxe (2010).
+function plot_speech_strf
+%PLOT_SPEECH_STRF  Plot example speech STRF.
+%   PLOT_SPEECH_STRF loads an example dataset, estimates and plots a speech
+%   STRF and the global field power (GFP) from 2 minutes of 128-channel EEG
+%   data as per Di Liberto et al. (2015).
 %
 %   Example data is loaded from SPEECH_DATA.MAT and consists of the
 %   following variables:
@@ -15,14 +15,14 @@ function plot_speech_trf
 %                   filtered between 0.5 and 15 Hertz
 %       'fs'        the sample rate of STIM and RESP (128Hz)
 %       'factor'    the BioSemi EEG normalization factor for computing the
-%                   TRF in microvolts (524.288mV / 2^24bits)
+%                   STRF in microvolts (524.288mV / 2^24bits)
 %
 %   mTRF-Toolbox https://github.com/mickcrosse/mTRF-Toolbox
 
 %   References:
-%      [1] Lalor EC, Foxe JJ (2010) Neural responses to uninterrupted
-%          natural speech can be extracted with precise temporal
-%          resolution. Eur J Neurosci 31(1):189-193.
+%      [1] Di Liberto GM, O'Sullivan JA, Lalor EC (2015) Low-Frequency
+%          Cortical Entrainment to Speech Reflects Phoneme-Level
+%          Processing. Curr Biol 25:1-9.
 
 %   Authors: Mick Crosse <mickcrosse@gmail.com>
 %   Copyright 2014-2020 Lalor Lab, Trinity College Dublin.
@@ -33,25 +33,24 @@ load('data/speech_data.mat','stim','resp','fs','factor');
 % Normalize data
 resp = factor*resp;
 
-% Compute broadband envelope
-stim = sum(stim,2);
-
 % Model hyperparameters
 tmin = -100;
 tmax = 400;
-lambda = 0.05;
+lambda = 0.5;
 
 % Compute model weights
-model = mTRFtrain(stim,resp,fs,1,tmin,tmax,lambda,'method','Tikhonov',...
+% Note, ridge regression is used instead of Tikhonov regularization to
+% avoid cross-channel leakage of the multivariate input features
+model = mTRFtrain(stim,resp,fs,1,tmin,tmax,lambda,'method','ridge',...
     'split',5,'zeropad',0);
 
-% Plot TRF
-figure, subplot(1,2,1)
-mTRFplot(model,'trf',[],85,[-50,350]);
-title('Speech TRF (Fz)')
-ylabel('Amplitude (a.u.)')
+% Plot STRF
+figure, subplot(2,2,1)
+mTRFplot(model,'mtrf','all',1,[-50,350]); % channel input here!
+title('Speech STRF (Fz)')
+ylabel('Frequency band')
 
 % Plot GFP
-subplot(1,2,2)
-mTRFplot(model,'gfp',[],'all',[-50,350]);
+subplot(2,2,2)
+mTRFplot(model,'mgfp','all','all',[-50,350]); % all channels!
 title('Global Field Power')
