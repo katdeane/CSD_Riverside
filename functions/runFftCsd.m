@@ -18,7 +18,7 @@ for iGr = 1:length(params.groups)
 
     Group = params.groups{iGr};
     run([Group '.m']); % brings in animals, channels, Layer, and Cond
-    entries = length(animals);
+    entries = length(animals); %#ok<*USENS>
 
     for iAn = 1:entries
         load([animals{iAn} '_Data.mat'],'Data'); 
@@ -64,13 +64,18 @@ for iGr = 1:length(params.groups)
             fftStruct(count).group        = Group;
             fftStruct(count).animal       = Aname;
             fftStruct(count).layer        = params.layers{iLay};
+
             if matches(Condition,'Spontaneous')
+                if length(fftcsd) < 120000
+                    continue
+                end
                 fftStruct(count).fft      = {fftcsd(1:120000)}; % limit to my recording min, 2 min
+                count = count + 1;
             else
                 fftStruct(count).fft      = {fftcsd};
+                count = count + 1;
             end
-            count = count + 1;
-
+            
         end % layer
     end % animal
 end % group
