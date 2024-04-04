@@ -22,63 +22,100 @@ timeaxis = BL + stimDur + stimITI;
 
 %% Choose Type
 
-yesnorm = 1;            % 1 = normalize to highest Pre peak; 0 = don't
+yesnorm = 0;            % 1 = normalize to highest Pre peak; 0 = don't
 
 cd(homedir), cd figures, cd Group_Avrec
 
-load([Group '_' Condition '_AvrecAll.mat'],'AvrecAll','PeakofAvg')
+load([Group '_' Condition '_AvrecCSDAll.mat'],'AvrecCSDAll','PeakofAvgCSD')
+load([Group '_' Condition '_AvrecLFPAll.mat'],'AvrecLFPAll','PeakofAvgLFP')
 % avrecall  = stimulus x layer x subject {1 x time x trial}
 % peakofavg = 1 per subject 
 
 %% To Norm or not to Norm
 
-% normalize to the peak of avrec activity during 70 dB noiseburst
+% normalize to the peak of avrec activity during 70 dB noiseburst or first 
+% peak of first stimulus (if not noiseburst)
 Subject = 0;
 if yesnorm == 1
-    for iAn = 1:length(PeakofAvg)
-        if isempty(PeakofAvg{iAn}) % skip empty ones
+    for iAn = 1:length(PeakofAvgCSD)
+        if isempty(PeakofAvgCSD{iAn}) % skip empty ones
             continue
         end
         Subject = Subject + 1; % yes this isn't great, sorry
-        for iStim = 1:size(AvrecAll,1)
-            for iLay = 1:size(AvrecAll,2)
+        for iStim = 1:size(AvrecCSDAll,1)
+            for iLay = 1:size(AvrecCSDAll,2)
                 % normalize each animal's measuremnt to their 2Hz peak
                 % of activity of the Avrec. 
-                toNormto = PeakofAvg{iAn};
-                AvrecAll{iStim,iLay,Subject} = AvrecAll{iStim,iLay,iAn} ./ toNormto;
+                toNormto = PeakofAvgCSD{iAn};
+                AvrecCSDAll{iStim,iLay,Subject} = AvrecCSDAll{iStim,iLay,iAn} ./ toNormto;
+            end
+        end
+    end
+    for iAn = 1:length(PeakofAvgLFP)
+        if isempty(PeakofAvgLFP{iAn}) % skip empty ones
+            continue
+        end
+        Subject = Subject + 1; % yes this isn't great, sorry
+        for iStim = 1:size(AvrecLFPAll,1)
+            for iLay = 1:size(AvrecLFPAll,2)
+                % normalize each animal's measuremnt to their 2Hz peak
+                % of activity of the Avrec. 
+                toNormto = PeakofAvgLFP{iAn};
+                AvrecLFPAll{iStim,iLay,Subject} = AvrecLFPAll{iStim,iLay,iAn} ./ toNormto;
             end
         end
     end
 end
 
 % preaverage trials
-AvrecAvg = cellfun(@(x) mean(x,3),AvrecAll,'UniformOutput',false);
+AvrecCSDAvg = cellfun(@(x) mean(x,3),AvrecCSDAll,'UniformOutput',false);
+AvrecLFPAvg = cellfun(@(x) mean(x,3),AvrecLFPAll,'UniformOutput',false);
 
 %% generate figures
 
 
 for iLay = 1:length(layers)
 
-    figure('Name',[Group '_Traces_' Condition layers{iLay}], 'Position',[5 45 900 800]); 
-    sgtitle([Group ' traces for ' layers{iLay} ' channels'])
-    hold on
-    for iStim = 1:length(stimList)
-        subplot(length(stimList),1,iStim);
-        title([num2str(stimList(iStim)) ' ' thisUnit])
+    figure(1)
+    CSDfig = tiledlayout('flow');
+    title(CSDfig,[Group ' ' Condition ' CSD trace of ' layers{iLay} ' channels'])
+    xlabel(CSDfig, 'time [ms]')
+    ylabel(CSDfig, 'depth [channels]')
 
-        stackgroup = cat(1,AvrecAvg{iStim,iLay,:});
-        
+    figure(2)
+    LFPfig = tiledlayout('flow');
+    title(LFPfig,[Group ' ' Condition ' LFP trace of ' layers{iLay} ' channels'])
+    xlabel(LFPfig, 'time [ms]')
+    ylabel(LFPfig, 'depth [channels]')
+
+    for iStim = 1:length(stimList)
+        % CSD
+        figure(1); nexttile
+        title([num2str(stimList(iStim)) ' ' thisUnit])
+        stackgroup = cat(1,AvrecCSDAvg{iStim,iLay,:});    
         shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
         xticks(0:200:timeaxis)
+        % LFP
+        figure(2); nexttile
+        title([num2str(stimList(iStim)) ' ' thisUnit])
+        stackgroup = cat(1,AvrecLFPAvg{iStim,iLay,:});    
+        shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
+        xticks(0:200:timeaxis)
+
     end
 
-    h = gcf;
     if yesnorm == 1
-        savename = ['Norm ' Group '_Traces_' Condition '_' layers{iLay}];
+        savenamecsd = ['Norm ' Group '_CSDTraces_' Condition '_' layers{iLay}];
+        savenamelfp = ['Norm ' Group '_LFPTraces_' Condition '_' layers{iLay}];
     else
-        savename = [Group '_Traces_' Condition '_' layers{iLay}];
+        savenamecsd = [Group '_CSDTraces_' Condition '_' layers{iLay}];
+        savenamelfp = [Group '_LFPTraces_' Condition '_' layers{iLay}];
     end
-    savefig(h,savename,'compact')
+    figure(1); linkaxes; h = gcf;
+    savefig(h,savenamecsd,'compact')
+    close (h)
+    figure(2); linkaxes; h = gcf;
+    savefig(h,savenamelfp,'compact')
     close (h)
 end
 

@@ -59,8 +59,8 @@ for i1 = 1:entries
                 % all of the above is to indicate which animal and
                 % condition is being analyzed
                 
-                if exist([name '_' measurement '_LFP.xdat.json'],'file')
-                    file = [name '_' measurement '_LFP'];
+                if exist([name(1:5) '_' measurement '_LFP.xdat.json'],'file')
+                    file = [name(1:5) '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     tic
                     [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
@@ -111,7 +111,7 @@ for i1 = 1:entries
                     cd (['Single_' input(i1).name(1:end-2)])
     
                     CSDfig = tiledlayout('flow');
-                    title(CSDfig,[file(1:5) ' ' Condition{iStimType}...
+                    title(CSDfig,[name ' ' Condition{iStimType}...
                         ' ' num2str(iStimCount) ' CSD'])
                     xlabel(CSDfig, 'time [ms]')
                     ylabel(CSDfig, 'depth [channels]')

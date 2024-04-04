@@ -34,20 +34,26 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
+% note that this reads automatically what's in groups/
 DynamicCSD(homedir, Condition, [-0.2 0.2])
 
 % per subject Spike Script
-% DynamicSpike(homedir, Condition)
+DynamicSpike(homedir, Condition)
+
+% LFP single subject figures
+singleLFPfig(homedir, Groups, Condition,[-50 50])
 
 %% Group pics (⌐▨_▨)
 
 % generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
-        disp(['Average CSDs for ' Groups{iGro} ' ' Condition{iST}])
+
+        disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST})
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50])
         toc
+
     end
 end
 
@@ -129,11 +135,14 @@ runCwtCsd(homedir,'MKO',params);
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
+
+% this collects all of the stats and puts them into csv in \output\CWTPermStats
+collectPermStats(homedir,params)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
