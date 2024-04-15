@@ -1,4 +1,5 @@
-function [peakout,latencyout,rmsout] = consec_peaks(datain, stim_freq, dur_stim, BL)
+function [peakout,latencyout,rmsout] = consec_peaks(datain, stim_freq, ...
+    dur_stim, BL, Condition)
 % this function detects peaks, using the peak prominance feature, at a
 % single trial level. 
 
@@ -13,37 +14,57 @@ if ~exist('BL','var')
     BL  = 399; % ms before the first stim onset
 end
 if ~exist('stim_freq','var')
-    stim_freq  = 2; % Hz of stim presentation
+    stim_freq  = 5; % Hz of stim presentation
 end
 if ~exist('stim_freq','var')
-    dur_stim  = 1000; % 1 s of stimulus
+    dur_stim  = 2000; % 1 s of stimulus
 end
 
-numreps = ceil(dur_stim / (1000/stim_freq)); % assuming sr 1k
+if matches(Condition,'ClickTrain')
+    numreps = ceil(dur_stim / (1000/stim_freq)); % assuming sr 1k
 
-%preallocation of onset detection window containers
+    % detection windows 
+    det_on     = nan(1,round(numreps));
+    det_off    = nan(1,round(numreps));
+    det_jump   = round(dur_stim/numreps);
+    % fill detection window containers
+    for idet = 1:round(numreps)
+        if idet == 1
+            det_on(idet) = BL+1;
+        else
+            det_on(idet) = det_on(idet-1) + det_jump;
+        end
+
+        % this makes a detection window of maximum 100 ms
+        if det_jump < 100
+            det_off(idet) = det_on(idet) + det_jump - 1;
+        else
+            det_off(idet) = det_on(idet) + 99;
+        end
+    end
+
+elseif matches(Condition,'NoiseBurst')
+    numreps = 3; % 0 - 50, 50 - 100, 100 - 300 
+    det_on  = [1, 51, 101] + BL; % 
+    det_off = [51, 101,301] + BL; % last window is longer
+elseif matches(Condition, 'gapASSR')
+    numreps = 6; % 6 gap in noise blocks, every 500 ms
+    det_on  = [1, 501, 1001, 1501, 2001, 2501]+BL+250; % 250 ms noise block
+    det_off = [251, 751, 1251, 1751, 2251, 2751]+BL+250; % full 250 ms gap in noise blocks
+elseif matches(Condition,'Chirp')
+    numreps = 1;
+    det_on  = BL+1001; % after the 1 s noise ramp
+    det_off = BL+3001; % mostly just to get RMS for the full chirp
+else % spontaneous
+    numreps = 1;
+    det_on  = BL + 1;
+    det_off = BL + dur_stim + 1;
+end
+
+%preallocation of data containers
 peakout    = nan(numreps,size(datain,3));
 latencyout = nan(numreps,size(datain,3));
 rmsout     = nan(numreps,size(datain,3));
-% needed to run detection loop
-det_on     = nan(1,round(numreps));
-det_off    = nan(1,round(numreps));
-det_jump   = round(dur_stim/numreps);
-% fill detection window containers
-for idet = 1:round(numreps)
-    if idet == 1
-        det_on(idet) = BL+1;
-    else
-        det_on(idet) = det_on(idet-1) + det_jump;
-    end
-
-    % this makes a detection window of maximum 100 ms
-    if det_jump < 100
-        det_off(idet) = det_on(idet) + det_jump - 1; 
-    else
-        det_off(idet) = det_on(idet) + 99; 
-    end
-end
 
 %% Take features
 for iTrial = 1:size(datain,3)
@@ -61,7 +82,7 @@ for iTrial = 1:size(datain,3)
             latencyout(iSti,iTrial)     = NaN;
             rmsout(iSti,iTrial)         = NaN;
         else
-            [pks, locs, ~, p] = findpeaks(det_win);
+            [pks, locs, ~, p] = findpeaks(det_win); % p = prominence
             [str, maxInd]=max(p); %which peak is most prominent
             
 %           figure; plot(det_win); hold on; plot(locs(maxInd),pks(maxInd),'o');hold off
@@ -77,8 +98,8 @@ for iTrial = 1:size(datain,3)
                 peakout(iSti,iTrial)    = pks(maxInd);
                 latencyout(iSti,iTrial) = locs(maxInd);
             end
+            % take RMS regardless
             rmsout(iSti,iTrial)         = rms(det_win(det_win > 0));
-
         end
     end
 end

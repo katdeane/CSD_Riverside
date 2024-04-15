@@ -70,8 +70,8 @@ end
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
+for iGro = 2:length(Groups)
+    for iST = 4:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
@@ -80,9 +80,6 @@ for iGro = 1:length(Groups)
 end
 
 %% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
-
-% to do: some stackedgroup concatonation not working (spont and gapASSR 6
-% ms)
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
@@ -93,6 +90,10 @@ for iGro = 1:length(Groups)
         toc
     end
 end
+
+%% Peak and RMS statistics
+
+NoiseBurstStats(homedir,Groups)
 
 %% Determine strength of response over EACH trial 
 
@@ -140,6 +141,8 @@ if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb 
 PermutationTest(homedir,'Power',params,yespermute)
 PermutationTest(homedir,'Phase',params,yespermute)
 delete(gcp('nocreate')) % end this par session
+
+PermutationTest_Area(homedir,'Phase',params,yespermute)
 
 % this collects all of the stats and puts them into csv in \output\CWTPermStats
 collectPermStats(homedir,params)

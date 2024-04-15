@@ -22,7 +22,7 @@ cd(homedir)
 
 %% Load in
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
-subjects = length(animals); %#ok<*NASGU>
+subjects = length(animals); %#ok<*USENS>
 
 layers = {'All', 'II', 'IV', 'Va', 'Vb', 'VI'};
 
@@ -33,8 +33,6 @@ BL = 399;
 
 % set up simple cell sheets to hold all data: avrec of total/layers and
 % peaks of pre conditions
-AvrecAll = cell(length(stimList),length(layers),subjects);
-PeakofAvg = cell(1,subjects);
 PeakData = array2table(zeros(0,9));
 
 % loop through number of Data mats in folder
@@ -157,20 +155,17 @@ for iSub = 1:subjects
             % peak detection over single trials
             if matches(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
-                newBL = BL;
-            elseif matches (Condition, 'gapASSR')
-                reprate = 2; % every 500 ms to detect onset response to gap-noise
-                newBL = BL + 250; % adding noise before first gap-noise
             else
                 reprate = 1;
-                newBL = BL;
             end
 
+            % includes condition specific detection windows
             [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...
-                reprate, stimDur, newBL);
+                reprate, stimDur, BL, Condition);
 
-            parfor iTrial = 1:size(peakout,2)
+            parfor iTrial = 1:size(peakout,2) 
                 for itab = 1:size(peakout,1)
+
                     CurPeakData = table({Group}, {AnName}, {layers{iLay}}, ...
                         {iTrial}, stimList(iStim), {itab}, peakout(itab,iTrial), ...
                         latencyout(itab,iTrial),rmsout(itab,iTrial));

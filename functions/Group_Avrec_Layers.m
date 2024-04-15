@@ -10,7 +10,7 @@ function Group_Avrec_Layers(homedir,Group,Condition)
 %Output:    ..\Figures\Group_Avrec -> figures of full and layer-wise Avrecs
 %           pre laser and post laser, including standard deviation
 
-% Normalization of the layer to the highest peak of the average trace of 
+% Normalization of the layer to the highest peak of the average trace of
 %   measurements can be toggled (yesnorm)
 
 % set some species specific variables:
@@ -29,11 +29,11 @@ cd(homedir), cd figures, cd Group_Avrec
 load([Group '_' Condition '_AvrecCSDAll.mat'],'AvrecCSDAll','PeakofAvgCSD')
 load([Group '_' Condition '_AvrecLFPAll.mat'],'AvrecLFPAll','PeakofAvgLFP')
 % avrecall  = stimulus x layer x subject {1 x time x trial}
-% peakofavg = 1 per subject 
+% peakofavg = 1 per subject
 
 %% To Norm or not to Norm
 
-% normalize to the peak of avrec activity during 70 dB noiseburst or first 
+% normalize to the peak of avrec activity during 70 dB noiseburst or first
 % peak of first stimulus (if not noiseburst)
 Subject = 0;
 if yesnorm == 1
@@ -45,7 +45,7 @@ if yesnorm == 1
         for iStim = 1:size(AvrecCSDAll,1)
             for iLay = 1:size(AvrecCSDAll,2)
                 % normalize each animal's measuremnt to their 2Hz peak
-                % of activity of the Avrec. 
+                % of activity of the Avrec.
                 toNormto = PeakofAvgCSD{iAn};
                 AvrecCSDAll{iStim,iLay,Subject} = AvrecCSDAll{iStim,iLay,iAn} ./ toNormto;
             end
@@ -59,7 +59,7 @@ if yesnorm == 1
         for iStim = 1:size(AvrecLFPAll,1)
             for iLay = 1:size(AvrecLFPAll,2)
                 % normalize each animal's measuremnt to their 2Hz peak
-                % of activity of the Avrec. 
+                % of activity of the Avrec.
                 toNormto = PeakofAvgLFP{iAn};
                 AvrecLFPAll{iStim,iLay,Subject} = AvrecLFPAll{iStim,iLay,iAn} ./ toNormto;
             end
@@ -71,8 +71,9 @@ end
 AvrecCSDAvg = cellfun(@(x) mean(x,3),AvrecCSDAll,'UniformOutput',false);
 AvrecLFPAvg = cellfun(@(x) mean(x,3),AvrecLFPAll,'UniformOutput',false);
 
-%% generate figures
+%% generate figures and detect average peaks
 
+AvgPeakData = array2table(zeros(0,8));
 
 for iLay = 1:length(layers)
 
@@ -92,16 +93,35 @@ for iLay = 1:length(layers)
         % CSD
         figure(1); nexttile
         title([num2str(stimList(iStim)) ' ' thisUnit])
-        stackgroup = cat(1,AvrecCSDAvg{iStim,iLay,:});    
-        shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
-        xticks(0:200:timeaxis)
-        % LFP
-        figure(2); nexttile
-        title([num2str(stimList(iStim)) ' ' thisUnit])
-        stackgroup = cat(1,AvrecLFPAvg{iStim,iLay,:});    
+        stackgroup = cat(1,AvrecCSDAvg{iStim,iLay,:});
         shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
         xticks(0:200:timeaxis)
 
+        % peak detection
+        if matches(Condition, 'ClickTrain')
+            reprate = stimList(iStim);
+        else
+            reprate = 1;
+        end
+        for iSub = 1:size(stackgroup,1)
+            [peakout,latencyout,rmsout] = consec_peaks(stackgroup(iSub,:), ...
+                reprate, stimDur, BL, Condition);
+
+            for itab = 1:size(peakout,1)
+                CurPeakData = table({Group}, {iSub}, {layers{iLay}}, ...
+                    stimList(iStim), {itab}, peakout(itab), ...
+                    latencyout(itab), rmsout(itab));
+
+                AvgPeakData = [AvgPeakData; CurPeakData]; %#ok<*AGROW>
+            end
+        end
+
+        % LFP
+        figure(2); nexttile
+        title([num2str(stimList(iStim)) ' ' thisUnit])
+        stackgroup = cat(1,AvrecLFPAvg{iStim,iLay,:});
+        shadedErrorBar(1:size(stackgroup,2),mean(stackgroup),std(stackgroup),'lineProps', '-b')
+        xticks(0:200:timeaxis)
     end
 
     if yesnorm == 1
@@ -118,6 +138,21 @@ for iLay = 1:length(layers)
     savefig(h,savenamelfp,'compact')
     close (h)
 end
+
+AvgPeakData.Properties.VariableNames = {'Group','Animal','Layer',...
+    'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
+
+% save the table in the main folder - needs to be moved to the Julia folder
+% for stats
+cd(homedir); cd output;
+if exist('TracePeaks','dir')
+    cd TracePeaks;
+else
+    mkdir TracePeaks, cd TracePeaks;
+end
+writetable(AvgPeakData,[Group '_' Condition '_AVG_AVRECPeak.csv'])
+
+cd(homedir)
 
 %% Normalized Avrec peak detection
 % Normalization is happening on the trace before peak detection. The trace
@@ -137,18 +172,18 @@ end
 %         % loop through stimulus frequencies
 %         for iStim = 1:length(freqlist)
 %             for iAn = 1:size(AvrecAll,3)
-% 
+%
 %                 thisMeas = AvrecAll{iStim,iLay,iAn};
 %                 % pull out consecutive peak data
 %                 [peakout,latencyout,rmsout] = consec_peaks(thisMeas, ...
 %                     str2double(freqlist{iStim}(1:end-2)), BL);
-% 
+%
 %                 for iMeas = 1:size(peakout,1)
 %                     for itab = 1:size(peakout,2)
 %                         CurPeakData = table({animals{iAn}(1:end-2)}, animals(iAn), {layers{iLay}}, ...
 %                             {iMeas}, freqlist(iStim), {itab}, peakout(iMeas,itab), ...
 %                             latencyout(iMeas,itab),rmsout(iMeas,itab) );
-% 
+%
 %                         PeakData = [PeakData; CurPeakData];
 %                     end
 %                 end % measurement
@@ -158,7 +193,7 @@ end
 %     end % layer
 %     PeakData.Properties.VariableNames = {'Group','Animal','Layer','Measurement',...
 %         'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
-% 
+%
 %     cd(homedir); cd(datfolder)
 %     writetable(PeakData,'normAVRECPeak.csv')
 % end
