@@ -77,6 +77,15 @@ end
 %     end
 % end
 
+%% mTF analysis 
+
+% Input:    group metadata file in /groups and curate converted files in
+%           /data that correspond to pup call (30 dB att) measurements
+% Output:   Cross validation, trained model, and predicted data figures for
+%           each subject. Stat data, error and pearson's r for full
+%           multiTRF, low broadband and high broadband TRF models. 
+Pipeline_mTRF(homedir,Groups)
+
 %% CWT analysis 
 
 % Output:   Runs CWT analysis using the Wavelet toolbox. 
