@@ -59,7 +59,7 @@ for iGr = 1:length(params.groups)
 
             fftcsd = fft(chanCSD);
             fftcsd = abs(fftcsd) .^2 ; % take power
-            fftcsd = fftcsd ./ sum(fftcsd);
+            fftcsd = fftcsd ./ sum(fftcsd); % normalize by sum of full spectrum
 
             fftStruct(count).group        = Group;
             fftStruct(count).animal       = Aname;

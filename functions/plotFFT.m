@@ -72,10 +72,28 @@ for iLay = 1:length(params.layers)
     grp1g   = imgaussfilt(grp1m,10);
     grp2g   = imgaussfilt(grp2m,10);
     ratioKOWTm = imgaussfilt(ratioKOWTm,10);
+    % ratioKOWT  = imgaussfilt(ratioKOWT,10);
+    % ratioWTWT  = imgaussfilt(ratioWTWT,10);
     
     fftaxis = (Fs/L)*(0:L-1);
 
     % plot
+    % sanity plot (why is the variability so low except in high gamma for
+    % the WT group?) 
+    % nexttile; hold on
+    % for ip = 1:size(ratioWTWT,1)
+    %     plot(fftaxis,ratioWTWT(ip,:))
+    % end
+    % xlim([0 100])
+    % xticks(0:10:100)
+    % 
+    % nexttile; hold on
+    % for ip = 1:size(ratioKOWT,1)
+    %     plot(fftaxis,ratioKOWT(ip,:))
+    % end
+    % xlim([0 100])
+    % xticks(0:10:100)
+
     nexttile 
     plot(fftaxis,grp1g,'-')
     title(['Layer ' params.layers{iLay} ' ' params.groups{1}])
@@ -152,29 +170,29 @@ for iLay = 1:length(params.layers)
     osci_stds  = [dwtstd dkostd twtstd tkostd awtstd akostd blwtstd blkostd...
         bhwtstd bhkostd glwtstd glkostd ghwtstd ghkostd];
     
-    % sanity check
-    hold on
-    test = zeros(1,length(fftaxis));
-    test(1:length(delta_range)) = delta_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(theta_range)) = theta_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(alpha_range)) = alpha_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(betalow_range)) = betalow_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(betahigh_range)) = betahigh_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(gammalow_range)) = gammalow_range;
-    plot(fftaxis,test)
-    test = zeros(1,length(fftaxis));
-    test(1:length(gammahigh_range)) = gammahigh_range;
-    plot(fftaxis,test)
+    % sanity check on bands
+    % hold on
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(delta_range)) = delta_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(theta_range)) = theta_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(alpha_range)) = alpha_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(betalow_range)) = betalow_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(betahigh_range)) = betahigh_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(gammalow_range)) = gammalow_range;
+    % plot(fftaxis,test)
+    % test = zeros(1,length(fftaxis));
+    % test(1:length(gammahigh_range)) = gammahigh_range;
+    % plot(fftaxis,test)
 
     % bar plot of binned frequency means and std error bars
     nexttile 
