@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,params,yespermute)
+function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -24,7 +24,6 @@ pthresh = 0.05;
 
 BL = 399;
 
-
 %% Load in and concatonate Data
 cd (homedir); cd output; cd WToutput
 % load('Cone.mat','cone');
@@ -34,8 +33,13 @@ for iCond = 1:length(params.condList)
     disp(['For condition: ' params.condList{iCond}])
 
     % condition specific info
-    [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
-        StimVariableCWT(params.condList{iCond},1);
+    % if matches(animals(iSub),'FOS01') 
+    %     [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
+    %         StimVariableCWT(params.condList{iCond},1,'Awake1');
+    % else
+        [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
+            StimVariableCWT(params.condList{iCond},1,type);
+    % end
     % timeAxis = BL + stimDur + stimITI; % time axis for visualization
     % compTime1 = BL+compDur1+1; % time of onset permutation comparison
     % compTime2 = cellfun(@(x) x+BL+1, compDur2, 'UniformOutput',false); % time of permutation comparison
@@ -44,7 +48,7 @@ for iCond = 1:length(params.condList)
         disp(['For stimulus: ' num2str(stimList(iStim))])
 
         % stack first group data
-        input = dir([params.groups{1} '*_' params.condList{iCond}...
+        input = dir([Groups{1} '*_' params.condList{iCond}...
             '_' num2str(stimList(iStim)) '_WT.mat']);
         % initialize table with first input
         load(input(1).name, 'wtTable')
@@ -59,7 +63,7 @@ for iCond = 1:length(params.condList)
         end
 
         % stack second group data
-        input = dir([params.groups{2} '*_' params.condList{iCond}...
+        input = dir([Groups{2} '*_' params.condList{iCond}...
             '_' num2str(stimList(iStim)) '_WT.mat']);
         % initialize table with first input
         load(input(1).name, 'wtTable')
@@ -210,7 +214,7 @@ for iCond = 1:length(params.condList)
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             xline(BL+1,'LineWidth',2,'Color','w') % onset
             xline(BL+stimDur+1,'LineWidth',2,'Color','w') % offset
-            title(params.groups{1})
+            title(Groups{1})
             colorbar
             clim = get(gca,'clim');
 
@@ -221,19 +225,24 @@ for iCond = 1:length(params.condList)
             yticklabels({'0','10','20','30','40','50','60','80','100'})
             xline(BL+1,'LineWidth',2,'Color','w') % onset
             xline(BL+stimDur+1,'LineWidth',2,'Color','w') % offset
-            title(params.groups{2})
+            title(Groups{2})
             colorbar
             clim = [clim; get(gca,'clim')]; %#ok<AGROW>
 
             nexttile
             imagesc(obs_difmeans)
             % just trust the axes from above
-            hold on % plot areas of significance p < 0.05
-            for k = 1:length(BsigPOSchan)
-                boundary = BsigPOSchan{k};
-                plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
+            if yespermute == 1
+                hold on % plot areas of significance p < 0.05
+                for k = 1:length(BsigPOSchan)
+                    boundary = BsigPOSchan{k};
+                    % only keep boundaries that are larger than 3x3  
+                    if length(unique(boundary(:,2))) > 3 && ...
+                            length(unique(boundary(:,1))) > 3
+                        plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
+                    end
+                end
             end
-
             title('Difference')
             colorbar
 
@@ -248,7 +257,7 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig([params.groups{1} 'v' params.groups{2} '_Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
+            savefig([Groups{1} 'v' Groups{2} '_Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)
 
@@ -284,7 +293,7 @@ for iCond = 1:length(params.condList)
             set(h, 'PaperType', 'A4');
             set(h, 'PaperOrientation', 'landscape');
             set(h, 'PaperUnits', 'centimeters');
-            savefig([params.groups{1} 'v' params.groups{2} '_Observed t and p ' ...
+            savefig([Groups{1} 'v' Groups{2} '_Observed t and p ' ...
                 whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay}])
             % saveas(gcf, ['Observed t and p ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
             close(h)

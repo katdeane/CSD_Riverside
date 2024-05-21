@@ -1,4 +1,4 @@
-function DynamicCSD(homedir, Condition, cbar)
+function DynamicCSD(homedir, Condition, Groups, cbar, type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -22,16 +22,13 @@ function DynamicCSD(homedir, Condition, cbar)
 %   calls homebrew functions: imakeIndexer, FileReaderLFP, StimVariable, 
 %   icutdata, icutsinglestimdata, SingleTrialCSD, sink_dura
 
-cd(homedir); cd groups;
 
 %% Load in
-input = dir('*.m');
-entries = length(input);
 cd(homedir)
 
-for i1 = 1:entries    
+for iGro = 1:length(Groups)    
     
-    run(input(i1).name); % brings in animals, channels, Layer, and Cond
+    run([Groups{iGro} '.m']); % brings in animals, channels, Layer, and Cond
     
     %% Display conditions to verify correct list
     disp(Condition)
@@ -63,12 +60,17 @@ for i1 = 1:entries
                     file = [name(1:5) '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     tic
-                    [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
+                    [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}),type);
 
                     % The next part depends on the stimulus; pull the
                     % relevant variables
-                    [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
-                        StimVariable(Condition{iStimType},1);
+                    if matches(animals(iA),'FOS01')
+                        [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                            StimVariable(Condition{iStimType},1,'Awake1');
+                    else
+                        [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                            StimVariable(Condition{iStimType},1,type);
+                    end
 
                     % and slice the data
                     if matches(thisTag,'single') || matches(thisTag,'spont')
@@ -105,10 +107,10 @@ for i1 = 1:entries
                     disp('Plotting CSD with sink detections')
                     
                     cd (homedir); cd figures;
-                    if ~exist(['Single_' input(i1).name(1:end-2)],'dir')
-                        mkdir(['Single_' input(i1).name(1:end-2)]);
+                    if ~exist(['Single_' Groups{iGro}],'dir')
+                        mkdir(['Single_' Groups{iGro}]);
                     end
-                    cd (['Single_' input(i1).name(1:end-2)])
+                    cd (['Single_' Groups{iGro}])
     
                     CSDfig = tiledlayout('flow');
                     title(CSDfig,[name ' ' Condition{iStimType}...
@@ -118,10 +120,10 @@ for i1 = 1:entries
                     
                     for istim = 1:length(stimList)
                         nexttile
-                        imagesc(mean(sngtrlCSD{istim},3))
+                        imagesc(nanmean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
-                        caxis(cbar)
+                        clim(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
                     end
@@ -129,6 +131,7 @@ for i1 = 1:entries
                     colorbar
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
+                    % saveas(h,[name '_' measurement '_CSD.png' ])
                     close (h)
 
                     % determine BF of each layer from 1st sink's rms

@@ -1,4 +1,4 @@
-function Avrec_Layers(homedir, Group, Condition)
+function Avrec_Layers(homedir, Group, Condition, type)
 
 % This script takes *.mat files out of the datastructs/ folder.It then plots the
 % Avrecs for each animal over the specified stimulus Condition
@@ -25,10 +25,6 @@ run([Group '.m']); % brings in animals, channels, Layer, and Cond
 subjects = length(animals); %#ok<*USENS>
 
 layers = {'All', 'II', 'IV', 'Va', 'Vb', 'VI'};
-
-% The next part depends on the stimulus, pull the relevant details
-[stimList, thisUnit, stimDur, ~, ~] = ...
-    StimVariable(Condition,1);
 BL = 399;
 
 % set up simple cell sheets to hold all data: avrec of total/layers and
@@ -37,6 +33,15 @@ PeakData = array2table(zeros(0,9));
 
 % loop through number of Data mats in folder
 for iSub = 1:subjects
+
+    % The next part depends on the stimulus, pull the relevant details
+    if matches(animals(iSub),'FOS01') % hopefully the only exception :D
+        [stimList, thisUnit, stimDur, ~, ~] = ...
+            StimVariable(Condition,1,'Awake1');
+    else
+        [stimList, thisUnit, stimDur, ~, ~] = ...
+            StimVariable(Condition,1,type);
+    end
 
     if matches(Group, 'MWT') && matches(Condition, 'NoiseBurst') ...
             && matches(animals{iSub},'MWT16b')
@@ -88,21 +93,21 @@ for iSub = 1:subjects
                 % "All" channels takes the AVREC
                 % pull out and average rectify each measurement
                 recCSD  = abs(curCSD);
-                traceCSD  = mean(recCSD,1); % this is the avrec
+                traceCSD  = nanmean(recCSD,1); % this is the avrec
 
                 % plot them with shaded error bar
                 figure(1); nexttile
-                shadedErrorBar(1:size(traceCSD,2),mean(traceCSD,3),std(traceCSD,0,3),'lineprops','b');
+                shadedErrorBar(1:size(traceCSD,2),nanmean(traceCSD,3),nanstd(traceCSD,0,3),'lineprops','b');
                 xline(BL+1,'LineWidth',2) % onset
                 xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
 
                 recLFP    = abs(curLFP);
-                traceLFP  = mean(recLFP,1); % this is the avrec
+                traceLFP  = nanmean(recLFP,1); % this is the avrec
 
                 % plot them with shaded error bar
                 figure(2); nexttile
-                shadedErrorBar(1:size(traceLFP,2),mean(traceLFP,3),std(traceLFP,0,3),'lineprops','b');
+                shadedErrorBar(1:size(traceLFP,2),nanmean(traceLFP,3),nanstd(traceLFP,0,3),'lineprops','b');
                 xline(BL+1,'LineWidth',2) % onset
                 xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
@@ -118,7 +123,7 @@ for iSub = 1:subjects
 
                 % plot them with shaded error bar
                 figure(1); nexttile
-                shadedErrorBar(1:size(traceCSD,2),mean(traceCSD,3),std(traceCSD,0,3),'lineprops','b');
+                shadedErrorBar(1:size(traceCSD,2),nanmean(traceCSD,3),nanstd(traceCSD,0,3),'lineprops','b');
                 xline(BL+1,'LineWidth',2) % onset
                 xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
@@ -133,7 +138,7 @@ for iSub = 1:subjects
 
                 % plot them with shaded error bar
                 figure(2); nexttile
-                shadedErrorBar(1:size(traceLFP,2),mean(traceLFP,3),std(traceLFP,0,3),'lineprops','b');
+                shadedErrorBar(1:size(traceLFP,2),nanmean(traceLFP,3),nanstd(traceLFP,0,3),'lineprops','b');
                 xline(BL+1,'LineWidth',2) % onset
                 xline(BL+stimDur+1,'LineWidth',2) % offset
                 title([num2str(stimList(iStim)) ' ' thisUnit])
@@ -184,6 +189,7 @@ for iSub = 1:subjects
         figure(1); linkaxes
         h = gcf;
         savefig(h,[Condition '_CSDTrace_' layers{iLay} '_' AnName],'compact')
+        % saveas(h,[Condition '_CSDTrace_' layers{iLay} '_' AnName '.png'])
         close (h)
 
         figure(2); linkaxes
@@ -202,22 +208,23 @@ if exist('Group_Avrec','dir')
 else
     mkdir Group_Avrec, cd Group_Avrec;
 end
-save([Group '_' Condition '_AvrecCSDAll'],'AvrecCSDAll','PeakofAvgCSD');
-save([Group '_' Condition '_AvrecLFPAll'],'AvrecLFPAll','PeakofAvgLFP');
+if exist('AvrecCSDAll','var')
+    save([Group '_' Condition '_AvrecCSDAll'],'AvrecCSDAll','PeakofAvgCSD');
+    save([Group '_' Condition '_AvrecLFPAll'],'AvrecLFPAll','PeakofAvgLFP');
 
-% save out collected peaks too
-% give the table variable names after everything is collected
-PeakData.Properties.VariableNames = {'Group','Animal','Layer','trial',...
-    'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
+    % save out collected peaks too
+    % give the table variable names after everything is collected
+    PeakData.Properties.VariableNames = {'Group','Animal','Layer','trial',...
+        'ClickFreq','OrderofClick','PeakAmp','PeakLat','RMS'};
 
-% save the table in the main folder - needs to be moved to the Julia folder
-% for stats
-cd(homedir); cd output;
-if exist('TracePeaks','dir')
-    cd TracePeaks;
-else
-    mkdir TracePeaks, cd TracePeaks;
+    % save the table in the main folder - needs to be moved to the Julia folder
+    % for stats
+    cd(homedir); cd output;
+    if exist('TracePeaks','dir')
+        cd TracePeaks;
+    else
+        mkdir TracePeaks, cd TracePeaks;
+    end
+    writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
 end
-writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
-
 cd(homedir)

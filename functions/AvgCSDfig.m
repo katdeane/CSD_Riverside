@@ -1,4 +1,4 @@
-function AvgCSDfig(homedir, Group, Condition, cbar_csd, cbar_lfp)
+function AvgCSDfig(homedir, Group, Condition, cbar_csd, cbar_lfp, type)
 %% Averaged CSD and LFP
 
 % The purpose of this script is to provide an averaged group CSD for visual
@@ -22,7 +22,7 @@ subjects = length(animals); %#ok<*USENS>
 
 % The next part depends on the stimulus, pull the relevant details
 [stimList, thisUnit, stimDur, stimITI, ~] = ...
-    StimVariable(Condition,1);
+    StimVariable(Condition,1,type);
 
 % put the time axis together with the above info
 timeaxis = BL + stimDur + stimITI;

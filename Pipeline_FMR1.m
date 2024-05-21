@@ -35,7 +35,7 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD(homedir, Condition, [-0.2 0.2])
+DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],type)
 
 % per subject Spike Script
 DynamicSpike(homedir, Condition)
@@ -94,6 +94,8 @@ end
 %% Peak and RMS statistics
 
 NoiseBurstStats(homedir,Groups)
+ClickTrainStats(homedir,Groups)
+gapASSRStats(homedir,Groups)
 
 %% Determine strength of response over EACH trial 
 
@@ -138,18 +140,24 @@ runCwtCsd(homedir,'MKO',params);
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-PermutationTest(homedir,'Power',params,yespermute)
-PermutationTest(homedir,'Phase',params,yespermute)
-delete(gcp('nocreate')) % end this par session
+% PermutationTest(homedir,'Power',params,yespermute)
+% PermutationTest(homedir,'Phase',params,yespermute)
+% delete(gcp('nocreate')) % end this par session
 
-PermutationTest_Area(homedir,'Phase',params,yespermute)
+PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
 
 % this collects all of the stats and puts them into csv in \output\CWTPermStats
 collectPermStats(homedir,params)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous','AB')
+plotFFT(homedir,params,'Spontaneous','RE')
+
+% now of the spontaneous windows between noisebursts at 70, 80, and 90 dB
+runFftCsd(homedir,params,'NoiseBurstSpont')
+plotFFT(homedir,params,'NoiseBurstSpont','AB')
+plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
 LaminarPhaseLocking(homedir,params)
@@ -157,7 +165,7 @@ interlamPhaseFig(homedir,params)
 
 %% Phase amplitude coupling
 
-% % it's been a while
+% it's been a while
 Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
 

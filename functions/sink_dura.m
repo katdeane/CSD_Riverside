@@ -87,7 +87,10 @@ for istim = 1:length(sngtrlCSD)
         %% Averaged CSD
         
         AvgCSD_layer(:,1:BL) = mean_BL - std_BL; %so that the first point is counted as an actual intercept
-        
+        % in the case of artifact correction where part of the signal is
+        % NaN, replace with 0s for continuous correction
+        AvgCSD_layer(isnan(AvgCSD_layer)) = 0; 
+
         %find intercept points in ZERO SOURCE CSD
         location = thresh_find <= AvgCSD_layer; % 1 is above, 0 is below 
         % detect when signal crosses 
@@ -96,14 +99,14 @@ for istim = 1:length(sngtrlCSD)
         offsets     = find(crossover == -1); %BELOW threshold
         
         % sanity check plot
-%         T = ones(1,length(AvgCSD_layer));
-%         plot(AvgCSD_layer) 
-%         hold on
-%         plot(thresh_find*T)
-%         plot(thresh_contain*T)
-%         for ion  = 1:length(onsets); plot(onsets(ion),thresh_find,'o'); end
-%         for ioff = 1:length(offsets); plot(offsets(ioff),thresh_find,'d'); end
-%         hold off
+        % T = ones(1,length(AvgCSD_layer));
+        % plot(AvgCSD_layer) 
+        % hold on
+        % plot(thresh_find*T)
+        % plot(thresh_contain*T)
+        % for ion  = 1:length(onsets); plot(onsets(ion),thresh_find,'o'); end
+        % for ioff = 1:length(offsets); plot(offsets(ioff),thresh_find,'d'); end
+        % hold off
         
         rmslist = NaN(1,length(onsets));
         pamplist = NaN(1,length(onsets));
@@ -114,7 +117,7 @@ for istim = 1:length(sngtrlCSD)
                 % if the sink is wide enough at the base 
                 if (offsets(iCross)-onsets(iCross)) > 30
                     % take actual rms and peak from RAW CSD
-                    rmslist(iCross)  = rms(rawCSD(:,onsets(iCross):onsets(iCross+1)));
+                    rmslist(iCross)  = rms(rawCSD(:,onsets(iCross):onsets(iCross+1)),'omitnan');
                     pamplist(iCross) = nanmax(rawCSD(:,onsets(iCross):onsets(iCross+1)));
                     platlist(iCross) = find(rawCSD(:,onsets(iCross):onsets(iCross+1)) == pamplist(iCross));
                 end

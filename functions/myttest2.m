@@ -8,7 +8,7 @@ if ~exist('tail','var')
     tail = 'both'; 
 end
 if ~exist('vartype','var')
-    vartype = 'unequal';
+    vartype = 'equal';
 end
 
 % the stuff matlab gives us for free

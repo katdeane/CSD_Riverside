@@ -1,7 +1,7 @@
-function GroupPupcallTraces(homedir,Group)
+function GroupPupcallTraces(homedir,Group,type)
 
 BL     = 399;
-[~, ~, stimDur, stimITI, ~] = StimVariable('Pupcall30',1);
+[~, ~, stimDur, stimITI, ~] = StimVariable('Pupcall30',1,type);
 timeaxis = BL + stimDur + stimITI;
 
 % AvrecAll is layers x data x subject
