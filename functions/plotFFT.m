@@ -1,14 +1,26 @@
-function plotFFT(homedir,params,Condition)
+function plotFFT(homedir,params,Condition,type)
 
-cd(homedir); cd output; cd FFT
-loadname = [params.groups{1} 'v' params.groups{2} '_FFT.mat'];
-load(loadname,'fftStruct')
-fftTab = struct2table(fftStruct); 
-clear fftStruct % kat, just save it as a table in the other script
+if ~exist('type','var')
+    type = 'AB'; % absolute or RE relative
+end
+
+cd(homedir); cd output;
+loadname = [params.groups{1} 'v' params.groups{2} '_' Condition '_' type '_FFT.mat'];
+load(loadname,['fftStruct' type])
+if matches(type,'AB')
+    fftTab = struct2table(fftStructAB);
+elseif matches(type,'RE')
+    fftTab = struct2table(fftStructRE);
+end
+clear fftStructAB fftStructRE % kat, just save it as a table in the other script
 
 % for plotting
 Fs = 1000; % Sampling frequency
 L  = length(fftTab.fft{1}); % Length of signal [ms]
+color11 = [15/255 63/255 111/255]; %indigo blue
+color12 = [24/255 102/255 180/255]; 
+color21 = [115/255 46/255 61/255]; % wine
+color22 = [160/255 64/255 85/255]; 
 
 if matches(Condition, 'Pupcall')
     % get rid of the shorter trials subject (VMP02 has 20 trials)
@@ -59,27 +71,21 @@ for iLay = 1:length(params.layers)
     % get both groups
     grp1 = layTab.fft(matches(layTab.group,params.groups{1}),:);
     grp2 = layTab.fft(matches(layTab.group,params.groups{2}),:);
-    grp1 = vertcat(grp1{:}); grp2 = vertcat(grp2{:});
+    % stack the trials
+    grp1 = horzcat(grp1{:}); grp2 = horzcat(grp2{:});
 
-    grp1m = mean(grp1,1);
-    grp2m = mean(grp2,1);
+    grp1m = mean(grp1,2);
+    grp2m = mean(grp2,2);
+    grp1sem = std(grp1,0,2)/sqrt(L); 
+    grp2sem = std(grp2,0,2)/sqrt(L);
 
     ratioKOWTm = grp2m ./ grp1m; % ratio mean line for plotting
     ratioKOWT  = grp2 ./ grp1m; % ratio of all KO to mean WT
     ratioWTWT  = grp1 ./ grp1m; % ratio of all WT to mean WT
-    
-    % gaussian filter for visualization
-    grp1g   = imgaussfilt(grp1m,10);
-    grp2g   = imgaussfilt(grp2m,10);
-    ratioKOWTm = imgaussfilt(ratioKOWTm,10);
-    % ratioKOWT  = imgaussfilt(ratioKOWT,10);
-    % ratioWTWT  = imgaussfilt(ratioWTWT,10);
-    
+        
     fftaxis = (Fs/L)*(0:L-1);
 
     % plot
-    % sanity plot (why is the variability so low except in high gamma for
-    % the WT group?) 
     % nexttile; hold on
     % for ip = 1:size(ratioWTWT,1)
     %     plot(fftaxis,ratioWTWT(ip,:))
@@ -94,20 +100,19 @@ for iLay = 1:length(params.layers)
     % xlim([0 100])
     % xticks(0:10:100)
 
-    nexttile 
-    plot(fftaxis,grp1g,'-')
-    title(['Layer ' params.layers{iLay} ' ' params.groups{1}])
+    nexttile
+    semilogy(fftaxis,grp1m,'-','Color',color11)
+    hold on
+    errorbar(fftaxis,grp1m,grp1sem,'Color',color12,'LineStyle','none');
+    semilogy(fftaxis,grp2m,'-','Color',color21)
+    errorbar(fftaxis,grp2m,grp2sem,'Color',color22,'LineStyle','none');
+    title(['Layer ' params.layers{iLay}])
     xlim([0 100])
     xticks(0:10:100)
+    legend({params.groups{1} params.groups{2}})
 
     nexttile 
-    plot(fftaxis,grp2g,'-')
-    title(['Layer ' params.layers{iLay} ' ' params.groups{2}])
-    xlim([0 100])
-    xticks(0:10:100)
-
-    nexttile 
-    plot(fftaxis,ratioKOWTm,'-')
+    plot(fftaxis,ratioKOWTm,'-k')
     title(['Layer ' params.layers{iLay} ' ' params.groups{2} '/' params.groups{1}])
     xlim([0 100])
     xticks(0:10:100)
@@ -118,52 +123,52 @@ for iLay = 1:length(params.layers)
     % sum data from freq bins to make bar graph so simple so clean
     gammahigh_range = fftaxis(fftaxis < 101); % cut off over 100
     gammahigh_range = gammahigh_range > 60; % get indices for over 60
-    gammahigh_KOm   = mean(ratioKOWT(:,gammahigh_range),2);
-    gammahigh_WTm   = mean(ratioWTWT(:,gammahigh_range),2);
-    [~,gh_P,~,gh_S] = ttest2(gammahigh_KOm,gammahigh_WTm,'tail','right');
-    [gh_Cohd, ghkomean, ghwtmean, ghkostd, ghwtstd] = igetCohensd(gammahigh_KOm,gammahigh_WTm);
+    gammahigh_KOm   = mean(ratioKOWT(gammahigh_range,:),1);
+    gammahigh_WTm   = mean(ratioWTWT(gammahigh_range,:),1);
+    [gh_P,gh_DF,gh_Cohd,ghwtmean,ghwtstd,ghkomean,ghkostd] = ...
+        myttest2(gammahigh_WTm',gammahigh_KOm',1,'both');
 
     gammalow_range  = fftaxis(fftaxis < 61); % cut off over 100
     gammalow_range  = gammalow_range > 30; % get indices for over 60
-    gammalow_KOm    = mean(ratioKOWT(:,gammalow_range));
-    gammalow_WTm    = mean(ratioWTWT(:,gammalow_range));
-    [~,gl_P,~,gl_S] = ttest2(gammalow_KOm,gammalow_WTm,'tail','right');
-    [gl_Cohd, glkomean, glwtmean, glkostd, glwtstd] = igetCohensd(gammalow_KOm,gammalow_WTm);
+    gammalow_KOm    = mean(ratioKOWT(gammalow_range,:),1);
+    gammalow_WTm    = mean(ratioWTWT(gammalow_range,:),1);
+    [gl_P,gl_DF,gl_Cohd,glwtmean,glwtstd,glkomean,glkostd] = ...
+        myttest2(gammalow_WTm',gammalow_KOm',1,'both');
 
     betahigh_range  = fftaxis(fftaxis < 31); % cut off over 100
     betahigh_range  = betahigh_range > 18; % get indices for over 60
-    betahigh_KOm    = mean(ratioKOWT(:,betahigh_range));
-    betahigh_WTm    = mean(ratioWTWT(:,betahigh_range));
-    [~,bh_P,~,bh_S] = ttest2(betahigh_KOm,betahigh_WTm,'tail','right');
-    [bh_Cohd, bhkomean, bhwtmean, bhkostd, bhwtstd] = igetCohensd(betahigh_KOm,betahigh_WTm);
+    betahigh_KOm    = mean(ratioKOWT(betahigh_range,:),1);
+    betahigh_WTm    = mean(ratioWTWT(betahigh_range,:),1);
+    [bh_P,bh_DF,bh_Cohd,bhwtmean,bhwtstd,bhkomean,bhkostd] = ...
+        myttest2(betahigh_WTm',betahigh_KOm',1,'both');
 
     betalow_range   = fftaxis(fftaxis < 19); % cut off over 100
     betalow_range   = betalow_range > 12; % get indices for over 60
-    betalow_KOm     = mean(ratioKOWT(:,betalow_range));
-    betalow_WTm     = mean(ratioWTWT(:,betalow_range));
-    [~,bl_P,~,bl_S] = ttest2(betalow_KOm,betalow_WTm,'tail','right');
-    [bl_Cohd, blkomean, blwtmean, blkostd, blwtstd] = igetCohensd(betalow_KOm,betalow_WTm);
+    betalow_KOm     = mean(ratioKOWT(betalow_range,:),1);
+    betalow_WTm     = mean(ratioWTWT(betalow_range,:),1);
+    [bl_P,bl_DF,bl_Cohd,blwtmean,blwtstd,blkomean,blkostd] = ...
+        myttest2(betalow_WTm',betalow_KOm',1,'both');
 
     alpha_range     = fftaxis(fftaxis < 13); % cut off over 100
     alpha_range     = alpha_range > 7; % get indices for over 60
-    alpha_KOm       = mean(ratioKOWT(:,alpha_range));
-    alpha_WTm       = mean(ratioWTWT(:,alpha_range));
-    [~,a_P,~,a_S]   = ttest2(alpha_KOm,alpha_WTm,'tail','right');
-    [a_Cohd, akomean, awtmean, akostd, awtstd] = igetCohensd(alpha_KOm,alpha_WTm);
+    alpha_KOm       = mean(ratioKOWT(alpha_range,:),1);
+    alpha_WTm       = mean(ratioWTWT(alpha_range,:),1);
+    [a_P,a_DF,a_Cohd,awtmean,awtstd,akomean,akostd] = ...
+        myttest2(alpha_WTm',alpha_KOm',1,'both');
 
     theta_range     = fftaxis(fftaxis < 8); % cut off over 100
     theta_range     = theta_range > 3; % get indices for over 60
-    theta_KOm       = mean(ratioKOWT(:,theta_range));
-    theta_WTm       = mean(ratioWTWT(:,theta_range));
-    [~,t_P,~,t_S]   = ttest2(theta_KOm,theta_WTm,'tail','right');
-    [t_Cohd, tkomean, twtmean, tkostd, twtstd] = igetCohensd(theta_KOm,theta_WTm);
+    theta_KOm       = mean(ratioKOWT(theta_range,:),1);
+    theta_WTm       = mean(ratioWTWT(theta_range,:),1);
+    [t_P,t_DF,t_Cohd,twtmean,twtstd,tkomean,tkostd] = ...
+        myttest2(theta_WTm',theta_KOm',1,'both');
 
     delta_range     = fftaxis(fftaxis < 4); % cut off over 100
     delta_range     = delta_range > 0; % get indices for over 60
-    delta_KOm       = mean(ratioKOWT(:,delta_range));
-    delta_WTm       = mean(ratioWTWT(:,delta_range));
-    [~,d_P,~,d_S]   = ttest2(delta_KOm,delta_WTm,'tail','right');
-    [d_Cohd, dkomean, dwtmean, dkostd, dwtstd] = igetCohensd(delta_KOm,delta_WTm);
+    delta_KOm       = mean(ratioKOWT(delta_range,:),1);
+    delta_WTm       = mean(ratioWTWT(delta_range,:),1);
+    [d_P,d_DF,d_Cohd,dwtmean,dwtstd,dkomean,dkostd] = ...
+        myttest2(delta_WTm',delta_KOm',1,'both');
         
     osci_Means = [dwtmean dkomean twtmean tkomean awtmean akomean blwtmean ...
         blkomean bhwtmean bhkomean glwtmean glkomean ghwtmean ghkomean];
@@ -202,53 +207,53 @@ for iLay = 1:length(params.layers)
     xticklabels([{'D'} {num2str(d_P)} {'T'} {num2str(t_P)} {'A'} {num2str(a_P)} {'BL'} {num2str(bl_P)}...
         {'BH'} {num2str(bh_P)} {'GL'} {num2str(gl_P)} {'GH'} {num2str(gh_P)}])
     title(['Layer ' params.layers{iLay} ' ' params.groups{2} '/' params.groups{1} ' means'])
+    ylim([0 5])
 
     % fill the table
-    FFTStats.Condition(iLay) = Condition; 
     FFTStats.Layer(iLay)     = params.layers{iLay};
     % theta
     FFTStats.p_delta(iLay) = d_P; FFTStats.Cohensd_delta(iLay) = d_Cohd;
     FFTStats.meanko_delta(iLay) = dkomean; FFTStats.meanwt_delta(iLay) = dwtmean;
     FFTStats.stdko_delta(iLay) = dkostd; FFTStats.stdwt_delta(iLay) = dwtstd; 
-    FFTStats.df_delta(iLay) = d_S.df;
+    FFTStats.df_delta(iLay) = d_DF;
     % theta
     FFTStats.p_theta(iLay) = t_P; FFTStats.Cohensd_theta(iLay) = t_Cohd;
     FFTStats.meanko_theta(iLay) = tkomean; FFTStats.meanwt_theta(iLay) = twtmean;
     FFTStats.stdko_theta(iLay) = tkostd; FFTStats.stdwt_theta(iLay) = twtstd; 
-    FFTStats.df_theta(iLay) = t_S.df;
+    FFTStats.df_theta(iLay) = t_DF;
     % alpha
     FFTStats.p_alpha(iLay) = a_P; FFTStats.Cohensd_alpha(iLay) = a_Cohd;
     FFTStats.meanko_alpha(iLay) = akomean; FFTStats.meanwt_alpha(iLay) = awtmean;
     FFTStats.stdko_alpha(iLay) = akostd; FFTStats.stdwt_alpha(iLay) = awtstd; 
-    FFTStats.df_alpha(iLay) = a_S.df;
+    FFTStats.df_alpha(iLay) = a_DF;
     % beta low
     FFTStats.p_betaL(iLay) = bl_P; FFTStats.Cohensd_betaL(iLay) = bl_Cohd;
     FFTStats.meanko_betaL(iLay) = blkomean; FFTStats.meanwt_betaL(iLay) = blwtmean;
     FFTStats.stdko_betaL(iLay) = blkostd; FFTStats.stdwt_betaL(iLay) = blwtstd; 
-    FFTStats.df_betaL(iLay) = bl_S.df;
+    FFTStats.df_betaL(iLay) = bl_DF;
     % beta high
     FFTStats.p_betaH(iLay) = bh_P; FFTStats.Cohensd_betaH(iLay) = bh_Cohd;
     FFTStats.meanko_betaH(iLay) = bhkomean; FFTStats.meanwt_betaH(iLay) = bhwtmean;
     FFTStats.stdko_betaH(iLay) = bhkostd; FFTStats.stdwt_betaH(iLay) = bhwtstd; 
-    FFTStats.df_betaH(iLay) = bh_S.df;
+    FFTStats.df_betaH(iLay) = bh_DF;
     % gamma low
     FFTStats.p_gammaL(iLay) = gl_P; FFTStats.Cohensd_gammaL(iLay) = gl_Cohd;
     FFTStats.meanko_gammaL(iLay) = glkomean; FFTStats.meanwt_gammaL(iLay) = glwtmean;
     FFTStats.stdko_gammaL(iLay) = glkostd; FFTStats.stdwt_gammaL(iLay) = glwtstd; 
-    FFTStats.df_gammaL(iLay) = gl_S.df;
+    FFTStats.df_gammaL(iLay) = gl_DF;
     % gamma high
     FFTStats.p_gammaH(iLay) = gh_P; FFTStats.Cohensd_gammaH(iLay) = gh_Cohd;
     FFTStats.meanko_gammaH(iLay) = ghkomean; FFTStats.meanwt_gammaH(iLay) = ghwtmean;
     FFTStats.stdko_gammaH(iLay) = ghkostd; FFTStats.stdwt_gammaH(iLay) = ghwtstd; 
-    FFTStats.df_gammaH(iLay) = gh_S.df;
+    FFTStats.df_gammaH(iLay) = gh_DF;
      
 end
 
-savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_FFT'];
+savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_' type '_FFT'];
 savefig(gcf,savename)
 close
 
 % save table 
-writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' Condition '_FFTStats.csv'])
+writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' Condition '_' type  '_FFTStats.csv'])
 
 cd(homedir)

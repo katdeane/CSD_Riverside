@@ -10,7 +10,8 @@ function runFftCsd(homedir,params,Condition)
 cd(homedir); cd datastructs;
 
 % Init datastruct to pass out
-fftStruct = struct();
+fftStructAB = struct(); % absolute (normalized by half sampling points)
+fftStructRE = struct(); % relative (normalized by sum of full spectrum)
 count = 1;
 
 % and go
@@ -27,19 +28,29 @@ for iGr = 1:length(params.groups)
 
         disp(['Running for ' Aname])
 
-        % pull the data for this subject
-        index = StimIndex({Data.Condition},Cond,iAn,Condition);
-        if isempty(index)
-            continue
-        end
-
-        curCSD = Data(index).sngtrlCSD{1};
-        % restack the trials (revert to original data)
-        stcklen = size(curCSD,2);
-        spontCSD = NaN(size(curCSD,1), stcklen*size(curCSD,3));
-        for iStack = 1:size(curCSD,3)
-            spontCSD(:,(1+((iStack-1)*stcklen)):(stcklen+((iStack-1)*stcklen))) ...
-                = curCSD(:,:,iStack);
+        if matches(Condition, 'NoiseBurstSpont')
+            % pull the data for this subject
+            index = StimIndex({Data.Condition},Cond,iAn,'NoiseBurst');
+            if isempty(index)
+                continue
+            end
+            % we're combining response to 70, 80, and 90 dB SPL
+            curCSD = cat(3,Data(index).sngtrlCSD{6},Data(index).sngtrlCSD{7},Data(index).sngtrlCSD{8});
+            % fft is going to be taken from each trial. The baseline 
+            % (0:400 ms, overlapped with other trials),
+            % noiseburst (400:500 ms) and post stimulus cortical activity
+            % period (500:1000 ms, most activity within 300 ms so this is
+            % generous) will be removed. We have 500 ms from each trial that
+            % will be spontaneous activity within the context of ongoing noise
+            % bursts and within 1 second of a noise burst at least 70 dB
+            curCSD = curCSD(:,1001:1500,:);
+        else % pup calls and spontaneous data
+            index = StimIndex({Data.Condition},Cond,iAn,Condition);
+            if isempty(index)
+                continue
+            end
+            % stacked in 2 second blocks
+            curCSD = Data(index).sngtrlCSD{1};
         end
 
         % pull out layers
@@ -55,24 +66,31 @@ for iGr = 1:length(params.groups)
                 continue
             end
             centerChan = curLay(ceil(length(curLay)/2));
-            chanCSD = curCSD(centerChan,:);
+            chanCSD = curCSD(centerChan,:,:);
 
             fftcsd = fft(chanCSD);
-            fftcsd = abs(fftcsd) .^2 ; % take power
-            fftcsd = fftcsd ./ sum(fftcsd); % normalize by sum of full spectrum
+            fftcsd = squeeze(abs(fftcsd) .^2); % take power
+            fftcsdAB = fftcsd ./ (size(curCSD,2)/2); % normalize by half sampling points
+            fftcsdRE = (fftcsd ./ sum(sum(fftcsd)))*params.sampleRate; % normalize by sum of full power spectrum
 
-            fftStruct(count).group        = Group;
-            fftStruct(count).animal       = Aname;
-            fftStruct(count).layer        = params.layers{iLay};
+            fftStructAB(count).group        = Group;
+            fftStructAB(count).animal       = Aname;
+            fftStructAB(count).layer        = params.layers{iLay};
+
+            fftStructRE(count).group        = Group;
+            fftStructRE(count).animal       = Aname;
+            fftStructRE(count).layer        = params.layers{iLay};
 
             if matches(Condition,'Spontaneous')
-                if length(fftcsd) < 120000
+                if size(fftcsd,2) < 60
                     continue
                 end
-                fftStruct(count).fft      = {fftcsd(1:120000)}; % limit to my recording min, 2 min
+                fftStructAB(count).fft      = {fftcsdAB(:,1:60)}; % limit to my recording min, 2 min
+                fftStructRE(count).fft      = {fftcsdRE(:,1:60)}; % limit to my recording min, 2 min
                 count = count + 1;
             else
-                fftStruct(count).fft      = {fftcsd};
+                fftStructAB(count).fft      = {fftcsdAB};
+                fftStructRE(count).fft      = {fftcsdRE};
                 count = count + 1;
             end
             
@@ -87,5 +105,7 @@ else
     mkdir('FFT'); cd FFT
 end
 
-savename = [params.groups{1} 'v' params.groups{2} '_FFT.mat'];
-save(savename,'fftStruct')
+savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_AB_FFT.mat'];
+save(savename,'fftStructAB')
+savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_RE_FFT.mat'];
+save(savename,'fftStructRE')
