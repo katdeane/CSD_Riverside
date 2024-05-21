@@ -1,8 +1,11 @@
-function [stimIn, data] = FileReaderLFP(file,channels)
+function [stimIn, data] = FileReaderLFP(file,channels,type)
 % This converts the data from allego/curate, assuming it has already been 
 % downsampled by 30. 
 % sr = 1000 (1000 sp in 1 second / each sp is 1 ms)
 
+if ~exist('type','var')
+    type = 'Anesthetized'; % no artifact correction
+end
 % initalized NeuroNexus conversion function
 reader = allegoXDatFileReaderR2019b;
 
@@ -28,4 +31,19 @@ else % or
     channels = inputdlg(prompt,dlgtitle,dims,definput);
     data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
 end
+
+tiledlayout('flow')
+nexttile
+imagesc(data)
+% artifact correction on all awake data
+if matches(type,'Awake')
+    % thresh = 3 standard deviations
+    data = icorrectartifacts(data,3);
+end
+
+nexttile
+imagesc(data)
+close
+
+
 
