@@ -331,4 +331,6 @@ for iGr = 1:length(Groups)
 end % group
 
 collectTRFStats
+p = runTRFttest;
+save('TRFp.m','p')
 cd(homedir)
