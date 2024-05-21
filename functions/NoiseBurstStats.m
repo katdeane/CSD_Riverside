@@ -1,5 +1,16 @@
 function NoiseBurstStats(homedir,Groups)
 % Noiseburst statistics
+% collecting from ROIs based on group-averaged AVREC plots where three
+% peaks can be distinguished in the WT group from 0-50 ms, 50-100 ms, and
+% 100-300 ms after noise onset. Currently only being run on 70 dB SPL noise
+% but data for 10:10:90 is available. Peak amp, peak latency, and RMS are
+% compared at both single trial and trial-averaged levels. 
+% Input:    csv's from ..\output\TracePeaks for single trial and
+%           trial-averaged data from running Avrec_Layers and
+%           Group_Avrec_Layers respectively. 
+% Output:   Figures in ..\figures\PeakPlots: scatter plots of peak amp over
+%           latency and boxplots of all three features across time windows.
+%           Data in ..\output\TracePeaks as *v*_NoiseBurst_70_Stats.csv
 
 cd(homedir); 
 
