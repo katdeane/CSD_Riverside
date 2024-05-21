@@ -15,15 +15,15 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'PMP' 'VMP'}; % virgin male pupcall & parent male pupcall
+Groups = {'PMP' 'VMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
 % Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp' 'Tonotopy'};
-cbar = [-0.5 0.5]; % species specific based on experience, color axis
+cbar = [-0.3 0.3]; % species specific based on experience, color axis
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-DynamicCSD(homedir, Condition, cbar)
+DynamicCSD(homedir, Condition, Groups, cbar, 'Anesthetized')
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -31,7 +31,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -43,7 +43,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Average CSDs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST})
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},cbar,[-50 50],'Anesthetized')
         toc
     end
 end
@@ -53,11 +53,11 @@ end
 % ms)
 
 disp('Producing group-averaged traces for each group')
-for iGro = 2:length(Groups)
+for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -94,12 +94,12 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'Pupcall'}; % subset %'NoiseBurst',
+params.condList = {'ClickTrain','gapASSR'}; % 'Pupcall', - gives out of memory error for pup call now (7 and 8 subjects)
 params.groups = {'PMP','VMP'}; % for permutation test
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'PMP',params);
-runCwtCsd(homedir,'VMP',params);
+runCwtCsd(homedir,'PMP',params,'Anesthetized');
+runCwtCsd(homedir,'VMP',params,'Anesthetized');
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -110,11 +110,13 @@ runCwtCsd(homedir,'VMP',params);
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-PermutationTest(homedir,'Power',params,yespermute)
-PermutationTest(homedir,'Phase',params,yespermute)
+% PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
+% PermutationTest(homedir,'Phase',params,yespermute,'Anesthetized')
+PermutationTest_Area(homedir,'Phase',params,{'PMP' 'VMP'},yespermute,'Anesthetized')
 delete(gcp('nocreate')) % end this par session
+
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
@@ -136,12 +138,12 @@ PupcallCWT(homedir,subject,params) % having run runCwtCsd
 
 %% Average group pup call visualization
 
-GroupPupcallCSD(homedir,'VMP',cbar) % having run DynamicCSD
-GroupPupcallTraces(homedir,'VMP') % having run Avrec_Layers
+GroupPupcallCSD(homedir,'VMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallTraces(homedir,'VMP','Anesthetized') % having run Avrec_Layers
 GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 
-GroupPupcallCSD(homedir,'PMP',cbar) % having run DynamicCSD
-GroupPupcallTraces(homedir,'PMP') % having run Avrec_Layers
+GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallTraces(homedir,'PMP','Anesthetized') % having run Avrec_Layers
 GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
 
 
