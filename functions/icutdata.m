@@ -34,8 +34,7 @@ if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
         || matches(thistype, 'gapASSRRate')
     % pre-psuedorandomized tone list for this subject
     stimList = readmatrix([file(1:6) thistype '.txt'])';
-    shortlist = unique(stimList);
-    shortlist = shortlist(shortlist ~= 0);
+    shortlist = unique(stimList(2:end)); % first row is unread
 
     % click list is of duration between clicks so 8.33 = 120 Hz
     % we want 1 hz (1000) first:
