@@ -1,6 +1,4 @@
 /data
-/metadata
-/figures
 
 *.asv
 *.json
@@ -11,4 +9,5 @@
 *.png
 *.csv
 
+.tmp.driveupload
 FirstPass.m
