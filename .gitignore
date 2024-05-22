@@ -8,6 +8,10 @@
 *.pdf
 *.png
 *.csv
+*.txt
+*.wav
+*.jpeg
+*.jpg
 
 .tmp.driveupload
 FirstPass.m
