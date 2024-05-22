@@ -8,7 +8,7 @@
 % The overall goal of this study is to characterize A1 laminar differences
 % between groups. Natural aging is often accompanied by reduced hearing and
 % reduced discrimination of target sounds in noise. Nicotine has been
-% explored as a potential treatment to reduce age affects of hearing.
+% explored as a potential treatment to reduce age affects of hearing loss.
 
 %% Get started
 
@@ -28,8 +28,8 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 % F = FVB, O = old, Y = young, N = nicotine, S = saline 
-Groups = {'FON' 'FYS' 'FYN'};
-% Groups = {'FOS' 'FON' 'FYS' 'FYN'};
+% Groups = {'FirstPass'};
+Groups = {'FOS' 'FON' 'FYS' 'FYN'};
 % Condition = {'NoiseBurst70'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'Chirp70' 'gapASSR70' ...
     'Tonotopy70' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatTonotopy' 'TreatNoiseBurst2'};
