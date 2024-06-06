@@ -17,13 +17,17 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % set consistently needed variables
 Groups = {'PMP' 'VMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
 % Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp' 'Tonotopy'};
+Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
 cbar = [-0.3 0.3]; % species specific based on experience, color axis
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 DynamicCSD(homedir, Condition, Groups, cbar, 'Anesthetized')
+
+% special cases if you rerun the DynamicCSD, run this too
+% Note that this does not adjust RELRES (if you ever want to use it)
+SpecialPCals(homedir)
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -32,6 +36,21 @@ for iGro = 1:length(Groups)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+        toc
+    end
+end
+
+%% Determine strength of response over EACH trial 
+
+% this is specifically to explore temporal dynamics over recording day and
+% uses single trial peak detection CSVs created by Avrec_Layers.m
+% 
+disp('Determining cortical strength over time')
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
+        disp(['For ' Groups{iGro} ' ' Condition{iST}])
+        tic 
+        StrengthxTime(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -62,20 +81,9 @@ for iGro = 1:length(Groups)
     end
 end
 
-%% Determine strength of response over EACH trial 
+%% Peak Stats
 
-% this is specifically to explore temporal dynamics over recording day and
-% uses single trial peak detection CSVs created by Avrec_Layers.m
-% 
-% disp('Determining cortical strength over time')
-% for iGro = 1:length(Groups)
-%     for iST = 1:length(Condition)
-%         disp(['For ' Groups{iGro} ' ' Condition{iST}])
-%         tic 
-%         StrengthxTime(homedir, Groups{iGro}, Condition{iST})
-%         toc
-%     end
-% end
+PCal_ClickTrainStats(homedir,Groups)
 
 %% mTF analysis 
 
@@ -120,10 +128,12 @@ delete(gcp('nocreate')) % end this par session
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
-plotFFT(homedir,params,'Pupcall')
+plotFFT(homedir,params,'Pupcall','AB')
+plotFFT(homedir,params,'Pupcall','RE')
 
 runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous','AB')
+plotFFT(homedir,params,'Spontaneous','RE')
 
 %% Interlaminar Phase Coherence
 % LaminarPhaseLocking(homedir,params)
@@ -145,5 +155,3 @@ GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
 GroupPupcallTraces(homedir,'PMP','Anesthetized') % having run Avrec_Layers
 GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
-
-
