@@ -93,21 +93,21 @@ elseif matches(type,'Awake1')
         stimITI  = 1000*sr_mult;
         thisTag  = 'spont';
 
-    elseif matches(Condition,'ClickTrain')
+    elseif contains(Condition,'ClickTrain')
         stimList = [5, 10, 20, 40, 80, 120];
         thisUnit = 'Hz';
         stimDur  = 2000*sr_mult; % ms
         stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
         thisTag  = 'ClickRate';
 
-    elseif matches(Condition,'Chirp')
+    elseif contains(Condition,'Chirp')
         stimList = 1;
         thisUnit = [];
         stimDur  = 3000*sr_mult; % ms
         stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
         thisTag  = 'single';
 
-    elseif matches(Condition,'gapASSR') || matches(Condition,'TreatgapASSR')
+    elseif contains(Condition,'gapASSR')
         % 10 gaps every 25 ms from onset to onset (40 hz)
         % 250 ms noise, 250 ms gap-noise, etc. , 250 noise
         % 10 presentations of gap-noise

@@ -180,8 +180,8 @@ function H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation)
 
 
     %Make pretty edges around the patch. 
-    H.edge(1)=plot(x,lE,'-','color',edgeColor);
-    H.edge(2)=plot(x,uE,'-','color',edgeColor);
+    % H.edge(1)=plot(x,lE,'-','color',edgeColor);
+    % H.edge(2)=plot(x,uE,'-','color',edgeColor);
 
 
 

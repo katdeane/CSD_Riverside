@@ -83,7 +83,8 @@ end
 
 %% Peak Stats
 
-PCal_ClickTrainStats(homedir,Groups)
+PCal_ClickTrainStats5(homedir,Groups)
+PCal_ClickTrainStats40(homedir,Groups)
 
 %% mTF analysis 
 
@@ -102,8 +103,8 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'ClickTrain','gapASSR'}; % 'Pupcall', - gives out of memory error for pup call now (7 and 8 subjects)
-params.groups = {'PMP','VMP'}; % for permutation test
+params.condList = {'Pupcall'}; % 'ClickTrain','gapASSR'; 'Pupcall', - gives out of memory error for pup call now (7 and 8 subjects)
+params.groups = {'VMP','PMP'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'PMP',params,'Anesthetized');
@@ -119,21 +120,24 @@ runCwtCsd(homedir,'VMP',params,'Anesthetized');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
+if yespermute == 1; parpool(3); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 % PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
 % PermutationTest(homedir,'Phase',params,yespermute,'Anesthetized')
-PermutationTest_Area(homedir,'Phase',params,{'PMP' 'VMP'},yespermute,'Anesthetized')
+PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
 delete(gcp('nocreate')) % end this par session
 
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
-plotFFT(homedir,params,'Pupcall','AB')
-plotFFT(homedir,params,'Pupcall','RE')
+% plotFFT(homedir,params,'Pupcall','AB')
+% plotFFT(homedir,params,'Pupcall','RE')
 
 runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','AB')
-plotFFT(homedir,params,'Spontaneous','RE')
+% plotFFT(homedir,params,'Spontaneous','AB')
+% plotFFT(homedir,params,'Spontaneous','RE')
+
+plotFFT_PCal(homedir,params,'AB')
+plotFFT_PCal(homedir,params,'RE')
 
 %% Interlaminar Phase Coherence
 % LaminarPhaseLocking(homedir,params)

@@ -57,12 +57,11 @@ FFTStats.Properties.VariableNames = ["Condition", "Layer", "p_delta",...
     "Cohensd_delta","p_theta", "meanko_theta","stdko_theta","meanwt_theta",...
     "stdwt_theta","df_theta", "Cohensd_theta", "p_alpha","meanko_alpha",...
     "stdko_alpha","meanwt_alpha", "stdwt_alpha","df_alpha","Cohensd_alpha",...
-    "p_betaL", "meanko_betaL", "stdko_betaL","meankwt_betaL","stdwt_betaL",...
-    "df_betaL","Cohensd_betaL", "p_betaH","meanko_betaH","stdko_betaH",...
-    "meanwt_betaH","stdwt_betaH", "df_betaH","Cohensd_betaH", "p_gammaL",...
-    "meanko_gammaL","stdko_gammaL", "meanwt_gammaL","stdwt_gammaL",...
-    "df_gammaL","Cohensd_gammaL", "p_gammaH", "meanko_gammaH",...
-    "stdko_gammaH","meanwt_gammaH","stdwt_gammaH","df_gammaH","Cohensd_gammaH"];
+    "p_beta","meanko_beta","stdko_beta", "meanwt_beta","stdwt_beta", ...
+    "df_beta","Cohensd_beta", "p_gammaL", "meanko_gammaL","stdko_gammaL",...
+    "meanwt_gammaL","stdwt_gammaL", "df_gammaL","Cohensd_gammaL",...
+    "p_gammaH", "meanko_gammaH", "stdko_gammaH","meanwt_gammaH",...
+    "stdwt_gammaH","df_gammaH","Cohensd_gammaH"];
 
 for iLay = 1:length(params.layers)
     
@@ -135,19 +134,12 @@ for iLay = 1:length(params.layers)
     [gl_P,gl_DF,gl_Cohd,glwtmean,glwtstd,glkomean,glkostd] = ...
         myttest2(gammalow_WTm',gammalow_KOm',1,'both');
 
-    betahigh_range  = fftaxis(fftaxis < 31); % cut off over 100
-    betahigh_range  = betahigh_range > 18; % get indices for over 60
-    betahigh_KOm    = mean(ratioKOWT(betahigh_range,:),1);
-    betahigh_WTm    = mean(ratioWTWT(betahigh_range,:),1);
-    [bh_P,bh_DF,bh_Cohd,bhwtmean,bhwtstd,bhkomean,bhkostd] = ...
-        myttest2(betahigh_WTm',betahigh_KOm',1,'both');
-
-    betalow_range   = fftaxis(fftaxis < 19); % cut off over 100
-    betalow_range   = betalow_range > 12; % get indices for over 60
-    betalow_KOm     = mean(ratioKOWT(betalow_range,:),1);
-    betalow_WTm     = mean(ratioWTWT(betalow_range,:),1);
-    [bl_P,bl_DF,bl_Cohd,blwtmean,blwtstd,blkomean,blkostd] = ...
-        myttest2(betalow_WTm',betalow_KOm',1,'both');
+    beta_range  = fftaxis(fftaxis < 31); % cut off over 100
+    beta_range  = beta_range > 12; % get indices for over 60
+    beta_KOm    = mean(ratioKOWT(beta_range,:),1);
+    beta_WTm    = mean(ratioWTWT(beta_range,:),1);
+    [b_P,b_DF,b_Cohd,bwtmean,bwtstd,bkomean,bkostd] = ...
+        myttest2(beta_WTm',beta_KOm',1,'both');
 
     alpha_range     = fftaxis(fftaxis < 13); % cut off over 100
     alpha_range     = alpha_range > 7; % get indices for over 60
@@ -170,10 +162,10 @@ for iLay = 1:length(params.layers)
     [d_P,d_DF,d_Cohd,dwtmean,dwtstd,dkomean,dkostd] = ...
         myttest2(delta_WTm',delta_KOm',1,'both');
         
-    osci_Means = [dwtmean dkomean twtmean tkomean awtmean akomean blwtmean ...
-        blkomean bhwtmean bhkomean glwtmean glkomean ghwtmean ghkomean];
-    osci_stds  = [dwtstd dkostd twtstd tkostd awtstd akostd blwtstd blkostd...
-        bhwtstd bhkostd glwtstd glkostd ghwtstd ghkostd];
+    osci_Means = [dwtmean dkomean twtmean tkomean awtmean akomean ...
+        bwtmean bkomean glwtmean glkomean ghwtmean ghkomean];
+    osci_stds  = [dwtstd dkostd twtstd tkostd awtstd akostd ...
+        bwtstd bkostd glwtstd glkostd ghwtstd ghkostd];
     
     % sanity check on bands
     % hold on
@@ -187,10 +179,7 @@ for iLay = 1:length(params.layers)
     % test(1:length(alpha_range)) = alpha_range;
     % plot(fftaxis,test)
     % test = zeros(1,length(fftaxis));
-    % test(1:length(betalow_range)) = betalow_range;
-    % plot(fftaxis,test)
-    % test = zeros(1,length(fftaxis));
-    % test(1:length(betahigh_range)) = betahigh_range;
+    % test(1:length(beta_range)) = beta_range;
     % plot(fftaxis,test)
     % test = zeros(1,length(fftaxis));
     % test(1:length(gammalow_range)) = gammalow_range;
@@ -204,8 +193,8 @@ for iLay = 1:length(params.layers)
     bar(1:length(osci_Means),osci_Means)
     hold on
     errorbar(1:length(osci_Means),osci_Means,osci_stds,'Color',[0 0 0],'LineStyle','none');
-    xticklabels([{'D'} {num2str(d_P)} {'T'} {num2str(t_P)} {'A'} {num2str(a_P)} {'BL'} {num2str(bl_P)}...
-        {'BH'} {num2str(bh_P)} {'GL'} {num2str(gl_P)} {'GH'} {num2str(gh_P)}])
+    xticklabels([{'D'} {num2str(d_P)} {'T'} {num2str(t_P)} {'A'} {num2str(a_P)} ...
+        {'BH'} {num2str(b_P)} {'GL'} {num2str(gl_P)} {'GH'} {num2str(gh_P)}])
     title(['Layer ' params.layers{iLay} ' ' params.groups{2} '/' params.groups{1} ' means'])
     ylim([0 5])
 
@@ -226,16 +215,11 @@ for iLay = 1:length(params.layers)
     FFTStats.meanko_alpha(iLay) = akomean; FFTStats.meanwt_alpha(iLay) = awtmean;
     FFTStats.stdko_alpha(iLay) = akostd; FFTStats.stdwt_alpha(iLay) = awtstd; 
     FFTStats.df_alpha(iLay) = a_DF;
-    % beta low
-    FFTStats.p_betaL(iLay) = bl_P; FFTStats.Cohensd_betaL(iLay) = bl_Cohd;
-    FFTStats.meanko_betaL(iLay) = blkomean; FFTStats.meanwt_betaL(iLay) = blwtmean;
-    FFTStats.stdko_betaL(iLay) = blkostd; FFTStats.stdwt_betaL(iLay) = blwtstd; 
-    FFTStats.df_betaL(iLay) = bl_DF;
-    % beta high
-    FFTStats.p_betaH(iLay) = bh_P; FFTStats.Cohensd_betaH(iLay) = bh_Cohd;
-    FFTStats.meanko_betaH(iLay) = bhkomean; FFTStats.meanwt_betaH(iLay) = bhwtmean;
-    FFTStats.stdko_betaH(iLay) = bhkostd; FFTStats.stdwt_betaH(iLay) = bhwtstd; 
-    FFTStats.df_betaH(iLay) = bh_DF;
+    % beta
+    FFTStats.p_beta(iLay) = b_P; FFTStats.Cohensd_beta(iLay) = b_Cohd;
+    FFTStats.meanko_beta(iLay) = bkomean; FFTStats.meanwt_beta(iLay) = bwtmean;
+    FFTStats.stdko_beta(iLay) = bkostd; FFTStats.stdwt_beta(iLay) = bwtstd; 
+    FFTStats.df_beta(iLay) = b_DF;
     % gamma low
     FFTStats.p_gammaL(iLay) = gl_P; FFTStats.Cohensd_gammaL(iLay) = gl_Cohd;
     FFTStats.meanko_gammaL(iLay) = glkomean; FFTStats.meanwt_gammaL(iLay) = glwtmean;

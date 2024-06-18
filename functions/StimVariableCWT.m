@@ -90,8 +90,7 @@ if matches(type, 'Anesthetized')
 
     end
 elseif matches(type,'Awake')
-    if matches(Condition,'NoiseBurst') || ...
-            matches(Condition,'TreatNoiseBurst') 
+    if contains(Condition,'NoiseBurst') 
         stimList = 70;
         thisUnit = 'dB';
         stimDur  = 100*sr_mult; % ms
@@ -100,7 +99,7 @@ elseif matches(type,'Awake')
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
 
-    elseif matches(Condition,'Tonotopy')
+    elseif contains(Condition,'Tonotopy')
         stimList = [2, 4, 8, 16, 24, 32];
         thisUnit = 'kHz';
         stimDur  = 200*sr_mult; % ms
@@ -109,7 +108,7 @@ elseif matches(type,'Awake')
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
 
-    elseif matches(Condition,'Spontaneous') 
+    elseif contains(Condition,'Spontaneous') 
         stimList = 1;
         thisUnit = [];
         stimDur  = 1000*sr_mult; % ms
@@ -117,7 +116,7 @@ elseif matches(type,'Awake')
         thisTag  = 'spont';
         compDur2 = 0; % probably don't need
 
-    elseif matches(Condition,'ClickTrain')
+    elseif contains(Condition,'ClickTrain')
         stimList = [5, 10, 40, 80];
         thisUnit = 'Hz';
         stimDur  = 2000*sr_mult; % ms
@@ -127,7 +126,7 @@ elseif matches(type,'Awake')
         compDur2 = {1000:1500; 1000:1500; 1000:1500; ...
             1000:1500; 1000:1500; 1000:1500; 1000:1500};
 
-    elseif matches(Condition,'Chirp')
+    elseif contains(Condition,'Chirp')
         stimList = 1;
         thisUnit = [];
         stimDur  = 3000*sr_mult; % ms
@@ -136,7 +135,7 @@ elseif matches(type,'Awake')
         compDur2 = {1100:3000; []; []; 1100:1450; 1250:1750; ...
             1500:2350; 1900:3000}; % post processing
 
-    elseif matches(Condition,'gapASSR') || matches(Condition,'TreatgapASSR') 
+    elseif contains(Condition,'gapASSR') 
         % 10 gaps every 25 ms from onset to onset (40 hz)
         % 250 ms noise, 250 ms gap-noise, etc. , 250 noise
         % 10 presentations of gap-noise

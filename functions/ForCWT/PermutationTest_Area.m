@@ -161,9 +161,10 @@ for iCond = 1:length(params.condList)
                 % permute
                 perm_stat = zeros(nperms,size(AllData,2),size(AllData,3));
                 ClustSizePOSperm = zeros(nperms,1);
+                ClustSizeNEGperm = zeros(nperms,1);
 
                 for iperm = 1:nperms
-                    [perm_stat(iperm,:,:),ClustSizePOSperm(iperm)] =...
+                    [perm_stat(iperm,:,:),ClustSizePOSperm(iperm),ClustSizeNEGperm(iperm)] =...
                         mymontecarlo(AllData,grp1size,grp2size);
                 end
 
@@ -171,15 +172,18 @@ for iCond = 1:length(params.condList)
                 % Kat: this is checking at which points on the matrix, the t statistic is
                 % higher at a level significantly above chance, not looking at clusters
                 POSpval = zeros(size(AllData,2),size(AllData,3));
+                NEGpval = zeros(size(AllData,2),size(AllData,3));
                 for icol = 1:size(AllData,3)
                     for irow = 1:size(AllData,2)
                         POSpval(irow,icol) = sum(perm_stat(:,irow,icol) > obs_stat(irow,icol))/nperms;
+                        NEGpval(irow,icol) = sum(perm_stat(:,irow,icol) < obs_stat(irow,icol))/nperms;
                     end
                 end
 
                 % get the boundaries for when our pthreshold is satisfied based on the t
                 % statistic comparison above
                 [BsigPOSchan,LsigPOSchan,~] = bwboundaries(POSpval<pthresh);
+                [BsigNEGchan,LsigNEGchan,~] = bwboundaries(NEGpval<pthresh);
                 
                 % sanity check
                 % imagesc(POSpval<pthresh); hold on
@@ -191,6 +195,7 @@ for iCond = 1:length(params.condList)
                 % get value that is the 97.5 percentile of this distribution of overall
                 % areas
                 sigPOSsizeChan = prctile(ClustSizePOSperm,100-(pthresh*100));
+                sigNEGsizeChan = prctile(ClustSizeNEGperm,100-(pthresh*100));
 
                 % Verify if the overall area where p < pthresh is larger
                 % than the 97.5 percentile of the perm distribution
@@ -216,7 +221,7 @@ for iCond = 1:length(params.condList)
             xline(BL+stimDur+1,'LineWidth',2,'Color','w') % offset
             title(Groups{1})
             colorbar
-            clim = get(gca,'clim');
+            newclim = get(gca,'clim');
 
             grp2Fig = nexttile;
             imagesc(flipud(obs2_mean))
@@ -227,7 +232,7 @@ for iCond = 1:length(params.condList)
             xline(BL+stimDur+1,'LineWidth',2,'Color','w') % offset
             title(Groups{2})
             colorbar
-            clim = [clim; get(gca,'clim')]; %#ok<AGROW>
+            newclim = [newclim; get(gca,'clim')]; %#ok<AGROW>
 
             nexttile
             imagesc(obs_difmeans)
@@ -242,11 +247,20 @@ for iCond = 1:length(params.condList)
                         plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
                     end
                 end
+                for k = 1:length(BsigNEGchan)
+                    boundary = BsigNEGchan{k};
+                    % only keep boundaries that are larger than 3x3  
+                    if length(unique(boundary(:,2))) > 3 && ...
+                            length(unique(boundary(:,1))) > 3
+                        plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
+                    end
+                end
             end
             title('Difference')
+            clim([-1 1])
             colorbar
 
-            newC = [min(clim(:)) max(clim(:))];
+            newC = [min(newclim(:)) max(newclim(:))];
 
             % scale clims the same
             set(grp2Fig,'Clim',newC); colorbar

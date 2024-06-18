@@ -23,6 +23,7 @@ end
 
 % and go
 for iAn = 1:subjects
+
     tic
     % load the animal data in
     load([animals{iAn} '_Data.mat'],'Data');

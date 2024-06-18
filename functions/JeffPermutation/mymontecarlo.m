@@ -1,5 +1,5 @@
 %% Monte Carlo Function for use with parfor
-function [perm_stat, ClustSizesPOSmc] = mymontecarlo(AllData,grp1size,grp2size)
+function [perm_stat, ClustSizesPOSmc, ClustSizesNEGmc] = mymontecarlo(AllData,grp1size,grp2size)
 
 % create order for permutation this round
 randorder = randperm(size(AllData,1));
@@ -31,12 +31,19 @@ perm2_std = squeeze(std(randGroup2,0,1));
 % find the tails of the distributions 
 dF = bothgroupsize-2;
 TsigPOSmc = tcdf(perm_stat,dF)>=0.975;
+TsigNEGmc = tcdf(perm_stat,dF)<=0.975;
 [~,LsigPOSmc,NsigPOSmc] = bwboundaries(TsigPOSmc);
+[~,LsigNEGmc,NsigNEGmc] = bwboundaries(TsigNEGmc);
 ClustSizesPOSmc = zeros(NsigPOSmc,1);
+ClustSizesNEGmc = zeros(NsigNEGmc,1);
 
 for isig = 1:NsigPOSmc
     ClustSizesPOSmc(isig) = sum(sum(LsigPOSmc == isig));
 end
+for isig = 1:NsigNEGmc
+    ClustSizesNEGmc(isig) = sum(sum(LsigNEGmc == isig));
+end
 
 ClustSizesPOSmc = sum(ClustSizesPOSmc);
+ClustSizesNEGmc = sum(ClustSizesNEGmc);
 

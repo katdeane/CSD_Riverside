@@ -31,8 +31,9 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % Groups = {'FirstPass'};
 Groups = {'FOS' 'FON' 'FYS' 'FYN'};
 % Condition = {'NoiseBurst70'};
-Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'Chirp70' 'gapASSR70' ...
-    'Tonotopy70' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatTonotopy' 'TreatNoiseBurst2'};
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+    'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
+    'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -48,7 +49,7 @@ for iGro = 1:length(Groups)
 
         disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50])
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Awake')
         toc
 
     end
@@ -61,6 +62,17 @@ for iGro = 1:length(Groups)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST}, 'Awake')
+        toc
+    end
+end
+
+ConditionList = {'NoiseBurst70' 'ClickTrain70' 'gapASSR70'};
+disp('Producing group-averaged traces for each group')
+for iGro = 1:length(Groups)
+    for iST = 1:length(ConditionList)
+        disp(['Group traces for ' Groups{iGro} ' ' ConditionList{iST}])
+        tic 
+        Group_Avrec_Stack(homedir, Groups{iGro}, ConditionList{iST},'Awake')
         toc
     end
 end
@@ -87,13 +99,20 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'ClickTrain','Chirp','gapASSR'}; % subset ,'TreatgapASSR'
-params.groups = {'FOS' 'FYS' 'FYN'}; % for permutation test
+params.condList = {'ClickTrain70','Chirp70','gapASSR70'}; 
+params.groups = {'FOS' 'FON' 'FYS' 'FYN'}; 
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'FOS',params,'Awake');
+runCwtCsd(homedir,'FON',params,'Awake');
 runCwtCsd(homedir,'FYS',params,'Awake');
 runCwtCsd(homedir,'FYN',params,'Awake');
+
+% Just individual inter-trial phase coherence figures
+CWTFigs(homedir,'Phase',params,'FOS','Awake')
+CWTFigs(homedir,'Phase',params,'FON','Awake')
+CWTFigs(homedir,'Phase',params,'FYS','Awake')
+CWTFigs(homedir,'Phase',params,'FYN','Awake')
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -106,6 +125,6 @@ runCwtCsd(homedir,'FYN',params,'Awake');
 %           output; boxplot and significance of permutation test
 yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-PermutationTest_Area(homedir,'Phase',params,{'FOS' 'FOS'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'FOS' 'FON'},yespermute,'Awake')
 PermutationTest_Area(homedir,'Phase',params,{'FYS' 'FYN'},yespermute,'Awake')
 
