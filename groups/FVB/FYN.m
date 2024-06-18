@@ -28,44 +28,96 @@ Layer.VI = {'[16:18]',  '[18:23]',  '[18:22]'};
 %% Conditions
 Cond.NoiseBurst70 = {...
     {'01'},... FYN01
+    {'01'},... FYN02
+    {'03'},... FYN03
     };
 
 Cond.NoiseBurst80 = {...
     {'02'},... FYN01
+    {'02'},... FYN02
+    {'04'},... FYN03
     };
 
 Cond.gapASSR70 = {...
     {'04'},... FYN01
+    {'07'},... FYN02
+    {'08'},... FYN03
+    };
+
+Cond.gapASSR80 = {...
+    {[]},... FYN01 
+    {[]},... FYN02
+    {[]},... FYN03
     };
 
 Cond.Tonotopy70 = {...
     {'06'},... FYN01
+    {'06'},... FYN02
+    {'05'},... FYN03
+    };
+
+Cond.Tonotopy80 = {...
+    {[]},... FYN01 
+    {[]},... FYN02
+    {[]},... FYN03
     };
 
 Cond.Spontaneous = {...
     {[]},... FYN01
+    {'03'},... FYN02
+    {[]},... FYN03
 	};
 
 Cond.ClickTrain70 = {...
     {'05'},... FYN01
+    {'05'},... FYN02
+    {'07'},... FYN03
 	};
+
+Cond.ClickTrain80 = {...
+    {[]},... FYN01 
+    {[]},... FYN02
+    {[]},... FYN03
+    };
 
 Cond.Chirp70 = {...
     {'03'},... FYN01
+    {'04'},... FYN02
+    {'06'},... FYN03
+    };
+
+Cond.Chirp80 = {...
+    {[]},... FYN01 
+    {[]},... FYN02
+    {[]},... FYN03
     };
 
 Cond.TreatNoiseBurst1 = {...
-    {'07'},... FYN01 - directly after nicotine
+    {'07'},... FYN01 
+    {'08'},... FYN02
+    {[]},... FYN03 -- broke from head-fixation during injection
     };
 
 Cond.TreatgapASSR70 = {...
     {'08'},... FYN01 - died during
+    {'09'},... FYN02 - died during
+    {[]},... FYN03
+    };
+
+Cond.TreatgapASSR80 = {...
+    {[]},... FYN01
+    {[]},... FYN02
+    {[]},... FYN03
     };
 
 Cond.TreatTonotopy = {...
     {[]},... FYN01 
+    {[]},... FYN02
+    {[]},... FYN03
     };
 
 Cond.TreatNoiseBurst2 = {...
-    {[]},... FYN01 - 31 minutes after nicotine
+    {[]},... FYN01
+    {[]},... FYN02
+    {[]},... FYN03
     };

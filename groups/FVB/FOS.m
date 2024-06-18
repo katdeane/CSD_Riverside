@@ -28,44 +28,80 @@ Layer.VI = {'[16:18]',  '[16:20]'};
 %% Conditions
 Cond.NoiseBurst70 = {...
     {'01'},... FOS01
+    {'01'},... FOS02
     };
 
 Cond.NoiseBurst80 = {...
     {[]},... FOS01
+    {'02'},... FOS02
     };
 
-Cond.gapASSR = {...
-    {'03'},... %FOS01 (02 was a mistaken stim presentation)
+Cond.gapASSR70 = {...
+    {'03'},... FOS01 
+    {'07'},... FOS02
     };
 
-Cond.Tonotopy = {...
-    {'05'},... %FOS01
+Cond.gapASSR80 = {...
+    {[]},... FOS01 
+    {'10'},... FOS02
+    };
+
+Cond.Tonotopy70 = {...
+    {'05'},... FOS01
+    {'04'},... FOS02
+    };
+
+Cond.Tonotopy80 = {...
+    {[]},... FOS01
+    {'08'},... FOS02
     };
 
 Cond.Spontaneous = {...
-    {[]},... %FOS01
+    {[]},... FOS01
+    {'03'},... FOS02
 	};
 
-Cond.ClickTrain = {...
-    {'06'},... %FOS01
+Cond.ClickTrain70 = {...
+    {'06'},... FOS01
+    {'06'},... FOS02
 	};
 
-Cond.Chirp = {...
-    {'04'},... %FOS01
+Cond.ClickTrain80 = {...
+    {[]},... FOS01
+    {'11'},... FOS02
+	};
+
+Cond.Chirp70 = {...
+    {'04'},... FOS01
+    {'05'},... FOS02
+    };
+
+Cond.Chirp80 = {...
+    {[]},... FOS01
+    {'09'},... FOS02
     };
 
 Cond.TreatNoiseBurst1 = {...
-    {[]},... %FOS01
+    {[]},... FOS01
+    {'12'},... FOS02
 	};
 
-Cond.TreatgapASSR = {...
-    {'07'},... %FOS01
+Cond.TreatgapASSR70 = {...
+    {'07'},... FOS01
+    {'13'},... FOS02
+    };
+
+Cond.TreatgapASSR80 = {...
+    {[]},... FOS01
+    {'14'},... FOS02
     };
 
 Cond.TreatTonotopy = {...
-    {[]},... %FOS01
-	};
+    {[]},... FOS01 
+    {[]},... FOS02
+    };
 
 Cond.TreatNoiseBurst2 = {...
     {'08'},... %FOS01 - 29 minutes after saline
+    {'15'},... FOS02
     };

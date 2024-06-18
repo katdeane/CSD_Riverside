@@ -82,8 +82,8 @@ Cond.TreatgapASSR80 = {...
     };
 
 Cond.TreatTonotopy = {...
-    {[]},... %FON01
-	};
+    {[]},... FON01 
+    };
 
 Cond.TreatNoiseBurst2 = {...
     {'15'},... %FON01 - 29 minutes after saline

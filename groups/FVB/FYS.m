@@ -37,9 +37,17 @@ Cond.gapASSR70 = {...
     {'03'},... FYS01
     };
 
+Cond.gapASSR80 = {...
+    {[]},... FYS01
+	};
+
 Cond.Tonotopy70 = {...
     {'04'},... FYS01
     };
+
+Cond.Tonotopy80 = {...
+    {[]},... FYS01
+	};
 
 Cond.Spontaneous = {...
     {[]},... FYS01
@@ -49,9 +57,17 @@ Cond.ClickTrain70 = {...
     {'05'},... FYS01
 	};
 
+Cond.ClickTrain80 = {...
+    {[]},... FYS01
+	};
+
 Cond.Chirp70 = {...
     {'06'},... FYS01
     };
+
+Cond.Chirp80 = {...
+    {[]},... FYS01
+	};
 
 Cond.TreatNoiseBurst1 = {...
     {'07'},... FYS01 - directly after saline
@@ -60,6 +76,10 @@ Cond.TreatNoiseBurst1 = {...
 Cond.TreatgapASSR70 = {...
     {'08'},... FYS01
     };
+
+Cond.TreatgapASSR80 = {...
+    {[]},... FYS01
+	};
 
 Cond.TreatTonotopy = {...
     {'09'},... FYS01 
