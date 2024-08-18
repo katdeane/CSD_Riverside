@@ -131,7 +131,7 @@ for iLay = 1:length(layers)
         repmat({'Grp1 80'},grp1size,1);repmat({'Grp2 80'},grp2size,1)];
 
     nexttile
-    boxplot(xboxPA,yboxes)
+    boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Trial-Average Peaks')
@@ -156,7 +156,7 @@ for iLay = 1:length(layers)
         repmat({'Grp1 80/1'},grp1size,1);repmat({'Grp2 80/1'},grp2size,1)];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio)
+    boxplot(xboxPAratio,yboxesratio,'Notch','on')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Trial-Average Peaks')
@@ -223,7 +223,7 @@ for iLay = 1:length(layers)
         repmat({'Grp1 80'},grp1size*50,1);repmat({'Grp2 80'},grp2size*50,1)];
 
     nexttile
-    boxplot(xboxPA,yboxes)
+    boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Single Trial Peaks')
@@ -248,7 +248,7 @@ for iLay = 1:length(layers)
         repmat({'Grp1 80/1'},grp1size*50,1);repmat({'Grp2 80/1'},grp2size*50,1)];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio)
+    boxplot(xboxPAratio,yboxesratio,'Notch','on')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Single Trial Peaks')

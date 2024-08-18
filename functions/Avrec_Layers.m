@@ -164,9 +164,15 @@ for iSub = 1:subjects
                 reprate = 1;
             end
 
-            % includes condition specific detection windows
-            [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...
-                reprate, stimDur, BL, Condition);
+            % includes condition specific detection windows, pupcall will
+            % take certain pre-selected windows at determined call times
+            if matches(Condition, 'Pupcall30')
+                [peakout,latencyout,rmsout] = pupcall_peaks(traceCSD, ...
+                    [1, 4, 9, 13, 18]); % pup call order
+            else
+                [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...
+                    reprate, stimDur, BL, Condition);
+            end
 
             parfor iTrial = 1:size(peakout,2) 
                 for itab = 1:size(peakout,1)

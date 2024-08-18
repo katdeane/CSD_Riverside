@@ -27,6 +27,5 @@ mean2 = nanmean(grp2);
 sd2   = nanstd(grp2,0);
 
 % Cohen's d
-S = sqrt((((grp1size - 1).*sd1.^2)+((grp2size-1).*sd2.^2))/...
-        (grp1size + grp2size - 2));
+S = sqrt(((sd1.^2)+(sd2.^2))/2); % pooled standard deviation
 CD = (mean1-mean2)./S;

@@ -108,7 +108,7 @@ for iLay = 1:length(layers)
         repmat({'Grp1 continue'},size1,1);repmat({'Grp2 continue'},size2,1)];
     
     nexttile
-    boxplot(xboxPA,yboxes)
+    boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Time Window')
     title('Single Trial Peaks')

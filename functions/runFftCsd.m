@@ -23,7 +23,7 @@ for iGr = 1:length(params.groups)
 
     for iAn = 1:entries
         load([animals{iAn} '_Data.mat'],'Data'); 
-
+ 
         Aname = animals{iAn};
 
         disp(['Running for ' Aname])
@@ -44,12 +44,27 @@ for iGr = 1:length(params.groups)
             % will be spontaneous activity within the context of ongoing noise
             % bursts and within 1 second of a noise burst at least 70 dB
             curCSD = curCSD(:,1001:1500,:);
+        elseif matches(Condition,'ClickTrain')
+            % pull data for this condition
+            index = StimIndex({Data.Condition},Cond,iAn,Condition);
+            if isempty(index)
+                continue
+            end
+            % we're going to look at the 5 Hz condition only, which is the
+            % closest approximate to pup call rate
+            % stacked in 3.4 second blocks: 2 seconds of clicks, 1 second
+            % ITI, 400 ms baseline. 
+            curCSD = Data(index).sngtrlCSD{5};
+            % we want to focus on clicks, so we'll keep just 200 ms on both
+            % sides
+            curCSD = curCSD(:,201:2600,:);
         else % pup calls and spontaneous data
             index = StimIndex({Data.Condition},Cond,iAn,Condition);
             if isempty(index)
                 continue
             end
-            % stacked in 2 second blocks
+            % Spont stacked in 2 second blocks
+            % Pupcalls stacked in 25 second blocks
             curCSD = Data(index).sngtrlCSD{1};
         end
 

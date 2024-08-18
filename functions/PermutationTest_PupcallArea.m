@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
+function PermutationTest_PupcallArea(homedir,whichtest,params,Groups,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -20,7 +20,7 @@ disp(['Observed ' whichtest ' and maybe permutations'])
 
 % number of permutations
 nperms = 1000; % 500 when ready
-pthresh = 0.05; 
+pthresh = 0.05;
 
 BL = 399;
 
@@ -33,67 +33,68 @@ for iCond = 1:length(params.condList)
     disp(['For condition: ' params.condList{iCond}])
 
     % condition specific info
-    % if matches(animals(iSub),'FOS01') 
+    % if matches(animals(iSub),'FOS01')
     %     [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
     %         StimVariableCWT(params.condList{iCond},1,'Awake1');
     % else
-        [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
-            StimVariableCWT(params.condList{iCond},1,type);
+    [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
+        StimVariableCWT(params.condList{iCond},1,type);
     % end
     % timeAxis = BL + stimDur + stimITI; % time axis for visualization
     % compTime1 = BL+compDur1+1; % time of onset permutation comparison
     % compTime2 = cellfun(@(x) x+BL+1, compDur2, 'UniformOutput',false); % time of permutation comparison
 
-    for iStim = 1:length(stimList)
-        disp(['For stimulus: ' num2str(stimList(iStim))])
+    % pupcall too big, need to load and then immediately purge excess data
+    for iLay = 1:length(params.layers)
+        disp(['For Layer: ' params.layers{iLay}])
+        for iStim = 1:length(stimList)
+            disp(['For stimulus: ' num2str(stimList(iStim))])
 
-        % stack first group data
-        input = dir([Groups{1} '*_' params.condList{iCond}...
-            '_' num2str(stimList(iStim)) '_WT.mat']);
-        % initialize table with first input
-        load(input(1).name, 'wtTable')
-        group1WT = wtTable; clear wtTable
-        % start on 2 and add further input to full tables
-        for iIn = 2:length(input)
-            if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
-                continue
+            % stack first group data
+            input = dir([Groups{1} '*_' params.condList{iCond}...
+                '_' num2str(stimList(iStim)) '_WT.mat']);
+            % initialize table with first input
+            load(input(1).name, 'wtTable')
+            % split out the layer
+            group1WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
+            % start on 2 and add further input to full tables
+            for iIn = 2:length(input)
+                if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
+                    continue
+                end
+                load(input(iIn).name, 'wtTable')
+                WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
+                group1WT = [group1WT; WT]; %#ok<AGROW>
+                clear WT
             end
-            load(input(iIn).name, 'wtTable')
-            group1WT = [group1WT; wtTable]; %#ok<AGROW>
-        end
 
-        % stack second group data
-        input = dir([Groups{2} '*_' params.condList{iCond}...
-            '_' num2str(stimList(iStim)) '_WT.mat']);
-        % initialize table with first input
-        load(input(1).name, 'wtTable')
-        group2WT = wtTable; clear wtTable
-        % start on 2 and add further input to full tables
-        for iIn = 2:length(input)
-            if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
-                continue
+            % stack second group data
+            input = dir([Groups{2} '*_' params.condList{iCond}...
+                '_' num2str(stimList(iStim)) '_WT.mat']);
+            % initialize table with first input
+            load(input(1).name, 'wtTable')
+            group2WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
+            % start on 2 and add further input to full tables
+            for iIn = 2:length(input)
+                if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
+                    continue
+                end
+                load(input(iIn).name, 'wtTable')
+                WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
+                group2WT = [group2WT; WT]; %#ok<AGROW>
+                clear WT
             end
-            load(input(iIn).name, 'wtTable')
-            group2WT = [group2WT; wtTable]; %#ok<AGROW>
-        end
-        clear wtTable
-
-        % loop through layers here
-        %Stack the individual animals' data (animal#x54x600)
-        for iLay = 1:length(params.layers)
-            % split out the one you want and get the power or phase mats
-            grp1Lay = group1WT(matches(group1WT.layer, params.layers{iLay}),:);
-            grp2Lay = group2WT(matches(group2WT.layer, params.layers{iLay}),:);
+            clear wtTable
 
             if contains(whichtest, 'Power')
 
-                grp1Out = getpowerout(grp1Lay);
-                grp2Out = getpowerout(grp2Lay);
+                grp1Out = getpowerout(group1WT);
+                grp2Out = getpowerout(group2WT);
 
             elseif contains(whichtest, 'Phase')
 
-                grp1Out = getphaseout(grp1Lay);
-                grp2Out = getphaseout(grp2Lay);
+                grp1Out = getphaseout(group1WT);
+                grp2Out = getphaseout(group2WT);
 
             end
 
@@ -112,7 +113,7 @@ for iCond = 1:length(params.condList)
             obs2_mean = squeeze(mean(grp2Out,1));
             obs2_std = squeeze(std(grp2Out,0,1));
 
-            obs_difmeans = obs2_mean - obs1_mean; % for fmr1 = KO - WT
+            obs_difmeans = obs1_mean - obs2_mean;
 
             %% Permutation Step 2 - t test or mwu test
             %find the t values along all data points for each frequency bin
@@ -152,7 +153,6 @@ for iCond = 1:length(params.condList)
                 %% Permutation Step 3 - do the permute
 
                 % Jeff's:
-                disp('monte');
                 % Monte Carlo permutation: Tperm,POS and NEG ClusterSizes
 
                 % stack groups together
@@ -184,7 +184,7 @@ for iCond = 1:length(params.condList)
                 % statistic comparison above
                 [BsigPOSchan,LsigPOSchan,~] = bwboundaries(POSpval<pthresh);
                 [BsigNEGchan,LsigNEGchan,~] = bwboundaries(NEGpval<pthresh);
-                
+
                 % sanity check
                 % imagesc(POSpval<pthresh); hold on
                 % for k = 1:length(BsigPOSchan)
@@ -241,7 +241,7 @@ for iCond = 1:length(params.condList)
                 hold on % plot areas of significance p < 0.05
                 for k = 1:length(BsigPOSchan)
                     boundary = BsigPOSchan{k};
-                    % only keep boundaries that are larger than 3x3  
+                    % only keep boundaries that are larger than 3x3
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
                         plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
@@ -249,7 +249,7 @@ for iCond = 1:length(params.condList)
                 end
                 for k = 1:length(BsigNEGchan)
                     boundary = BsigNEGchan{k};
-                    % only keep boundaries that are larger than 3x3  
+                    % only keep boundaries that are larger than 3x3
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
                         plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)

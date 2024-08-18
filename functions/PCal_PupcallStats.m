@@ -1,5 +1,5 @@
-function PCal_ClickTrainStats5(homedir,Groups)
-% ROIs are from the onset of one click to the onset of the next with a
+function PCal_PupcallStats(homedir,Groups,call_list)
+% ROIs are from the onset of one pupcall to the onset of the next with a
 % maximum of 100 ms time windows (for lower freq click trains). Currently
 % 40 Hz click trains are being analyzed on the onset peak response (highest
 % out of first 3 click time windows), 10th, 20th, 40th, and 80th peak
@@ -15,11 +15,10 @@ function PCal_ClickTrainStats5(homedir,Groups)
 cd(homedir); 
 
 % single trial data
-grp1sgl = readtable([Groups{1} '_ClickTrain_AVRECPeak.csv']);
-grp2sgl = readtable([Groups{2} '_ClickTrain_AVRECPeak.csv']);
-% subject averaged data
-grp1avg = readtable([Groups{1} '_ClickTrain_AVG_AVRECPeak.csv']);
-grp2avg = readtable([Groups{2} '_ClickTrain_AVG_AVRECPeak.csv']);
+grp1sgl = readtable([Groups{1} '_Pupcall30_AVRECPeak.csv']);
+grp2sgl = readtable([Groups{2} '_Pupcall30_AVRECPeak.csv']);
+grp1avg = readtable([Groups{1} '_Pupcall30_AVG_AVRECPeak.csv']);
+grp2avg = readtable([Groups{2} '_Pupcall30_AVG_AVRECPeak.csv']);
 
 % set some stuff up
 layers = unique(grp1sgl.Layer);
@@ -28,13 +27,6 @@ color11 = [15/255 63/255 111/255]; %indigo blue
 color12 = [24/255 102/255 180/255]; 
 color21 = [115/255 46/255 61/255]; % wine
 color22 = [160/255 64/255 85/255]; 
-
-% we're only looking at 5 Hz, pull that out
-stimfreq = 5;
-grp1sgl = grp1sgl(grp1sgl.ClickFreq == stimfreq,:);
-grp2sgl = grp2sgl(grp2sgl.ClickFreq == stimfreq,:);
-grp1avg = grp1avg(grp1avg.ClickFreq == stimfreq,:);
-grp2avg = grp2avg(grp2avg.ClickFreq == stimfreq,:);
 
 % initiate a huge stats table for the lawls (for the stats)
 PeakStats = table('Size',[length(layers)*length(statfill) 20],'VariableTypes',...
@@ -59,10 +51,10 @@ for iLay = 1:length(layers)
     grp2size = length(unique(avg2lay.Animal));
     grp2name = unique(sgl2lay.Animal);
 
-    avg1stk  = nan(grp1size,stimfreq*2); 
-    sgl1stk  = nan(grp1size,stimfreq*2,50); % maximum trials is 50
-    avg2stk  = nan(grp2size,stimfreq*2);
-    sgl2stk  = nan(grp2size,stimfreq*2,50);
+    avg1stk  = nan(grp1size,length(call_list)); % subject x peak
+    sgl1stk  = nan(grp1size,length(call_list),50); % maximum trials is 50
+    avg2stk  = nan(grp2size,length(call_list));
+    sgl2stk  = nan(grp2size,length(call_list),50);
     % stack groups for pics
     for iSub = 1:grp1size
         % groups stacks have subjects numbered as order gone in
@@ -89,9 +81,6 @@ for iLay = 1:length(layers)
         end
     end
     
-    % We're going to look at the onset response click and then the response
-    % to 2, 3, 4, 5
-
     %% let's make a nice figure
     Peakfig = tiledlayout('flow');
     title(Peakfig,[layers{iLay} ' Channels'])
@@ -103,7 +92,7 @@ for iLay = 1:length(layers)
     plot(avg2stk','color',color22)
     plot(nanmean(avg1stk,1),'color',color11,'LineWidth',4)
     plot(nanmean(avg2stk,1),'color',color21,'LineWidth',4)
-    xlabel('Clicks')
+    xlabel('Calls')
     ylabel('Peak Amplitude [mV/mm²]')
     title('Trial-Average Peaks')
 
@@ -111,7 +100,7 @@ for iLay = 1:length(layers)
     shadedErrorBar(1:size(avg1stk,2),nanmean(avg1stk,1),nanstd(avg1stk,0,1),'lineprops','b')
     hold on 
     shadedErrorBar(1:size(avg2stk,2),nanmean(avg2stk,1),nanstd(avg2stk,0,1),'lineprops','r')    
-    xlabel('Clicks')
+    xlabel('Callss')
     ylabel('PeakAmp [mV/mm²] mean and std')
     title('Trial-Average Peaks')
 
@@ -133,7 +122,7 @@ for iLay = 1:length(layers)
     nexttile
     boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
-    xlabel('Group / Click')
+    xlabel('Group / Calls')
     title('Trial-Average Peaks')
 
     % here we're going to calculate the ratios and store them for stats
@@ -158,7 +147,7 @@ for iLay = 1:length(layers)
     nexttile
     boxplot(xboxPAratio,yboxesratio,'Notch','on')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
-    xlabel('Group / Click')
+    xlabel('Group / Call')
     title('Trial-Average Peaks')
 
     % single trial data
@@ -170,7 +159,7 @@ for iLay = 1:length(layers)
     end
     plot(nanmean(nanmean(sgl1stk,1),3),'color',color11,'LineWidth',4)
     plot(nanmean(nanmean(sgl2stk,1),3),'color',color21,'LineWidth',4)
-    xlabel('Clicks')
+    xlabel('Calls')
     ylabel('Peak Amplitude [mV/mm²]')
     title('Single Trial Peaks')
 
@@ -178,11 +167,11 @@ for iLay = 1:length(layers)
     shadedErrorBar(1:size(sgl1stk,2),nanmean(nanmean(sgl1stk,3),1),nanstd(nanmean(sgl1stk,3),0,1),'lineprops','b')
     hold on 
     shadedErrorBar(1:size(sgl2stk,2),nanmean(nanmean(sgl2stk,3),1),nanstd(nanmean(sgl2stk,3),0,1),'lineprops','r')    
-    xlabel('Clicks')
+    xlabel('Calls')
     ylabel('PeakAmp [mV/mm²] mean and std')
     title('Single Trial Peaks')
 
-    % we will take the max peak click determined in averaged data
+    % we will take the max peak call determined in averaged data
     % we also have to stack the data appropriately
     sgl1onpeak = nan(length(avg1onpeak)*50,1);
     sgl1_2    = nan(length(sgl1onpeak),1);
@@ -225,7 +214,7 @@ for iLay = 1:length(layers)
     nexttile
     boxplot(xboxPA,yboxes,'Notch','on','Symbol','')
     ylabel('Peak Amplitude [mV/mm²]')
-    xlabel('Group / Click')
+    xlabel('Group / Call')
     title('Single Trial Peaks')
 
     % here we're going to calculate the ratios and store them for stats
@@ -250,7 +239,7 @@ for iLay = 1:length(layers)
     nexttile
     boxplot(xboxPAratio,yboxesratio,'Notch','on','Symbol','')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
-    xlabel('Group / Click')
+    xlabel('Group / Call')
     title('Single Trial Peaks')
 
 
@@ -261,7 +250,7 @@ for iLay = 1:length(layers)
     end
     cd PeakPlots
     h = gcf;
-    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_ClickTrain5']);
+    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall']);
     close(h)
 
     %% no more stalling, it's stats time
@@ -333,5 +322,5 @@ for iLay = 1:length(layers)
 end
 
 cd(homedir); cd output; cd TracePeaks
-writetable(PeakStats,[Groups{1} 'v' Groups{2} '_ClickTrain5_Stats.csv']);
+writetable(PeakStats,[Groups{1} 'v' Groups{2} '_PupCall_Stats.csv']);
 cd(homedir)

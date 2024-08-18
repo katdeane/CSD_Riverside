@@ -63,10 +63,10 @@ for iSub = 1:length(animals)
     % pull the data
     for iStim = 1:length(stimList)
 
-        CurCSD = mean(Data(index).sngtrlCSD{1, iStim},3);
+        CurCSD = nanmean(Data(index).sngtrlCSD{1, iStim},3);
         CSDhold{iStim}(1:size(CurCSD,1),1:size(CurCSD,2),iSub) = CurCSD;
 
-        CurLFP = mean(Data(index).sngtrlLFP{1, iStim},3);
+        CurLFP = nanmean(Data(index).sngtrlLFP{1, iStim},3);
         LFPhold{iStim}(1:size(CurLFP,1),1:size(CurLFP,2),iSub) = CurLFP;
     end
     clear index
