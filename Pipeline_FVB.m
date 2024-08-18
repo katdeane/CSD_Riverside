@@ -19,6 +19,8 @@ if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
 elseif exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside'); 
+elseif exist('/Users/anjumhussain/Documents/GitHub/CSD_Riverside','dir')
+    cd('/Users/anjumhussain/Documents/GitHub/CSD_Riverside')
 else
     error('add your local repository as shown above')
 end
@@ -29,11 +31,11 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % set consistently needed variables
 % F = FVB, O = old, Y = young, N = nicotine, S = saline 
 % Groups = {'FirstPass'};
-Groups = {'FOS' 'FON' 'FYS' 'FYN'};
-% Condition = {'NoiseBurst70'};
-Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-    'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
-    'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
+Groups = {'FYN'};
+Condition = {'NoiseBurst70'};
+%Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+  %  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
+   % 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
 
 %% Data generation per subject ⊂◉‿◉つ
 

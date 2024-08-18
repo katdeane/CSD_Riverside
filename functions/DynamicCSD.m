@@ -123,7 +123,7 @@ for iGro = 1:length(Groups)
                         imagesc(nanmean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
-                        clim(cbar)
+                        caxis(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
                     end
