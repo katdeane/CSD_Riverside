@@ -1,7 +1,10 @@
-function plotFFT_PCal(homedir,params,type)
+function plotFFT_PCal(homedir,params,type,Comparison)
 
 if ~exist('type','var')
     type = 'AB'; % absolute or RE relative
+end
+if ~exist('Comparison','var')
+    Comparison = 'Pupcall'; % or 'ClickTrain
 end
 
 cd(homedir); cd output;
@@ -13,9 +16,15 @@ if matches(type,'AB')
 elseif matches(type,'RE')
     fftTabS = struct2table(fftStructRE);
 end
-% Load in Pupcall FFT
-loadnameP = [params.groups{1} 'v' params.groups{2} '_Pupcall_' type '_FFT.mat'];
-load(loadnameP,['fftStruct' type])
+
+if matches(Comparison, 'Pupcall')
+    % Load in Pupcall FFT
+    loadname2 = [params.groups{1} 'v' params.groups{2} '_Pupcall_' type '_FFT.mat'];
+elseif matches(Comparison,'ClickTrain')
+    % Load in ClickTrain FFT
+    loadname2 = [params.groups{1} 'v' params.groups{2} '_ClickTrain_' type '_FFT.mat'];
+end
+load(loadname2,['fftStruct' type])
 if matches(type,'AB')
     fftTabP = struct2table(fftStructAB);
 elseif matches(type,'RE')
@@ -138,17 +147,19 @@ for iLay = 1:length(params.layers)
     grp1S = horzcat(grp1S{:}); grp2S = horzcat(grp2S{:});
     grp1P = horzcat(grp1P{:}); grp2P = horzcat(grp2P{:});
 
-    % Pupcall data needs to be gaussian filtered because it's too many
-    % sampling points
-    grp1P = imgaussfilt(grp1P,10);
-    grp2P = imgaussfilt(grp2P,10);
+    if matches(Comparison,'Pupcall')
+        % Pupcall data needs to be gaussian filtered because it's too many
+        % sampling points (Clicks don't need to be)
+        grp1P = imgaussfilt(grp1P,10);
+        grp2P = imgaussfilt(grp2P,10);
+    end
     % now it needs to be resampled so we can use Spont data to ratio
     grp1P = downsample(grp1P,10);
     grp1P = resample(grp1P,LS,size(grp1P,1));
     grp2P = downsample(grp2P,10);
     grp2P = resample(grp2P,LS,size(grp2P,1));
     % that felt good :)
-  
+
     % means and sems
     grp1mS = mean(grp1S,2);
     grp2mS = mean(grp2S,2);
@@ -183,13 +194,13 @@ for iLay = 1:length(params.layers)
     xlim([0 100])
     xticks(0:10:100)
     legend({[params.groups{1} ' resting'] '' [params.groups{2} ' resting']...
-        '' [params.groups{1} ' pupcall'] '' [params.groups{2} ' pupcall']})
+        '' [params.groups{1} ' ' Comparison] '' [params.groups{2} ' ' Comparison]})
 
     nexttile 
     semilogy(fftaxis,ratioPSm1,'-b')
     hold on 
     semilogy(fftaxis,ratioPSm2,'-r')
-    title(['Layer ' params.layers{iLay} ' Pupcall / Resting'])
+    title(['Layer ' params.layers{iLay} ' ' Comparison ' / Resting'])
     xlim([0 100])
     xticks(0:10:100)
     line('XData', [0 100], 'YData', [1 1])
@@ -385,7 +396,7 @@ for iLay = 1:length(params.layers)
     errorbar(1:length(Means1),Means1,sems1,'Color',[0 0 0],'LineStyle','none');
     xticklabels([{'D'} {num2str(dps1_P)} {'T'} {num2str(tps1_P)} {'A'} {num2str(aps1_P)} ...
         {'B'} {num2str(bps1_P)} {'GL'} {num2str(glps1_P)} {'GH'} {num2str(ghps1_P)}])
-    title(['L ' params.layers{iLay} ' ' params.groups{1} ' Pupcall / Resting'])
+    title(['L ' params.layers{iLay} ' ' params.groups{1} ' ' Comparison '/ Resting'])
 
     nexttile 
     bar(1:length(Means2),Means2)
@@ -393,7 +404,7 @@ for iLay = 1:length(params.layers)
     errorbar(1:length(Means2),Means2,sems2,'Color',[0 0 0],'LineStyle','none');
     xticklabels([{'D'} {num2str(dps2_P)} {'T'} {num2str(tps2_P)} {'A'} {num2str(aps2_P)} ...
         {'B'} {num2str(bps2_P)} {'GL'} {num2str(glps2_P)} {'GH'} {num2str(ghps2_P)}])
-    title(['L ' params.layers{iLay} ' ' params.groups{2} ' Pupcall / Resting'])
+    title(['L ' params.layers{iLay} ' ' params.groups{2} ' ' Comparison '/ Resting'])
     
     % fill the table
     % delta
@@ -486,9 +497,9 @@ for iLay = 1:length(params.layers)
     errorbar(1:length(PS_Means),PS_Means,PS_sems,'Color',[0 0 0],'LineStyle','none');
     xticklabels([{'D'} {num2str(dps_P)} {'T'} {num2str(tps_P)} {'A'} {num2str(aps_P)} ...
         {'B'} {num2str(bps_P)} {'GL'} {num2str(glps_P)} {'GH'} {num2str(ghps_P)}])
-    title(['L ' params.layers{iLay} ' ' params.groups{1} ' vs ' params.groups{2} ' Pupcall/Resting'])
+    title(['L ' params.layers{iLay} ' ' params.groups{1} ' vs ' params.groups{2} ' ' Comparison '/Resting'])
      
-    savename = [params.groups{1} 'v' params.groups{2} '_' params.layers{iLay} '_' type '_FFT'];
+    savename = [params.groups{1} 'v' params.groups{2} '_' params.layers{iLay} '_' type '_' Comparison '_FFT'];
     savefig(gcf,savename)
     close
 
@@ -527,6 +538,6 @@ for iLay = 1:length(params.layers)
 end
 
 % save table 
-writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' type  '_FFTStats.csv'])
+writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' type '_' Comparison  '_FFTStats.csv'])
 
 cd(homedir)

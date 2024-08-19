@@ -85,19 +85,19 @@ for iLay = 1:length(layers)
     yboxes  = [repmat({'Grp1 1'},grp1size*3,1);repmat({'Grp2 1'},grp2size*3,1)];
 
     nexttile
-    boxplot(xboxPA,yboxes)
+    boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group')
     title('Trial-Average Peaks')
 
     nexttile
-    boxplot(xboxPL,yboxes)
+    boxplot(xboxPL,yboxes,'Notch','on')
     ylabel('Peak Latency [ms]')
     xlabel('Group')
     title('Trial-Average Peaks')
 
     nexttile
-    boxplot(xboxRMS,yboxes)
+    boxplot(xboxRMS,yboxes,'Notch','on')
     ylabel('RMS [mV/mm²]')
     xlabel('Group')
     title('Trial-Average RMS')
@@ -123,19 +123,19 @@ for iLay = 1:length(layers)
     yboxes  = [repmat({'Grp1 1'},size(xboxPA,1)/2,1);repmat({'Grp2 1'},size(xboxPA,1)/2,1)];
 
     nexttile
-    boxplot(xboxPA,yboxes)
+    boxplot(xboxPA,yboxes,'Notch','on')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group')
     title('Single Trial Peaks')
 
     nexttile
-    boxplot(xboxPL,yboxes)
+    boxplot(xboxPL,yboxes,'Notch','on')
     ylabel('Peak Latency [ms]')
     xlabel('Group')
     title('Single Trial Peaks')
 
     nexttile
-    boxplot(xboxRMS,yboxes)
+    boxplot(xboxRMS,yboxes,'Notch','on')
     ylabel('RMS [mV/mm²]')
     xlabel('Group')
     title('Single Trial RMS')

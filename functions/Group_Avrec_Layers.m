@@ -104,8 +104,13 @@ for iLay = 1:length(layers)
             reprate = 1;
         end
         for iSub = 1:size(stackgroup,1)
-            [peakout,latencyout,rmsout] = consec_peaks(stackgroup(iSub,:), ...
-                reprate, stimDur, BL, Condition);
+            if matches(Condition, 'Pupcall30')
+                [peakout,latencyout,rmsout] = pupcall_peaks(stackgroup(iSub,:), ...
+                    [1, 4, 9, 13, 18]); % pup call order
+            else
+                [peakout,latencyout,rmsout] = consec_peaks(stackgroup(iSub,:), ...
+                    reprate, stimDur, BL, Condition);
+            end
 
             for itab = 1:size(peakout,1)
                 CurPeakData = table({Group}, {iSub}, {layers{iLay}}, ...

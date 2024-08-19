@@ -15,7 +15,7 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'PMP' 'VMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
+Groups = {'VMP' 'PMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
 % Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
 cbar = [-0.3 0.3]; % species specific based on experience, color axis
@@ -44,7 +44,7 @@ end
 
 % this is specifically to explore temporal dynamics over recording day and
 % uses single trial peak detection CSVs created by Avrec_Layers.m
-% 
+
 disp('Determining cortical strength over time')
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
@@ -86,6 +86,8 @@ end
 PCal_ClickTrainStats5(homedir,Groups)
 PCal_ClickTrainStats40(homedir,Groups)
 
+PCal_PupcallStats(homedir,Groups,[1,4,9,13,18])
+
 %% mTF analysis 
 
 % Input:    group metadata file in /groups and curate converted files in
@@ -95,6 +97,12 @@ PCal_ClickTrainStats40(homedir,Groups)
 %           multiTRF, low broadband and high broadband TRF models. 
 Pipeline_mTRF(homedir,Groups)
 
+%% CSD permutation analysis 
+Condition = {'NoiseBurst' 'Pupcall30' 'ClickTrain'};
+for iSti = 1:length(Condition)
+    PermutationTest_CSDArea(homedir,Condition{iSti},Groups,1,'Anesthetized')
+end
+
 %% CWT analysis 
 
 % Output:   Runs CWT analysis using the Wavelet toolbox. 
@@ -103,7 +111,6 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'Pupcall'}; % 'ClickTrain','gapASSR'; 'Pupcall', - gives out of memory error for pup call now (7 and 8 subjects)
 params.groups = {'VMP','PMP'}; % for permutation test
 
 % Only run when data regeneration is needed:
@@ -119,11 +126,18 @@ runCwtCsd(homedir,'VMP',params,'Anesthetized');
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
+
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(3); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 % PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
 % PermutationTest(homedir,'Phase',params,yespermute,'Anesthetized')
+
+params.condList = {'ClickTrain','gapASSR'}; %
 PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+
+params.condList = {'Pupcall'}; % needs to be broken down by layers earlier
+PermutationTest_PupcallArea(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+
 delete(gcp('nocreate')) % end this par session
 
 
@@ -136,8 +150,11 @@ runFftCsd(homedir,params,'Spontaneous')
 % plotFFT(homedir,params,'Spontaneous','AB')
 % plotFFT(homedir,params,'Spontaneous','RE')
 
-plotFFT_PCal(homedir,params,'AB')
-plotFFT_PCal(homedir,params,'RE')
+runFftCsd(homedir,params,'ClickTrain')
+
+plotFFT_PCal(homedir,params,'AB','Pupcall') % spont compared to pupcalls
+plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 40 HZ)
+% plotFFT_PCal(homedir,params,'RE')
 
 %% Interlaminar Phase Coherence
 % LaminarPhaseLocking(homedir,params)

@@ -1,6 +1,6 @@
-% Pipeline - FMR1 Comparison Study ~( °٢° )~
+% Pipeline - Awake FMR1 Comparison Study ~( °٢° )~
 
-% This is the master script for the FMR1 KO and WT study, run by Katrina
+% This is the master script for the awake FMR1 KO and WT study, run by Katrina
 % Deane at University of California, Riverside in Khaleel Razak's lab in
 % the Psychology Department. 
 
@@ -26,16 +26,17 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
+Groups = {'AWT' 'AKO'}; 
 % Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    'gapASSR' 'postNoise'};
+Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
+% Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+%     'gapASSR' 'postNoiseBurst'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
+DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
 
 % per subject Spike Script
 DynamicSpike(homedir, Condition)
@@ -51,7 +52,7 @@ for iGro = 1:length(Groups)
 
         disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50])
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Awake')
         toc
 
     end
@@ -116,12 +117,16 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset
-params.groups = {'MWT','MKO'}; % for permutation test
+params.condList = {'ClickTrain','gapASSR'}; % subset 'Chirp'
+params.groups = {'AWT','AKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'MWT',params);
-runCwtCsd(homedir,'MKO',params);
+runCwtCsd(homedir,'AWT',params,'Awake');
+runCwtCsd(homedir,'AKO',params,'Awake');
+
+% single subject ITPC figures
+CWTFigs(homedir,'Phase',params,'AWT','Awake')
+CWTFigs(homedir,'Phase',params,'AKO','Awake')
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -132,13 +137,13 @@ runCwtCsd(homedir,'MKO',params);
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 % PermutationTest(homedir,'Power',params,yespermute)
 % PermutationTest(homedir,'Phase',params,yespermute)
 % delete(gcp('nocreate')) % end this par session
 
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
+PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
 
 % this collects all of the stats and puts them into csv in \output\CWTPermStats
 collectPermStats(homedir,params)
