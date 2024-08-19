@@ -15,4 +15,5 @@
 
 .tmp.driveupload
 .DS_Store
+.Rhistory
 FirstPass.m

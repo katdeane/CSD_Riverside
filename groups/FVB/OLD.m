@@ -18,6 +18,7 @@ animals = {'FON01','FOS01','FOS02','FOS03','FOS04',...'FOS05',
 % N03: 18.5 months;female
 % N04: 16.8 months
 
+
 %% Channels and Layers
 % channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]
 
@@ -69,6 +70,7 @@ Cond.NoiseBurst80 = {...
     {'07'},... FON02
     {'10'},... FON03
     {'10'},... FON04
+    {'01'},... FON01
     };
 
 Cond.gapASSR70 = {...
@@ -81,7 +83,6 @@ Cond.gapASSR70 = {...
     {'04'},... FON02
     {'03'},... FON03
     {'06'},... FON04
-    };
 
 Cond.gapASSR80 = {...
     {'09'},... %FON01

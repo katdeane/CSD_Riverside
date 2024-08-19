@@ -36,38 +36,38 @@ Layer.VI = {'[17:20]','[18:21]','[18:21]'};
 Cond.NoiseBurst70 = {...
     {'01'},... FYS03
     {'02'},... FYS04
-    {'02'},... FYS05
+    {'01'},... FYS02
     };
     
 
 Cond.NoiseBurst80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };
 
 Cond.gapASSR70 = {...
     {'04'},... FYS03
     {'04'},... FYS04
-    {'05'},... FYS05
+    {'06'},... FYS02
     };
 
 Cond.gapASSR80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };  
 
 Cond.Tonotopy70 = {...
     {'03'},... FYS03
     {'03'},... FYS04
-    {'04'},... FYS05
+    {'03'},... FYS02
     };
 
  Cond.Tonotopy80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };   
 
 Cond.Spontaneous = {...
@@ -77,15 +77,15 @@ Cond.Spontaneous = {...
 	};
 
 Cond.ClickTrain70 = {...
-    {'02'},... FYS03
-    {'05'},... FYS04
-    {'06'},... FYS05
+    {'05'},... FYS03
+    {'07'},... FYS04
+    {'02'},... FYS02
     };
 
 Cond.ClickTrain80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };
 
 Cond.Chirp70 = {...
@@ -97,35 +97,35 @@ Cond.Chirp70 = {...
 Cond.Chirp80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {'04'},... FYS02
     };
 
 Cond.TreatNoiseBurst1 = {...
     {'07'},... FYS03 - directly after saline Noiseburst 70db
     {'08'},... FYS04 - directly after saline Noiseburst 70db
-    {'08'},... FYS05 - directly after saline Noiseburst 70db
+    {'07'},... FYS02 - directly after saline Noiseburst 70db
     };
 
 Cond.TreatgapASSR70 = {...
     {'08'},... FYS03
     {'09'},... FYS04
-    {'09'},... FYS05
+    {'08'},... FYS02
     };
 
 Cond.TreatgapASSR80 = {...
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };
 
 Cond.TreatTonotopy = {...
     {[]},... FYS03 
     {[]},... FYS04
-    {[]},... FYS05
+    {[]},... FYS02
     };
 
 Cond.TreatNoiseBurst2 = {...
     {'09'},... FYS03 Noiseburst 70db
     {'10'},... FYS04 Noiseburst 70db
-    {'10'},... FYS05 Noiseburst 70db
+    {'09'},... FYS02 Noiseburst 70db
     };
