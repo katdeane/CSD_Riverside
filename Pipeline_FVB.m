@@ -31,11 +31,11 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % set consistently needed variables
 % F = FVB, O = old, Y = young, N = nicotine, S = saline 
 % Groups = {'FirstPass'};
-Groups = {'FYN'};
-Condition = {'NoiseBurst70'};
-%Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-  %  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
-   % 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
+Groups = {'OLD' 'YNG'};
+% Condition = {'NoiseBurst70'};
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+   'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
+   'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
