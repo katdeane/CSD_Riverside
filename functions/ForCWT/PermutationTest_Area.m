@@ -16,13 +16,25 @@ if ~exist('whichtest','var')
     whichtest = 'Power'; % or 'Phase'
 end
 
-disp(['Observed ' whichtest ' and maybe permutations'])
-
 % number of permutations
 nperms = 1000; % 500 when ready
 pthresh = 0.05; 
 
+if yespermute == 1
+    disp(['Observed ' whichtest ' with ' num2str(nperms) ' permutations'])
+elseif yespermute == 0
+    disp(['Observed ' whichtest ' with NO permutations'])
+end
+
 BL = 399;
+
+% set up subject call lists
+run([Groups{1} '.m'])
+grp1sub = animals; 
+clear animals 
+run([Groups{2} '.m'])
+grp2sub = animals;
+clear animals channels Cond Layer
 
 %% Load in and concatonate Data
 cd (homedir); cd output; cd WToutput
@@ -48,32 +60,32 @@ for iCond = 1:length(params.condList)
         disp(['For stimulus: ' num2str(stimList(iStim))])
 
         % stack first group data
-        input = dir([Groups{1} '*_' params.condList{iCond}...
-            '_' num2str(stimList(iStim)) '_WT.mat']);
-        % initialize table with first input
-        load(input(1).name, 'wtTable')
+        load([grp1sub{1} '_' params.condList{iCond} ...
+            '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
         group1WT = wtTable; clear wtTable
         % start on 2 and add further input to full tables
-        for iIn = 2:length(input)
-            if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
+        for iIn = 2:length(grp1sub)
+            input = [grp1sub{iIn} '_' params.condList{iCond} ...
+            '_' num2str(stimList(iStim)) '_WT.mat'];
+            if contains(input,'MWT16b_NoiseBurst') % special case
                 continue
             end
-            load(input(iIn).name, 'wtTable')
+            load(input, 'wtTable')
             group1WT = [group1WT; wtTable]; %#ok<AGROW>
         end
 
         % stack second group data
-        input = dir([Groups{2} '*_' params.condList{iCond}...
-            '_' num2str(stimList(iStim)) '_WT.mat']);
-        % initialize table with first input
-        load(input(1).name, 'wtTable')
+        load([grp2sub{1} '_' params.condList{iCond} ...
+            '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
         group2WT = wtTable; clear wtTable
         % start on 2 and add further input to full tables
-        for iIn = 2:length(input)
-            if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
+        for iIn = 2:length(grp2sub)
+            input = [grp2sub{iIn} '_' params.condList{iCond} ...
+            '_' num2str(stimList(iStim)) '_WT.mat'];
+            if contains(input,'MWT16b_NoiseBurst') % special case
                 continue
             end
-            load(input(iIn).name, 'wtTable')
+            load(input, 'wtTable')
             group2WT = [group2WT; wtTable]; %#ok<AGROW>
         end
         clear wtTable
@@ -81,6 +93,8 @@ for iCond = 1:length(params.condList)
         % loop through layers here
         %Stack the individual animals' data (animal#x54x600)
         for iLay = 1:length(params.layers)
+
+            disp(['Layer ' params.layers{iLay}])
             % split out the one you want and get the power or phase mats
             grp1Lay = group1WT(matches(group1WT.layer, params.layers{iLay}),:);
             grp2Lay = group2WT(matches(group2WT.layer, params.layers{iLay}),:);
@@ -152,7 +166,6 @@ for iCond = 1:length(params.condList)
                 %% Permutation Step 3 - do the permute
 
                 % Jeff's:
-                disp('monte');
                 % Monte Carlo permutation: Tperm,POS and NEG ClusterSizes
 
                 % stack groups together
@@ -200,12 +213,20 @@ for iCond = 1:length(params.condList)
                 % Verify if the overall area where p < pthresh is larger
                 % than the 97.5 percentile of the perm distribution
                 if sum(sum(LsigPOSchan)) > sigPOSsizeChan
-                    isSig = true; % leaving this in here for readability
-                    thiscolor = 'w'; % significant results will have white line
+                    % significant
+                    POScolor = 'w'; % significant results will have white line
                 else
-                    isSig = false;
-                    thiscolor = 'k'; % non significant will be black
+                    % not significant
+                    POScolor = 'k'; % non significant will be black
                 end
+                if sum(sum(LsigNEGchan)) > sigNEGsizeChan
+                    % significant
+                    NEGcolor = 'w'; % significant results will have white line
+                else
+                    % not significant
+                    NEGcolor = 'k'; % non significant will be black
+                end
+
 
             end
             clear grp1Lay gr2Lay
@@ -244,7 +265,7 @@ for iCond = 1:length(params.condList)
                     % only keep boundaries that are larger than 3x3  
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
-                        plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
+                        plot(boundary(:,2),boundary(:,1),POScolor,'Linewidth',2)
                     end
                 end
                 for k = 1:length(BsigNEGchan)
@@ -252,12 +273,11 @@ for iCond = 1:length(params.condList)
                     % only keep boundaries that are larger than 3x3  
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
-                        plot(boundary(:,2),boundary(:,1),thiscolor,'Linewidth',2)
+                        plot(boundary(:,2),boundary(:,1),NEGcolor,'Linewidth',2)
                     end
                 end
             end
-            title('Difference')
-            clim([-1 1])
+            title(['Difference ' Groups{2} '-' Groups{1}])
             colorbar
 
             newC = [min(newclim(:)) max(newclim(:))];

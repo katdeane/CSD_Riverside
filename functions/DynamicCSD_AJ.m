@@ -1,4 +1,4 @@
-function DynamicCSD(homedir, Condition, Groups, cbar, type)
+function DynamicCSD_AJ(homedir, Condition, Groups, cbar, type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -76,6 +76,9 @@ for iGro = 1:length(Groups)
                     if matches(thisTag,'single') || matches(thisTag,'spont')
                         sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
                             stimDur, stimITI, thisTag);
+                    elseif matches(thisTag,'gapASSRRate') 
+                        sngtrlLFP = icutGAPdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, stimITI, thisTag);
                     else
                         sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
                             BL, stimDur, stimITI, thisTag);
@@ -166,16 +169,16 @@ for iGro = 1:length(Groups)
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % sink data removed 08/07/23
-
-                    % BFs
+                    % % sink data removed 08/07/23
+                    % 
+                    % % BFs
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
                     Data(CondIDX).BF_Va         = BF_Va;
                     Data(CondIDX).BF_Vb         = BF_Vb;
                     Data(CondIDX).BF_VI         = BF_VI;
-
-                    % CSD data
+                    % 
+                    % % CSD data
                     Data(CondIDX).sngtrlLFP     = sngtrlLFP;
                     Data(CondIDX).sngtrlCSD     = sngtrlCSD;
                     Data(CondIDX).AVREC         = AvrecCSD;

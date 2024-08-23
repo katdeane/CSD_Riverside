@@ -32,20 +32,20 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % F = FVB, O = old, Y = young, N = nicotine, S = saline 
 % Groups = {'FirstPass'};
 Groups = {'OLD' 'YNG'};
-% Condition = {'NoiseBurst70'};
+% Condition = {'gapASSR70' 'gapASSR80'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-   'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' ...
-   'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'};
+   'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' };
+    %'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'
 
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
-DynamicCSD(homedir, Condition, Groups, [-0.2 0.2], 'Awake')
+DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2], 'Awake')
 
 %% Group pics (⌐▨_▨)
-
+Condition = {'gapASSR70' 'gapASSR80'};
 % generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
@@ -69,7 +69,7 @@ for iGro = 1:length(Groups)
     end
 end
 
-ConditionList = {'NoiseBurst70' 'ClickTrain70' 'gapASSR70'};
+ConditionList = {'gapASSR70'}; %'NoiseBurst70' 'ClickTrain70' 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
     for iST = 1:length(ConditionList)
@@ -87,7 +87,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
@@ -102,20 +102,22 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'ClickTrain70','Chirp70','gapASSR70'}; 
-params.groups = {'FOS' 'FON' 'FYS' 'FYN'}; 
+params.condList = {'gapASSR70'};  %'NoiseBurst70','ClickTrain70','Chirp70',
+% params.groups = {'FOS' 'FON' 'FYS' 'FYN'}; 
+params.groups = {'OLD' 'YNG'};
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'FOS',params,'Awake');
-runCwtCsd(homedir,'FON',params,'Awake');
-runCwtCsd(homedir,'FYS',params,'Awake');
-runCwtCsd(homedir,'FYN',params,'Awake');
+% runCwtCsd(homedir,'FOS',params,'Awake');
+% runCwtCsd(homedir,'FON',params,'Awake');
+% runCwtCsd(homedir,'FYS',params,'Awake');
+% runCwtCsd(homedir,'FYN',params,'Awake');
+
+runCwtCsd(homedir,'OLD',params,'Awake');
+runCwtCsd(homedir,'YNG',params,'Awake');
 
 % Just individual inter-trial phase coherence figures
-CWTFigs(homedir,'Phase',params,'FOS','Awake')
-CWTFigs(homedir,'Phase',params,'FON','Awake')
-CWTFigs(homedir,'Phase',params,'FYS','Awake')
-CWTFigs(homedir,'Phase',params,'FYN','Awake')
+% CWTFigs(homedir,'Phase',params,'FOS','Awake')
+
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -126,8 +128,10 @@ CWTFigs(homedir,'Phase',params,'FYN','Awake')
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
-if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-PermutationTest_Area(homedir,'Phase',params,{'FOS' 'FON'},yespermute,'Awake')
-PermutationTest_Area(homedir,'Phase',params,{'FYS' 'FYN'},yespermute,'Awake')
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+% if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
+% PermutationTest_Area(homedir,'Phase',params,{'FOS' 'FON'},yespermute,'Awake')
+% PermutationTest_Area(homedir,'Phase',params,{'FYS' 'FYN'},yespermute,'Awake')
+
+PermutationTest_Area(homedir,'Phase',params,{'OLD' 'YNG'},yespermute,'Awake')
 

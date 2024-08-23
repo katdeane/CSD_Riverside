@@ -1,14 +1,15 @@
-function DataOut = icutdata(file, StimIn, Data, checkStimList, BL, stimdur, ITI, thistype)
+function DataOut = icutGAPdata(file, StimIn, Data, checkStimList, BL, stimdur, ITI, thistype)
 % this function takes any type of data input and returns truncated epochs
-% sorted by stimulus 
+% sorted by stimulus. Gap data is dealt with differently because the
+% RPvdsEx software does a terrible and odd blip for the first stimulus,
+% only sometimes. We need to make a set of rules for consistently finding
+% which recordings this happens on so that the stimulus presentation is
+% scrambled upon application
 
-if ~exist('thistype','var')
-    thistype = 'noise';  % 'stack' or 'single'
-end
 
 %% get the stimulus onsets
 
-threshold = 0.05; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
+threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
 
 % do we need to throw out the first trial in this case? 
@@ -23,6 +24,38 @@ end
 crossover = diff(location);
 onsets = find(crossover == 1);
 
+% the first stim is marked by a down peak around 300 ms after onset. It's
+% very consistent but the resting channel value is variable. We have then a
+% dynamic lower threshold to check for the down peak after the stim onset
+% time
+
+% plot(StimIn(1:9000));
+% ylim([-0.1 0.1])
+% xline(onsets(1))
+if (onsets(1)-3770) > 0
+
+    firstsuspect = onsets(1)-3770;
+
+    % take the mean and std of the 40 seconds around the stim 
+    meansus = mean(StimIn(firstsuspect-20:firstsuspect+20));
+    stdsus  = std(StimIn(firstsuspect-20:firstsuspect+20));
+    
+    % set the threshold for 10*std below mean (very little variability)
+    lowthreshold = meansus-(stdsus*15); %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
+    lowlocation = lowthreshold >= StimIn(firstsuspect:firstsuspect+500); % 0 is above, 1 is below 
+    lowcrossover = diff(lowlocation);
+    
+    % xline(firstsuspect)
+    % yline(meansus)
+    % yline(meansus-stdsus)
+    % yline(lowthreshold,'LineWidth',2)
+
+    if ~isempty(find(lowcrossover == 1,1))
+        onsets = [firstsuspect onsets];
+    end
+
+end
+
 %% timing info 
 
 % stim duration + ITI (ms)
@@ -30,31 +63,12 @@ stimITI = stimdur+ITI; % ms
 
 %% stack or source the pseudorandom list
 
-if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
-        || matches(thistype, 'gapASSRRate')
-    % pre-psuedorandomized tone list for this subject
-    stimList = readmatrix([file(1:6) thistype '.txt'])';
-    shortlist = unique(stimList(2:end)); % first row is unread
+% pre-psuedorandomized tone list for this subject
+stimList = readmatrix([file(1:6) thistype '.txt'])';
+shortlist = unique(stimList(2:end)); % first row is unread
 
-    % click list is of duration between clicks so 8.33 = 120 Hz
-    % we want 1 hz (1000) first:
-    if matches(thistype, 'ClickRate')
-        shortlist =  sort(shortlist,"descend");
-    end
-
-    % this should match or something is wrong
-    if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
-
-elseif matches(thistype, 'noise') % noise bursts
-    
-    stimList = zeros(1,length(checkStimList) * ...
-        (ceil((length(onsets)+1)/length(checkStimList))));
-    for iextend = 1:ceil((length(stimList)+1)/length(checkStimList))
-        stimList(8*iextend-7:8*iextend) = checkStimList;
-    end
-    shortlist = checkStimList;
-    
-end
+% this should match or something is wrong
+if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
 
 % this is an issue for gapASSR where I have to manually stop the stimuli
 % and I sometimes miss that it's finished until a few stim later. 

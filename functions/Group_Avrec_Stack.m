@@ -19,7 +19,7 @@ BL     = 399;
 layers = {'All', 'II', 'IV', 'Va', 'Vb', 'VI'};
 [stimList, thisUnit, stimDur, stimITI, ~] = StimVariable(Condition,1,type);
 timeaxis = BL + stimDur + stimITI;
-colors = {'-b', '-r', '-c', '-g', '-k', '-m', '-y'};
+colors = {'-b', '-r', '-c', '-g', '-k', '-m', '-y','-b','-r','-c','-g'};
 
 %% Choose Type
 

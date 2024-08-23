@@ -141,7 +141,7 @@ elseif matches(type,'Awake')
         % 10 presentations of gap-noise
         % noiseonset = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000];
         % gaponset = [250, 750, 1250, 1750, 2250, 2750, 3250, 3750, 4250, 4750];
-        stimList = [3, 5, 7, 9];
+        stimList = [3, 5, 7, 9];  
         thisUnit = ' [ms] gap width';
         stimDur  = 3250*sr_mult; % ms
         stimITI  = 500*sr_mult;

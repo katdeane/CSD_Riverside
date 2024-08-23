@@ -76,7 +76,7 @@ elseif matches(type,'Awake1')
         stimList = 70;
         thisUnit = 'dB';
         stimDur  = 100*sr_mult; % ms
-        stimITI  = 2000*sr_mult;
+        stimITI  = 1000*sr_mult;
         thisTag  = 'single';
 
     elseif contains(Condition,'Tonotopy')
