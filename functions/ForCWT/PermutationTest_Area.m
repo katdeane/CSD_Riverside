@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
+function PermutationTest_Area(homedir,whichtest,params,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -28,6 +28,7 @@ end
 
 BL = 399;
 
+Groups=params.groups;
 % set up subject call lists
 run([Groups{1} '.m'])
 grp1sub = animals; 
@@ -67,7 +68,7 @@ for iCond = 1:length(params.condList)
         for iIn = 2:length(grp1sub)
             input = [grp1sub{iIn} '_' params.condList{iCond} ...
             '_' num2str(stimList(iStim)) '_WT.mat'];
-            if contains(input,'MWT16b_NoiseBurst') % special case
+            if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
             end
             load(input, 'wtTable')
@@ -82,7 +83,7 @@ for iCond = 1:length(params.condList)
         for iIn = 2:length(grp2sub)
             input = [grp2sub{iIn} '_' params.condList{iCond} ...
             '_' num2str(stimList(iStim)) '_WT.mat'];
-            if contains(input,'MWT16b_NoiseBurst') % special case
+            if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
             end
             load(input, 'wtTable')

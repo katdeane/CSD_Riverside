@@ -1,4 +1,4 @@
-function [stimList, thisUnit, stimDur, stimITI, thisTag,compDur1,compDur2] = ...
+function [stimList, thisUnit, stimDur, stimITI, thisTag,compDur1,compDur2,ITPCwin] = ...
     StimVariableCWT(Condition,sr_mult,type)
 
 % for the various scripts that need this information dynamically, this
@@ -98,6 +98,8 @@ elseif matches(type,'Awake')
         thisTag  = 'single';
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
+        % for ITPCmean
+        ITPCwin = {1:400};
 
     elseif contains(Condition,'Tonotopy')
         stimList = [2, 4, 8, 16, 24, 32];
@@ -107,6 +109,8 @@ elseif matches(type,'Awake')
         thisTag  = 'Tonotopy';
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
+        % for ITPCmean
+        ITPCwin = {1:600};
 
     elseif contains(Condition,'Spontaneous') 
         stimList = 1;
@@ -115,6 +119,8 @@ elseif matches(type,'Awake')
         stimITI  = 1000*sr_mult;
         thisTag  = 'spont';
         compDur2 = 0; % probably don't need
+        % for ITPCmean
+        ITPCwin = {1:2000};
 
     elseif contains(Condition,'ClickTrain')
         stimList = [5, 10, 40, 80];
@@ -125,6 +131,8 @@ elseif matches(type,'Awake')
         % ASSR reached
         compDur2 = {1000:1500; 1000:1500; 1000:1500; ...
             1000:1500; 1000:1500; 1000:1500; 1000:1500};
+        % for ITPCmean
+        ITPCwin = {1000:2000};
 
     elseif contains(Condition,'Chirp')
         stimList = 1;
@@ -134,13 +142,15 @@ elseif matches(type,'Awake')
         thisTag  = 'single';
         compDur2 = {1100:3000; []; []; 1100:1450; 1250:1750; ...
             1500:2350; 1900:3000}; % post processing
+        % for ITPCmean
+        ITPCwin = {1000:3000};        
 
     elseif contains(Condition,'gapASSR') 
         % 10 gaps every 25 ms from onset to onset (40 hz)
         % 250 ms noise, 250 ms gap-noise, etc. , 250 noise
         % 10 presentations of gap-noise
-        % noiseonset = [0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000];
-        % gaponset = [250, 750, 1250, 1750, 2250, 2750, 3250, 3750, 4250, 4750];
+        % noiseonset = [0, 500, 1000, 1500, 2000, 2500, 3000];
+        % gaponset =      [250, 750, 1250, 1750, 2250, 2750];
         stimList = [3, 5, 7, 9];  
         thisUnit = ' [ms] gap width';
         stimDur  = 3250*sr_mult; % ms
@@ -149,6 +159,8 @@ elseif matches(type,'Awake')
         % 4th gap in noise block
         compDur2 = {1750:2000; 1750:2000; 1750:2000; ...
             1750:2000; 1750:2000; 1750:2000; 1750:2000};
+        % for ITPCmean
+        ITPCwin = {1250:3000}; % from 3rd gap-noise block to last (no final noise block)
 
     elseif contains(Condition,'Pupcall')
         stimList = 1;
@@ -157,6 +169,8 @@ elseif matches(type,'Awake')
         stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 5s
         thisTag  = 'single';
         compDur2 = 0; % DIDN'T CALCULATE
+        % for ITPCmean
+        ITPCwin = 0; % DIDN'T CALCULATE       
 
     end
 end

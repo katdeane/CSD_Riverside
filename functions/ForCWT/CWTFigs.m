@@ -39,6 +39,9 @@ for iSub = 1:length(animals)
 
             % stack first group data
             input = [animals{iSub} '_' params.condList{iCond} '_' num2str(stimList(iStim)) '_WT.mat'];
+            if ~exist(input,'file')
+                continue
+            end
             load(input, 'wtTable')
 
             % loop through layers here

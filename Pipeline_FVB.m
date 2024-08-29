@@ -48,11 +48,11 @@ DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2], 'Awake')
 Condition = {'gapASSR70' 'gapASSR80'};
 % generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
+    for iCon = 1:length(Condition)
 
-        disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
+        disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iCon}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Awake')
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iCon},[-0.2 0.2],[-50 50],'Awake')
         toc
 
     end
@@ -61,10 +61,10 @@ end
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
+    for iCon = 1:length(Condition)
+        disp(['Single traces for ' Groups{iGro} ' ' Condition{iCon}])
         tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST}, 'Awake')
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iCon}, 'Awake')
         toc
     end
 end
@@ -72,10 +72,10 @@ end
 ConditionList = {'gapASSR70'}; %'NoiseBurst70' 'ClickTrain70' 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 1:length(ConditionList)
-        disp(['Group traces for ' Groups{iGro} ' ' ConditionList{iST}])
+    for iCon = 1:length(ConditionList)
+        disp(['Group traces for ' Groups{iGro} ' ' ConditionList{iCon}])
         tic 
-        Group_Avrec_Stack(homedir, Groups{iGro}, ConditionList{iST},'Awake')
+        Group_Avrec_Stack(homedir, Groups{iGro}, ConditionList{iCon},'Awake')
         toc
     end
 end
@@ -84,10 +84,10 @@ end
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
+    for iCon = 1:length(Condition)
+        disp(['Group traces for ' Groups{iGro} ' ' Condition{iCon}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iCon},'Awake')
         toc
     end
 end
@@ -102,7 +102,8 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'gapASSR70'};  %'NoiseBurst70','ClickTrain70','Chirp70',
+params.condList = {'gapASSR80'};
+% params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70'};  
 % params.groups = {'FOS' 'FON' 'FYS' 'FYN'}; 
 params.groups = {'OLD' 'YNG'};
 
@@ -116,8 +117,7 @@ runCwtCsd(homedir,'OLD',params,'Awake');
 runCwtCsd(homedir,'YNG',params,'Awake');
 
 % Just individual inter-trial phase coherence figures
-% CWTFigs(homedir,'Phase',params,'FOS','Awake')
-
+% CWTFigs(homedir,'Phase',params,'OLD','Awake')
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -128,10 +128,14 @@ runCwtCsd(homedir,'YNG',params,'Awake');
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
 % if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-% PermutationTest_Area(homedir,'Phase',params,{'FOS' 'FON'},yespermute,'Awake')
-% PermutationTest_Area(homedir,'Phase',params,{'FYS' 'FYN'},yespermute,'Awake')
+% PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
+% PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
 
-PermutationTest_Area(homedir,'Phase',params,{'OLD' 'YNG'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
 
+% create .csv with all of the ITPC means per stim presentation/subject/layer
+for iCon = 1:length(params.condList)
+    igetITPCmean(homedir,params.groups,params.condList{iCon},'Phase','Awake')
+end
