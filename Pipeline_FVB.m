@@ -29,8 +29,6 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-% F = FVB, O = old, Y = young, N = nicotine, S = saline 
-% Groups = {'FirstPass'};
 Groups = {'OLD' 'YNG'};
 % Condition = {'gapASSR70' 'gapASSR80'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
@@ -40,9 +38,11 @@ Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTr
 
 %% Data generation per subject ⊂◉‿◉つ
 
+c_axis = [-0.2 0.2];
+
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
-DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2], 'Awake')
+DynamicCSD_AJ(homedir, Condition, Groups, c_axis, 'Awake')
 
 %% Group pics (⌐▨_▨)
 Condition = {'gapASSR70' 'gapASSR80'};
@@ -102,17 +102,9 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'gapASSR80'};
-% params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70'};  
-% params.groups = {'FOS' 'FON' 'FYS' 'FYN'}; 
-params.groups = {'OLD' 'YNG'};
+params.condList = {'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'};  
 
 % Only run when data regeneration is needed:
-% runCwtCsd(homedir,'FOS',params,'Awake');
-% runCwtCsd(homedir,'FON',params,'Awake');
-% runCwtCsd(homedir,'FYS',params,'Awake');
-% runCwtCsd(homedir,'FYN',params,'Awake');
-
 runCwtCsd(homedir,'OLD',params,'Awake');
 runCwtCsd(homedir,'YNG',params,'Awake');
 
@@ -128,14 +120,32 @@ runCwtCsd(homedir,'YNG',params,'Awake');
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
-% if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-% PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
-% PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
-
-PermutationTest_Area(homedir,'Phase',params,yespermute,'Awake')
+    yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+    PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
 
 % create .csv with all of the ITPC means per stim presentation/subject/layer
 for iCon = 1:length(params.condList)
-    igetITPCmean(homedir,params.groups,params.condList{iCon},'Phase','Awake')
+    igetITPCmean(homedir,{'OLD' 'YNG'},params.condList{iCon},'Phase','Awake')
 end
+
+%% ISPC 
+
+params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70'}; 
+LaminarPhaseLocking(homedir,'OLD',params)
+LaminarPhaseLocking(homedir,'YNG',params)
+params.condList = {'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'};
+LaminarPhaseLocking(homedir,'OLD',params)
+% figures
+params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70',...
+    'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'}; 
+interlamPhaseFig(homedir,{'OLD' 'YNG'},params)
+
+%% Pretty up all the figures for straight .png output
+
+% single group pictures
+% currently set up for Noise Burst, possible to adjust for others if
+% desired
+ncolums = 4;
+Group_single_CSD(homedir, 'OLD', 'NoiseBurst70',  c_axis, ncolums)
+Group_single_CSD(homedir, 'OLD', 'NoiseBurst80',  c_axis, ncolums)
+Group_single_CSD(homedir, 'YNG', 'NoiseBurst70',  c_axis, ncolums)

@@ -1,4 +1,4 @@
-function LaminarPhaseLocking(homedir,params)
+function LaminarPhaseLocking(homedir,Group,params)
 % this function calculates phase coherence between layers based off of data
 % from \output\WToutput. It saves table of traces averaged over phase
 % coherence matrix: spectral frequency x time. Tables are saved with all
@@ -16,17 +16,16 @@ beta_high = (34:38);    %(19:30);
 gamma_low = (26:33);    %(31:60);
 gamma_high = (19:25);   %(61:100);
 
+% set up subject call lists
+run([Group '.m'])
+subList = animals; 
 
 for iCond = 1:length(params.condList) 
 
     [stimList, ~, ~, ~, ~] = ...
-        StimVariable(params.condList{iCond},1);
+        StimVariable(params.condList{iCond},1,'Awake');
 
     for iStim = 1:length(stimList) 
-
-        cd (homedir); cd output; cd WToutput
-        input = dir(['*_' params.condList{iCond}...
-            '_' num2str(stimList(iStim)) '_WT.mat']);
 
         % initialize table out
         sz = [10000 11]; % length will be cut at the end
@@ -37,8 +36,11 @@ for iCond = 1:length(params.condList)
         dTab = table('Size',sz,'VariableTypes',varTypes,'VariableNames',varNames);
         count = 1; % I'm sorry 
 
-        for iIn = 1:length(input) 
-            load(input(iIn).name, 'wtTable')
+        for iIn = 1:length(subList) 
+            input =  [subList{iIn} '_' params.condList{iCond}...
+                '_' num2str(stimList(iStim)) '_WT.mat'];
+
+            load(input, 'wtTable')
 
             % loop through layer comparisons (if iLay == 'II', iComp -> 'IV' - 'VI')
             for iLay = 1:(length(params.layers)-1) 
@@ -77,7 +79,7 @@ for iCond = 1:length(params.condList)
 
                         % sanity check %
                         % Phasefig = tiledlayout('flow');
-                        % title(Phasefig,[input(1).name])
+                        % title(Phasefig,input)
                         % xlabel(Phasefig, 'time [ms]')
                         % 
                         % nexttile
@@ -91,13 +93,13 @@ for iCond = 1:length(params.condList)
                         % colorbar
                         % 
                         % nexttile
-                        % plot(GHtrace,'LineWidth',2);
+                        % plot(GHtracehold(iTr,:),'LineWidth',2);
                         % hold on
-                        % plot(GLtrace,'LineWidth',2)
-                        % plot(BHtrace,'LineWidth',2);
-                        % plot(BLtrace,'LineWidth',2);
-                        % plot(Atrace,'LineWidth',2);
-                        % plot(Ttrace,'LineWidth',2);
+                        % plot(GLtracehold(iTr,:),'LineWidth',2)
+                        % plot(BHtracehold(iTr,:),'LineWidth',2);
+                        % plot(BLtracehold(iTr,:),'LineWidth',2);
+                        % plot(Atracehold(iTr,:),'LineWidth',2);
+                        % plot(Ttracehold(iTr,:),'LineWidth',2);
                         % xline(400,'LineWidth',2)
                         % legend('High Gamma', 'Low Gamma', 'High Beta', 'Low Beta','Alpha','Theta','Onset')
                         % ylabel('Phase Coherence')
@@ -117,7 +119,7 @@ for iCond = 1:length(params.condList)
                     % "Subject","Condition","Stim",
                     % "Lay 1","Lay 2","GHtrace",
                     % "GLtrace","BHtrace","BLtrace","Atrace","Ttrace"
-                    dTab(count,:) = {input(iIn).name(1:5),params.condList{iCond},stimList(iStim)...
+                    dTab(count,:) = {subList{iIn},params.condList{iCond},stimList(iStim)...
                         params.layers{iLay},params.layers{iComp},{GHtrace},...
                         {GLtrace},{BHtrace},{BLtrace},{Atrace},{Ttrace}};
                     count = count + 1;
@@ -138,7 +140,7 @@ for iCond = 1:length(params.condList)
             mkdir('InterLam_PhaseCo');
         end
         cd InterLam_PhaseCo
-        savename = ['InterLam_' params.condList{iCond} '_' num2str(stimList(iStim)) '.mat'];
+        savename = ['InterLam_' Group '_' params.condList{iCond} '_' num2str(stimList(iStim)) '.mat'];
         save(savename, 'dTab')
 
     end % stimulus

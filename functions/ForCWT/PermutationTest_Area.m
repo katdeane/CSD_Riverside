@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,params,yespermute,type)
+function PermutationTest_Area(homedir,whichtest,Groups,params,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -28,7 +28,6 @@ end
 
 BL = 399;
 
-Groups=params.groups;
 % set up subject call lists
 run([Groups{1} '.m'])
 grp1sub = animals; 
@@ -45,28 +44,33 @@ for iCond = 1:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
-    % condition specific info
-    % if matches(animals(iSub),'FOS01') 
-    %     [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
-    %         StimVariableCWT(params.condList{iCond},1,'Awake1');
-    % else
-        [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
-            StimVariableCWT(params.condList{iCond},1,type);
-    % end
-    % timeAxis = BL + stimDur + stimITI; % time axis for visualization
-    % compTime1 = BL+compDur1+1; % time of onset permutation comparison
-    % compTime2 = cellfun(@(x) x+BL+1, compDur2, 'UniformOutput',false); % time of permutation comparison
+    [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
+        StimVariableCWT(params.condList{iCond},1,type);
+    
+    % old 80 dB to be compared with young 70 dB
+    if contains(params.condList{iCond},'80')
+        if matches(Groups{1},'YNG')
+            grp1cond = [params.condList{iCond}(1:end-2) '70'];
+        else
+            grp1cond = params.condList{iCond};
+        end
+        if matches(Groups{2},'YNG')
+            grp2cond = [params.condList{iCond}(1:end-2) '70'];
+        else
+            grp2cond = params.condList{iCond};
+        end
+    end
 
     for iStim = 1:length(stimList)
         disp(['For stimulus: ' num2str(stimList(iStim))])
 
         % stack first group data
-        load([grp1sub{1} '_' params.condList{iCond} ...
+        load([grp1sub{1} '_' grp1cond ...
             '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
         group1WT = wtTable; clear wtTable
         % start on 2 and add further input to full tables
         for iIn = 2:length(grp1sub)
-            input = [grp1sub{iIn} '_' params.condList{iCond} ...
+            input = [grp1sub{iIn} '_' grp1cond ...
             '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
@@ -76,12 +80,12 @@ for iCond = 1:length(params.condList)
         end
 
         % stack second group data
-        load([grp2sub{1} '_' params.condList{iCond} ...
+        load([grp2sub{1} '_' grp2cond ...
             '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
         group2WT = wtTable; clear wtTable
         % start on 2 and add further input to full tables
         for iIn = 2:length(grp2sub)
-            input = [grp2sub{iIn} '_' params.condList{iCond} ...
+            input = [grp2sub{iIn} '_' grp2cond ...
             '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
