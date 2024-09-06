@@ -168,7 +168,7 @@ for iSub = 1:subjects
             % take certain pre-selected windows at determined call times
             if matches(Condition, 'Pupcall30')
                 [peakout,latencyout,rmsout] = pupcall_peaks(traceCSD, ...
-                    [1, 4, 9, 13, 18]); % pup call order
+                    [1,15,29,44,60]); % pup call order ; was [1, 4, 9, 13, 18]
             else
                 [peakout,latencyout,rmsout] = consec_peaks(traceCSD, ...
                     reprate, stimDur, BL, Condition);

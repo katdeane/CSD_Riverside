@@ -16,13 +16,15 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'VMP' 'PMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
-% Condition = {'NoiseBurst'};
+% Condition = {'Pupcall30'};
 Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
 cbar = [-0.3 0.3]; % species specific based on experience, color axis
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
+% something was off with PMP09's pup call measurement and it needed to be
+% resampled just a tiny bit. Concerning...
 DynamicCSD(homedir, Condition, Groups, cbar, 'Anesthetized')
 
 % special cases if you rerun the DynamicCSD, run this too
@@ -44,16 +46,16 @@ end
 
 % this is specifically to explore temporal dynamics over recording day and
 % uses single trial peak detection CSVs created by Avrec_Layers.m
-
-disp('Determining cortical strength over time')
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['For ' Groups{iGro} ' ' Condition{iST}])
-        tic 
-        StrengthxTime(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
-        toc
-    end
-end
+% 
+% disp('Determining cortical strength over time')
+% for iGro = 1:length(Groups)
+%     for iST = 1:length(Condition)
+%         disp(['For ' Groups{iGro} ' ' Condition{iST}])
+%         tic 
+%         StrengthxTime(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+%         toc
+%     end
+% end
 
 %% group pics
 
@@ -84,9 +86,10 @@ end
 %% Peak Stats
 
 PCal_ClickTrainStats5(homedir,Groups)
-PCal_ClickTrainStats40(homedir,Groups)
+% PCal_ClickTrainStats40(homedir,Groups)
 
-PCal_PupcallStats(homedir,Groups,[1,4,9,13,18])
+PCal_PupcallStats(homedir,Groups,[1,15,29,44,60]) % was [1,4,9,13,18]
+ITPCmeanfigsPCal(homedir)
 
 %% mTF analysis 
 
@@ -95,10 +98,10 @@ PCal_PupcallStats(homedir,Groups,[1,4,9,13,18])
 % Output:   Cross validation, trained model, and predicted data figures for
 %           each subject. Stat data, error and pearson's r for full
 %           multiTRF, low broadband and high broadband TRF models. 
-Pipeline_mTRF(homedir,Groups)
+% Pipeline_mTRF(homedir,Groups)
 
 %% CSD permutation analysis 
-Condition = {'NoiseBurst' 'Pupcall30' 'ClickTrain'};
+% Condition = {'NoiseBurst' 'Pupcall30' 'ClickTrain'};
 for iSti = 1:length(Condition)
     PermutationTest_CSDArea(homedir,Condition{iSti},Groups,1,'Anesthetized')
 end
@@ -115,7 +118,7 @@ params.groups = {'VMP','PMP'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'PMP',params,'Anesthetized');
-runCwtCsd(homedir,'VMP',params,'Anesthetized');
+% runCwtCsd(homedir,'VMP',params,'Anesthetized');
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -132,14 +135,17 @@ if yespermute == 1; parpool(3); end % 4 workers in an 8 core machine with 64 gb 
 % PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
 % PermutationTest(homedir,'Phase',params,yespermute,'Anesthetized')
 
-params.condList = {'ClickTrain','gapASSR'}; %
-PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+% params.condList = {'ClickTrain','gapASSR'}; %
+% PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
 
 params.condList = {'Pupcall'}; % needs to be broken down by layers earlier
 PermutationTest_PupcallArea(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
 
 delete(gcp('nocreate')) % end this par session
 
+% get the ITPC mean across time
+igetITPCmeanPCal(homedir,{'VMP' 'PMP'},'Phase')
+% now plot and test it 
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
@@ -161,7 +167,7 @@ plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRE
 % interlamPhaseFig(homedir,params)
 
 %% Subject specific pup call visualization
-subject = 'PMP03';
+subject = 'PMP09';
 
 PupcallCSD(homedir,subject,cbar) % having run DynamicCSD
 PupcallTraces(homedir,subject) % having run DynamicCSD
@@ -176,3 +182,5 @@ GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
 GroupPupcallTraces(homedir,'PMP','Anesthetized') % having run Avrec_Layers
 GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
+
+cutPupcallFig(homedir,[1, 18, 30, 44, 60], [1 5 10])

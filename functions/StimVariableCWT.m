@@ -27,6 +27,7 @@ if matches(type, 'Anesthetized')
         thisTag  = 'noise';
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
+        ITPCwin = {1:400};
 
     elseif matches(Condition,'Tonotopy')
         stimList = [1, 2, 4, 8, 16, 24, 32];
@@ -36,6 +37,8 @@ if matches(type, 'Anesthetized')
         thisTag  = 'Tonotopy';
         % post processing
         compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
+        % for ITPCmean
+        ITPCwin = {1:600};
 
     elseif matches(Condition,'Spontaneous') || ...
             matches(Condition,'postSpont')
@@ -45,6 +48,8 @@ if matches(type, 'Anesthetized')
         stimITI  = 1000*sr_mult;
         thisTag  = 'spont';
         compDur2 = 0; % probably don't need
+        % for ITPCmean
+        ITPCwin = {1:2000};
 
     elseif matches(Condition,'ClickTrain')
         stimList = [1, 5, 10, 20, 40, 80];
@@ -55,6 +60,8 @@ if matches(type, 'Anesthetized')
         % ASSR reached
         compDur2 = {1000:1500; 1000:1500; 1000:1500; ...
             1000:1500; 1000:1500; 1000:1500; 1000:1500};
+        % for ITPCmean
+        ITPCwin = {1000:2000};
 
     elseif matches(Condition,'Chirp')
         stimList = 1;
@@ -79,6 +86,8 @@ if matches(type, 'Anesthetized')
         % 4th gap in noise block
         compDur2 = {1750:2000; 1750:2000; 1750:2000; ...
             1750:2000; 1750:2000; 1750:2000; 1750:2000};
+        % for ITPCmean
+        ITPCwin = {1250:3000}; % from 3rd gap-noise block to last (no final noise block)
 
     elseif contains(Condition,'Pupcall')
         stimList = 1;

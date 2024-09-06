@@ -60,7 +60,11 @@ for iGro = 1:length(Groups)
                     file = [name(1:5) '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     tic
-                    [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}),type);
+                    if matches(file,'PMP09_05_LFP')
+                        [StimIn, DataIn] = FileReaderLFPresamp(file,str2num(channels{iA}),type);
+                    else
+                        [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}),type);
+                    end
 
                     % The next part depends on the stimulus; pull the
                     % relevant variables

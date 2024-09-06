@@ -96,33 +96,34 @@ for iLay = 1:length(layers)
     ylabel('Peak Amplitude [mV/mm²]')
     title('Trial-Average Peaks')
 
-    nexttile 
-    shadedErrorBar(1:size(avg1stk,2),nanmean(avg1stk,1),nanstd(avg1stk,0,1),'lineprops','b')
-    hold on 
-    shadedErrorBar(1:size(avg2stk,2),nanmean(avg2stk,1),nanstd(avg2stk,0,1),'lineprops','r')    
-    xlabel('Callss')
-    ylabel('PeakAmp [mV/mm²] mean and std')
-    title('Trial-Average Peaks')
-
-
     % onset peak
     avg1onpeak = avg1stk(:,1);
     avg2onpeak = avg2stk(:,1);
     
-    xboxPA = [avg1onpeak; avg2onpeak; avg1stk(:,2); avg2stk(:,2);...
-        avg1stk(:,3); avg2stk(:,3); avg1stk(:,4); avg2stk(:,4);...
-        avg1stk(:,5); avg2stk(:,5);];
+    xboxPA = [nanmean(avg1onpeak), nanmean(avg2onpeak), nanmean(avg1stk(:,2)),...
+        nanmean(avg2stk(:,2)), nanmean(avg1stk(:,3)), nanmean(avg2stk(:,3)),...
+        nanmean(avg1stk(:,4)), nanmean(avg2stk(:,4)), nanmean(avg1stk(:,5)),...
+        nanmean(avg2stk(:,5))];
 
-    yboxes  = [repmat({'Grp1 1'},grp1size,1);repmat({'Grp2 1'},grp2size,1);
-        repmat({'Grp1 2'},grp1size,1);repmat({'Grp2 2'},grp2size,1);
-        repmat({'Grp1 3'},grp1size,1);repmat({'Grp2 3'},grp2size,1);
-        repmat({'Grp1 4'},grp1size,1);repmat({'Grp2 4'},grp2size,1);
-        repmat({'Grp1 5'},grp1size,1);repmat({'Grp2 5'},grp2size,1)];
+    semPA = [nanstd(avg1onpeak)/sqrt(length(avg1onpeak)), ...
+        nanstd(avg2onpeak)/sqrt(length(avg2onpeak)), nanstd(avg1stk(:,2))/sqrt(length(avg1stk(:,2))),...
+        nanstd(avg2stk(:,2))/sqrt(length(avg2stk(:,2))), nanstd(avg1stk(:,3))/sqrt(length(avg1stk(:,3))),...
+        nanstd(avg2stk(:,3))/sqrt(length(avg2stk(:,3))),...
+        nanstd(avg1stk(:,4))/sqrt(length(avg1stk(:,4))), nanstd(avg2stk(:,4))/sqrt(length(avg2stk(:,4))),...
+        nanstd(avg1stk(:,5))/sqrt(length(avg1stk(:,5))),...
+        nanstd(avg2stk(:,5))/sqrt(length(avg2stk(:,5)))];
 
     nexttile
-    boxplot(xboxPA,yboxes,'Notch','on')
+    bar(xboxPA)
+    hold on
+    errorbar(xboxPA,semPA,'LineStyle','none')
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Calls')
+    xticklabels({[Groups{1} ' ' num2str(call_list(1))] [Groups{2} ' ' num2str(call_list(1))]...
+        [Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
+        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
+        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
+        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
     title('Trial-Average Peaks')
 
     % here we're going to calculate the ratios and store them for stats
@@ -136,33 +137,29 @@ for iLay = 1:length(layers)
     avg2r4 = avg2stk(:,4)./avg2onpeak;
     avg2r5 = avg2stk(:,5)./avg2onpeak;
     
-    xboxPAratio = [avg1r2; avg2r2; avg1r3; avg2r3;...
-        avg1r4; avg2r4; avg1r5; avg2r5];
+    xboxPAratio = [nanmean(avg1r2), nanmean(avg2r2), nanmean(avg1r3),...
+        nanmean(avg2r3), nanmean(avg1r4), nanmean(avg2r4),...
+        nanmean(avg1r5), nanmean(avg2r5)];
 
-    yboxesratio  = [repmat({'Grp1 2/1'},grp1size,1);repmat({'Grp2 2/1'},grp2size,1);
-        repmat({'Grp1 3/1'},grp1size,1);repmat({'Grp2 3/1'},grp2size,1);
-        repmat({'Grp1 4/1'},grp1size,1);repmat({'Grp2 4/1'},grp2size,1);
-        repmat({'Grp1 5/1'},grp1size,1);repmat({'Grp2 5/1'},grp2size,1)];
+    semPAratio = [nanstd(avg1r2)/sqrt(length(avg1r2)), ...
+        nanstd(avg2r2)/sqrt(length(avg2r2)), nanstd(avg1r3)/sqrt(length(avg1r3)),...
+        nanstd(avg2r3)/sqrt(length(avg2r3)), nanstd(avg1r4)/sqrt(length(avg1r4)),...
+        nanstd(avg2r4)/sqrt(length(avg2r4)), nanstd(avg1r5)/sqrt(length(avg1r5)),...
+        nanstd(avg2r5)/sqrt(length(avg2r5))];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio,'Notch','on')
+    bar(xboxPAratio)
+    hold on
+    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Call')
+    xticklabels({[Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
+        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
+        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
+        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
     title('Trial-Average Peaks')
 
     % single trial data
-    nexttile 
-    hold on 
-    for itrial = 1:50
-        plot(sgl1stk(:,:,itrial)','color',color12)
-        plot(sgl2stk(:,:,itrial)','color',color22)
-    end
-    plot(nanmean(nanmean(sgl1stk,1),3),'color',color11,'LineWidth',4)
-    plot(nanmean(nanmean(sgl2stk,1),3),'color',color21,'LineWidth',4)
-    xlabel('Calls')
-    ylabel('Peak Amplitude [mV/mm²]')
-    title('Single Trial Peaks')
-
     nexttile 
     shadedErrorBar(1:size(sgl1stk,2),nanmean(nanmean(sgl1stk,3),1),nanstd(nanmean(sgl1stk,3),0,1),'lineprops','b')
     hold on 
@@ -202,19 +199,30 @@ for iLay = 1:length(layers)
         sgl2_5(count:countto)    = squeeze(sgl2stk(iSub,5,:));
     end
     
-   xboxPA = [sgl1onpeak; sgl2onpeak; sgl1_2; sgl2_2;...
-        sgl1_3; sgl2_3; sgl1_4; sgl2_4; sgl1_5; sgl2_5];
+    xboxPA = [nanmean(sgl1onpeak), nanmean(sgl2onpeak), nanmean(sgl1_2),...
+        nanmean(sgl2_2), nanmean(sgl1_3), nanmean(sgl2_3), nanmean(sgl1_4),...
+        nanmean(sgl2_4), nanmean(sgl1_5), nanmean(sgl2_5)];
 
-    yboxes  = [repmat({'Grp1 1'},grp1size*50,1);repmat({'Grp2 1'},grp2size*50,1);
-        repmat({'Grp1 2'},grp1size*50,1);repmat({'Grp2 2'},grp2size*50,1);
-        repmat({'Grp1 3'},grp1size*50,1);repmat({'Grp2 3'},grp2size*50,1);
-        repmat({'Grp1 4'},grp1size*50,1);repmat({'Grp2 4'},grp2size*50,1);
-        repmat({'Grp1 5'},grp1size*50,1);repmat({'Grp2 5'},grp2size*50,1)];
+
+    semPA = [nanstd(sgl1onpeak)/sqrt(length(sgl1onpeak)), ...
+        nanstd(sgl2onpeak)/sqrt(length(sgl2onpeak)), nanstd(sgl1_2)/sqrt(length(sgl1_2)),...
+        nanstd(sgl2_2)/sqrt(length(sgl2_2)), nanstd(sgl1_3)/sqrt(length(sgl1_3)),...
+        nanstd(sgl2_3)/sqrt(length(sgl2_3)),...
+        nanstd(sgl1_4)/sqrt(length(sgl1_4)), nanstd(sgl2_4)/sqrt(length(sgl2_4)),...
+        nanstd(sgl1_5)/sqrt(length(sgl1_5)),...
+        nanstd(sgl2_5)/sqrt(length(sgl2_5))];
 
     nexttile
-    boxplot(xboxPA,yboxes,'Notch','on','Symbol','')
+    bar(xboxPA)
+    hold on
+    errorbar(xboxPA,semPA,'LineStyle','none')
     ylabel('Peak Amplitude [mV/mm²]')
-    xlabel('Group / Call')
+    xlabel('Group / Calls')
+    xticklabels({[Groups{1} ' ' num2str(call_list(1))] [Groups{2} ' ' num2str(call_list(1))]...
+        [Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
+        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
+        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
+        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
     title('Single Trial Peaks')
 
     % here we're going to calculate the ratios and store them for stats
@@ -227,19 +235,27 @@ for iLay = 1:length(layers)
     sgl2r3 = sgl2_3./sgl2onpeak;
     sgl2r4 = sgl2_4./sgl2onpeak;
     sgl2r5 = sgl2_5./sgl2onpeak;
-    
-    xboxPAratio = [sgl1r2; sgl2r2; sgl1r3; sgl2r3;...
-        sgl1r4; sgl2r4; sgl1r5; sgl2r5];
 
-    yboxesratio  = [repmat({'Grp1 2/1'},grp1size*50,1);repmat({'Grp2 2/1'},grp2size*50,1);
-        repmat({'Grp1 3/1'},grp1size*50,1);repmat({'Grp2 3/1'},grp2size*50,1);
-        repmat({'Grp1 4/1'},grp1size*50,1);repmat({'Grp2 4/1'},grp2size*50,1);
-        repmat({'Grp1 5/1'},grp1size*50,1);repmat({'Grp2 5/1'},grp2size*50,1)];
+    xboxPAratio = [nanmean(sgl1r2), nanmean(sgl2r2), nanmean(sgl1r3),...
+        nanmean(sgl2r3), nanmean(sgl1r4), nanmean(sgl2r4),...
+        nanmean(sgl1r5), nanmean(sgl2r5)];
+
+    semPAratio = [nanstd(sgl1r2)/sqrt(length(sgl1r2)), ...
+        nanstd(sgl2r2)/sqrt(length(sgl2r2)), nanstd(sgl1r3)/sqrt(length(sgl1r3)),...
+        nanstd(sgl2r3)/sqrt(length(sgl2r3)), nanstd(sgl1r4)/sqrt(length(sgl1r4)),...
+        nanstd(sgl2r4)/sqrt(length(sgl2r4)), nanstd(sgl1r5)/sqrt(length(sgl1r5)),...
+        nanstd(sgl2r5)/sqrt(length(sgl2r5))];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio,'Notch','on','Symbol','')
+    bar(xboxPAratio)
+    hold on
+    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Call')
+    xticklabels({[Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
+        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
+        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
+        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
     title('Single Trial Peaks')
 
 
@@ -251,6 +267,7 @@ for iLay = 1:length(layers)
     cd PeakPlots
     h = gcf;
     savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall']);
+    exportgraphics(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall.pdf'])
     close(h)
 
     %% no more stalling, it's stats time

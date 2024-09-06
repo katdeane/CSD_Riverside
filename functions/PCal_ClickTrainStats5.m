@@ -37,15 +37,13 @@ grp1avg = grp1avg(grp1avg.ClickFreq == stimfreq,:);
 grp2avg = grp2avg(grp2avg.ClickFreq == stimfreq,:);
 
 % initiate a huge stats table for the lawls (for the stats)
-PeakStats = table('Size',[length(layers)*length(statfill) 20],'VariableTypes',...
+PeakStats = table('Size',[length(layers)*length(statfill) 12],'VariableTypes',...
             {'string','string','double','double','double','double','double',...
-            'double','double','double','double','double','double','double',...
-            'double','double','double','double','double','double'});
+            'double','double','double','double','double'});
 
 % S = single, A = average, TH = thalamic, CO = cortical, CN = continue
 PeakStats.Properties.VariableNames = ["Layer", "stat", "SON",...
-    "S2", "S3", "S4","S5","Srat2","Srat3","Srat4","Srat5",...
-    "AON", "A2", "A3", "A4","A5","Arat2","Arat3","Arat4","Arat5"];
+    "S5", "S10", "Srat5", "Srat10", "AON", "A5", "A10", "Arat5", "Arat10"];
 
 for iLay = 1:length(layers)
     % pull out current layer
@@ -90,7 +88,7 @@ for iLay = 1:length(layers)
     end
     
     % We're going to look at the onset response click and then the response
-    % to 2, 3, 4, 5
+    % to 5 and 10
 
     %% let's make a nice figure
     Peakfig = tiledlayout('flow');
@@ -105,150 +103,123 @@ for iLay = 1:length(layers)
     plot(nanmean(avg2stk,1),'color',color21,'LineWidth',4)
     xlabel('Clicks')
     ylabel('Peak Amplitude [mV/mm²]')
-    title('Trial-Average Peaks')
-
-    nexttile 
-    shadedErrorBar(1:size(avg1stk,2),nanmean(avg1stk,1),nanstd(avg1stk,0,1),'lineprops','b')
-    hold on 
-    shadedErrorBar(1:size(avg2stk,2),nanmean(avg2stk,1),nanstd(avg2stk,0,1),'lineprops','r')    
-    xlabel('Clicks')
-    ylabel('PeakAmp [mV/mm²] mean and std')
-    title('Trial-Average Peaks')
-
+    title('Trial-Average Peaks')    
 
     % onset peak
+    % nexttile
+    % errorbar(nanmean(avg1stk),nanstd(avg1stk)/sqrt(size(avg1stk,2)),'color',color11,'LineWidth',1)
+    % hold on 
+    % errorbar(nanmean(avg2stk),nanstd(avg1stk)/sqrt(size(avg2stk,2)),'color',color21,'LineWidth',1)
+    % xlabel('Clicks')
+    % ylabel('Peak Amplitude [mV/mm²]')
+    % title('Trial-Average Peaks') 
+
     avg1onpeak = avg1stk(:,1);
     avg2onpeak = avg2stk(:,1);
     
-    xboxPA = [avg1onpeak; avg2onpeak; avg1stk(:,2); avg2stk(:,2);...
-        avg1stk(:,3); avg2stk(:,3); avg1stk(:,4); avg2stk(:,4);...
-        avg1stk(:,5); avg2stk(:,5);];
+    xboxPA = [nanmean(avg1onpeak), nanmean(avg2onpeak), nanmean(avg1stk(:,5)), ...
+        nanmean(avg2stk(:,5)), nanmean(avg1stk(:,10)), nanmean(avg2stk(:,10))];
 
-    yboxes  = [repmat({'Grp1 1'},grp1size,1);repmat({'Grp2 1'},grp2size,1);
-        repmat({'Grp1 2'},grp1size,1);repmat({'Grp2 2'},grp2size,1);
-        repmat({'Grp1 3'},grp1size,1);repmat({'Grp2 3'},grp2size,1);
-        repmat({'Grp1 4'},grp1size,1);repmat({'Grp2 4'},grp2size,1);
-        repmat({'Grp1 5'},grp1size,1);repmat({'Grp2 5'},grp2size,1)];
+    semPA = [nanstd(avg1onpeak)/sqrt(length(avg1onpeak)), ...
+        nanstd(avg2onpeak)/sqrt(length(avg2onpeak)), nanstd(avg1stk(:,5))/sqrt(length(avg1stk(:,5))), ...
+        nanstd(avg2stk(:,5))/sqrt(length(avg2stk(:,5))), ...
+        nanstd(avg1stk(:,10))/sqrt(length(avg1stk(:,10))), nanstd(avg2stk(:,10))/sqrt(length(avg2stk(:,10)))];
 
     nexttile
-    boxplot(xboxPA,yboxes,'Notch','on')
+    bar(xboxPA)  
+    hold on
+    errorbar(xboxPA,semPA,'LineStyle', 'none')
+    xticklabels({[Groups{1} ' onset'] [Groups{2} ' onset'] [Groups{1} ' 5th']...
+        [Groups{2} ' 5th'] [Groups{1} ' 10th'] [Groups{2} ' 10th']})
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Trial-Average Peaks')
 
     % here we're going to calculate the ratios and store them for stats
-    avg1r2 = avg1stk(:,2)./avg1onpeak;
-    avg1r3 = avg1stk(:,3)./avg1onpeak;
-    avg1r4 = avg1stk(:,4)./avg1onpeak;
-    avg1r5 = avg1stk(:,5)./avg1onpeak;
+    avg1r5  = avg1stk(:,5)./avg1onpeak;
+    avg1r10 = avg1stk(:,10)./avg1onpeak;
 
-    avg2r2 = avg2stk(:,2)./avg2onpeak;
-    avg2r3 = avg2stk(:,3)./avg2onpeak;
-    avg2r4 = avg2stk(:,4)./avg2onpeak;
-    avg2r5 = avg2stk(:,5)./avg2onpeak;
+    avg2r5  = avg2stk(:,5)./avg2onpeak;
+    avg2r10 = avg2stk(:,10)./avg2onpeak;
     
-    xboxPAratio = [avg1r2; avg2r2; avg1r3; avg2r3;...
-        avg1r4; avg2r4; avg1r5; avg2r5];
+    xboxPAratio = [nanmean(avg1r5), nanmean(avg2r5), nanmean(avg1r10), ...
+        nanmean(avg2r10)];
 
-    yboxesratio  = [repmat({'Grp1 2/1'},grp1size,1);repmat({'Grp2 2/1'},grp2size,1);
-        repmat({'Grp1 3/1'},grp1size,1);repmat({'Grp2 3/1'},grp2size,1);
-        repmat({'Grp1 4/1'},grp1size,1);repmat({'Grp2 4/1'},grp2size,1);
-        repmat({'Grp1 5/1'},grp1size,1);repmat({'Grp2 5/1'},grp2size,1)];
+    semPAratio = [nanstd(avg1r5)/sqrt(length(avg1r5)), ...
+        nanstd(avg2r5)/sqrt(length(avg2r5)), nanstd(avg1r10)/sqrt(length(avg1r10)), ...
+        nanstd(avg2r10)/sqrt(length(avg2r10))];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio,'Notch','on')
+    bar(xboxPAratio)
+    hold on
+    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
+    xticklabels({[Groups{1} ' 5/1'] [Groups{2} ' 5/1'] [Groups{1} ' 10/1'] [Groups{2} ' 10/1']})
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Trial-Average Peaks')
 
     % single trial data
-    nexttile 
-    hold on 
-    for itrial = 1:50
-        plot(sgl1stk(:,:,itrial)','color',color12)
-        plot(sgl2stk(:,:,itrial)','color',color22)
-    end
-    plot(nanmean(nanmean(sgl1stk,1),3),'color',color11,'LineWidth',4)
-    plot(nanmean(nanmean(sgl2stk,1),3),'color',color21,'LineWidth',4)
-    xlabel('Clicks')
-    ylabel('Peak Amplitude [mV/mm²]')
-    title('Single Trial Peaks')
-
-    nexttile 
-    shadedErrorBar(1:size(sgl1stk,2),nanmean(nanmean(sgl1stk,3),1),nanstd(nanmean(sgl1stk,3),0,1),'lineprops','b')
-    hold on 
-    shadedErrorBar(1:size(sgl2stk,2),nanmean(nanmean(sgl2stk,3),1),nanstd(nanmean(sgl2stk,3),0,1),'lineprops','r')    
-    xlabel('Clicks')
-    ylabel('PeakAmp [mV/mm²] mean and std')
-    title('Single Trial Peaks')
 
     % we will take the max peak click determined in averaged data
     % we also have to stack the data appropriately
     sgl1onpeak = nan(length(avg1onpeak)*50,1);
-    sgl1_2    = nan(length(sgl1onpeak),1);
-    sgl1_3    = nan(length(sgl1onpeak),1);
-    sgl1_4    = nan(length(sgl1onpeak),1);
     sgl1_5    = nan(length(sgl1onpeak),1);
+    sgl1_10   = nan(length(sgl1onpeak),1);
     for iSub = 1:length(avg1onpeak)
         count = ((iSub-1)*50)+1;
         countto = count+49;
         sgl1onpeak(count:countto) = squeeze(sgl1stk(iSub,avg1stk(iSub,:)==avg1onpeak(iSub),:));
-        sgl1_2(count:countto)    = squeeze(sgl1stk(iSub,2,:));
-        sgl1_3(count:countto)    = squeeze(sgl1stk(iSub,3,:));
-        sgl1_4(count:countto)    = squeeze(sgl1stk(iSub,4,:));
-        sgl1_5(count:countto)    = squeeze(sgl1stk(iSub,5,:));
+        sgl1_5(count:countto)     = squeeze(sgl1stk(iSub,5,:));
+        sgl1_10(count:countto)    = squeeze(sgl1stk(iSub,10,:));
     end
     sgl2onpeak = nan(length(avg2onpeak)*50,1);
-    sgl2_2    = nan(length(sgl2onpeak),1);
-    sgl2_3    = nan(length(sgl2onpeak),1);
-    sgl2_4    = nan(length(sgl2onpeak),1);
     sgl2_5    = nan(length(sgl2onpeak),1);
+    sgl2_10   = nan(length(sgl2onpeak),1);
     for iSub = 1:length(avg2onpeak)
         count = ((iSub-1)*50)+1;
         countto = count+49;
         sgl2onpeak(count:countto) = squeeze(sgl2stk(iSub,avg2stk(iSub,:)==avg2onpeak(iSub),:));
-        sgl2_2(count:countto)    = squeeze(sgl2stk(iSub,2,:));
-        sgl2_3(count:countto)    = squeeze(sgl2stk(iSub,3,:));
-        sgl2_4(count:countto)    = squeeze(sgl2stk(iSub,4,:));
-        sgl2_5(count:countto)    = squeeze(sgl2stk(iSub,5,:));
+        sgl2_5(count:countto)     = squeeze(sgl2stk(iSub,5,:));
+        sgl2_10(count:countto)    = squeeze(sgl2stk(iSub,10,:));
     end
-    
-   xboxPA = [sgl1onpeak; sgl2onpeak; sgl1_2; sgl2_2;...
-        sgl1_3; sgl2_3; sgl1_4; sgl2_4; sgl1_5; sgl2_5];
 
-    yboxes  = [repmat({'Grp1 1'},grp1size*50,1);repmat({'Grp2 1'},grp2size*50,1);
-        repmat({'Grp1 2'},grp1size*50,1);repmat({'Grp2 2'},grp2size*50,1);
-        repmat({'Grp1 3'},grp1size*50,1);repmat({'Grp2 3'},grp2size*50,1);
-        repmat({'Grp1 4'},grp1size*50,1);repmat({'Grp2 4'},grp2size*50,1);
-        repmat({'Grp1 5'},grp1size*50,1);repmat({'Grp2 5'},grp2size*50,1)];
+    xboxPA = [nanmean(sgl1onpeak), nanmean(sgl2onpeak), nanmean(sgl1_5), ...
+        nanmean(sgl2_5), nanmean(sgl1_10), nanmean(sgl2_10)];
+
+    semPA = [nanstd(sgl1onpeak)/sqrt(length(sgl1onpeak)), ...
+        nanstd(sgl2onpeak)/sqrt(length(sgl2onpeak)), nanstd(sgl1_5)/sqrt(length(sgl1_5)), ...
+        nanstd(sgl2_5)/sqrt(length(sgl2_5)), nanstd(sgl1_10)/sqrt(length(sgl1_10)), ...
+        nanstd(sgl2_10)/sqrt(length(sgl2_10))];
 
     nexttile
-    boxplot(xboxPA,yboxes,'Notch','on','Symbol','')
+    bar(xboxPA)  
+    hold on
+    errorbar(xboxPA,semPA,'LineStyle', 'none')
+    xticklabels({[Groups{1} ' onset'] [Groups{2} ' onset'] [Groups{1} ' 5th']...
+        [Groups{2} ' 5th'] [Groups{1} ' 10th'] [Groups{2} ' 10th']})
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Single Trial Peaks')
 
     % here we're going to calculate the ratios and store them for stats
-    sgl1r2 = sgl1_2./sgl1onpeak;
-    sgl1r3 = sgl1_3./sgl1onpeak;
-    sgl1r4 = sgl1_4./sgl1onpeak;
-    sgl1r5 = sgl1_5./sgl1onpeak;
+    sgl1r5  = sgl1_5./sgl1onpeak;
+    sgl1r10 = sgl1_10./sgl1onpeak;
 
-    sgl2r2 = sgl2_2./sgl2onpeak;
-    sgl2r3 = sgl2_3./sgl2onpeak;
-    sgl2r4 = sgl2_4./sgl2onpeak;
-    sgl2r5 = sgl2_5./sgl2onpeak;
+    sgl2r5  = sgl2_5./sgl2onpeak;
+    sgl2r10 = sgl2_10./sgl2onpeak;
     
-    xboxPAratio = [sgl1r2; sgl2r2; sgl1r3; sgl2r3;...
-        sgl1r4; sgl2r4; sgl1r5; sgl2r5];
+    xboxPAratio = [nanmean(sgl1r5), nanmean(sgl2r5), nanmean(sgl1r10), ...
+        nanmean(sgl2r10)];
 
-    yboxesratio  = [repmat({'Grp1 2/1'},grp1size*50,1);repmat({'Grp2 2/1'},grp2size*50,1);
-        repmat({'Grp1 3/1'},grp1size*50,1);repmat({'Grp2 3/1'},grp2size*50,1);
-        repmat({'Grp1 4/1'},grp1size*50,1);repmat({'Grp2 4/1'},grp2size*50,1);
-        repmat({'Grp1 5/1'},grp1size*50,1);repmat({'Grp2 5/1'},grp2size*50,1)];
+    semPAratio = [nanstd(sgl1r5)/sqrt(length(sgl1r5)), ...
+        nanstd(sgl2r5)/sqrt(length(sgl2r5)), nanstd(sgl1r10)/sqrt(length(sgl1r10)), ...
+        nanstd(sgl2r10)/sqrt(length(sgl2r10))];
 
     nexttile
-    boxplot(xboxPAratio,yboxesratio,'Notch','on','Symbol','')
+    bar(xboxPAratio)
+    hold on
+    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
+    xticklabels({[Groups{1} ' 5/1'] [Groups{2} ' 5/1'] [Groups{1} ' 10/1'] [Groups{2} ' 10/1']})
     ylabel('Ratio Peak Amplitude [mV/mm²]')
     xlabel('Group / Click')
     title('Single Trial Peaks')
@@ -262,6 +233,7 @@ for iLay = 1:length(layers)
     cd PeakPlots
     h = gcf;
     savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_ClickTrain5']);
+    exportgraphics(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_ClickTrain5.pdf'])
     close(h)
 
     %% no more stalling, it's stats time
@@ -274,61 +246,38 @@ for iLay = 1:length(layers)
     % Peak Onset
     [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1onpeak,sgl2onpeak,1,'both'); % right tail: group 1 bigger
     PeakStats.SON(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 10
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_2,sgl2_2,1,'both'); % left, group 2 is bigger
-    PeakStats.S2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 20 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_3,sgl2_3,1,'both');
-    PeakStats.S3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 40 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_4,sgl2_4,1,'both');
-    PeakStats.S4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 80 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_5,sgl2_5,1,'both');
+    % Peak 5
+    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_5,sgl2_5,1,'both'); % left, group 2 is bigger
     PeakStats.S5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    % Peak 10
+    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_10,sgl2_10,1,'both');
+    PeakStats.S10(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
 
     % Peak Ratio to onset
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r2,sgl2r2,1,'both'); 
-    PeakStats.Srat2(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r3,sgl2r3,1,'both'); 
-    PeakStats.Srat3(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r4,sgl2r4,1,'both'); 
-    PeakStats.Srat4(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
     [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r5,sgl2r5,1,'both'); 
     PeakStats.Srat5(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
+
+    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r10,sgl2r10,1,'both'); 
+    PeakStats.Srat10(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
+
 
     % Averaged
     % Peak Onset
     [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1onpeak,avg2onpeak,1,'both'); % right tail: group 1 bigger
     PeakStats.AON(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 10
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,2),avg2stk(:,2),1,'both'); % left, group 2 is bigger
-    PeakStats.A2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 20 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,3),avg2stk(:,3),1,'both');
-    PeakStats.A3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 40 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,4),avg2stk(:,4),1,'both');
-    PeakStats.A4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
-    % Peak 80 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,5),avg2stk(:,5),1,'both');
+    % Peak 5
+    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,5),avg2stk(:,5),1,'both'); % left, group 2 is bigger
     PeakStats.A5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    % Peak 10 
+    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,10),avg2stk(:,10),1,'both');
+    PeakStats.A10(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
 
     % Peak Ratio to onset
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r2,avg2r2,1,'both'); 
-    PeakStats.Arat2(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r3,avg2r3,1,'both'); 
-    PeakStats.Arat3(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r4,avg2r4,1,'both'); 
-    PeakStats.Arat4(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
     [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r5,avg2r5,1,'both'); 
     PeakStats.Arat5(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
+
+    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r10,avg2r10,1,'both'); 
+    PeakStats.Arat10(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
     
 end
 

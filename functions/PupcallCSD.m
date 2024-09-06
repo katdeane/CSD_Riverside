@@ -81,7 +81,7 @@ for iMeas = 1:length(pupCondList)
     % xline(PupTimes(:,1).*1000,'b')
     % xline(PupTimes(:,2).*1000,'r')
 
-    callList = [1 3 18 21 26 49];
+    callList = [6 18 26 49];
 
     for iCall = callList
 
