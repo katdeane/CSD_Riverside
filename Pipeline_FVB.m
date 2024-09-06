@@ -102,7 +102,7 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'};  
+params.condList = {'NoiseBurst70'}; % ,'ClickTrain80','Chirp80','gapASSR80'  
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'OLD',params,'Awake');
@@ -116,12 +116,12 @@ runCwtCsd(homedir,'YNG',params,'Awake');
 % and Cohen'd d effect size are the stats used for observed and
 % permutation difference
 % specifying Phase: phase is taken per trial. Student's t test and Cohen's
-% d effect size are the stats used for observation and permutation 
+% d effect size are the stats used for observation and permutation
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-    yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-    PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
 
 % create .csv with all of the ITPC means per stim presentation/subject/layer
 for iCon = 1:length(params.condList)
@@ -145,7 +145,16 @@ interlamPhaseFig(homedir,{'OLD' 'YNG'},params)
 % single group pictures
 % currently set up for Noise Burst, possible to adjust for others if
 % desired
-ncolums = 4;
-Group_single_CSD(homedir, 'OLD', 'NoiseBurst70',  c_axis, ncolums)
-Group_single_CSD(homedir, 'OLD', 'NoiseBurst80',  c_axis, ncolums)
-Group_single_CSD(homedir, 'YNG', 'NoiseBurst70',  c_axis, ncolums)
+ncolum = 4;
+Group_single_CSD(homedir, 'OLD', 'NoiseBurst70',  c_axis, ncolum)
+Group_single_CSD(homedir, 'OLD', 'NoiseBurst80',  c_axis, ncolum)
+Group_single_CSD(homedir, 'YNG', 'NoiseBurst70',  c_axis, ncolum)
+
+CWTorderedfigs(homedir, 'OLDvYNG', 'ClickTrain70', [0 0.6], [-0.2 0.2])
+CWTorderedfigs(homedir, 'OLDvYNG', 'ClickTrain80', [0 0.6], [-0.2 0.2])
+CWTorderedfigs(homedir, 'OLDvYNG', 'gapASSR70',    [0 0.4], [-0.15 0.15])
+CWTorderedfigs(homedir, 'OLDvYNG', 'gapASSR80',    [0 0.4], [-0.15 0.15])
+CWTorderedfigs(homedir, 'OLDvYNG', 'Chirp70',      [0 0.4], [-0.15 0.15])
+CWTorderedfigs(homedir, 'OLDvYNG', 'Chirp80',      [0 0.4], [-0.15 0.15])
+CWTorderedfigs(homedir, 'OLDvYNG', 'NoiseBurst70', [0 0.7], [-0.25 0.25])
+CWTorderedfigs(homedir, 'OLDvYNG', 'NoiseBurst80', [0 0.7], [-0.25 0.25])

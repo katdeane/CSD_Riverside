@@ -59,6 +59,9 @@ for iCond = 1:length(params.condList)
         else
             grp2cond = params.condList{iCond};
         end
+    else
+        grp1cond = params.condList{iCond};
+        grp2cond = params.condList{iCond};
     end
 
     for iStim = 1:length(stimList)
