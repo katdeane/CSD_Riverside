@@ -29,11 +29,13 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'EMP'};
-Condition = {'NoiseBurst70'};
-%Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-  % 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' };
-    %'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'
+Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
+Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}};
+Subjects = {'ALL'};
+% Condition = {'NoiseBurst70'};
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'}; % 'Tonotopy70' 'Tonotopy80' 
+    % 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'
 
 
 %% Data generation per subject ⊂◉‿◉つ
@@ -42,10 +44,19 @@ c_axis = [-0.2 0.2];
 
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
-DynamicCSD_AJ(homedir, Condition, Groups, c_axis, 'Awake')
+DynamicCSD_AJ(homedir, Condition, Subjects, c_axis, 'Awake')
+
+%% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
+
+for iCon = 1:length(Condition)
+    disp(['Single traces for ' Groups{iGro} ' ' Condition{iCon}])
+    tic
+    Avrec_Layers(homedir, Subjects, Condition{iCon}, 'Awake')
+    toc
+end
 
 %% Group pics (⌐▨_▨)
-Condition = {'gapASSR70' 'gapASSR80'};
+
 % generate group averaged CSDs based on stimuli (does not BF sort)
 for iGro = 1:length(Groups)
     for iCon = 1:length(Condition)
@@ -60,25 +71,15 @@ end
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
-for iGro = 1:length(Groups)
-    for iCon = 1:length(Condition)
-        disp(['Single traces for ' Groups{iGro} ' ' Condition{iCon}])
-        tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iCon}, 'Awake')
-        toc
-    end
-end
-
-ConditionList = {'gapASSR70'}; %'NoiseBurst70' 'ClickTrain70' 
-disp('Producing group-averaged traces for each group')
-for iGro = 1:length(Groups)
-    for iCon = 1:length(ConditionList)
-        disp(['Group traces for ' Groups{iGro} ' ' ConditionList{iCon}])
-        tic 
-        Group_Avrec_Stack(homedir, Groups{iGro}, ConditionList{iCon},'Awake')
-        toc
-    end
-end
+% disp('Producing group-averaged traces for each group')
+% for iGro = 1:length(Groups)
+%     for iCon = 1:length(Condition)
+%         disp(['Group traces for ' Groups{iGro} ' ' Condition{iCon}])
+%         tic 
+%         Group_Avrec_Stack(homedir, Groups{iGro}, Condition{iCon},'Awake')
+%         toc
+%     end
+% end
 
 %% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
@@ -102,11 +103,10 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst70'}; % ,'ClickTrain80','Chirp80','gapASSR80'  
+params.condList = Condition; %   
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'OLD',params,'Awake');
-runCwtCsd(homedir,'YNG',params,'Awake');
+runCwtCsd(homedir,Subjects,params,'Awake');
 
 % Just individual inter-trial phase coherence figures
 % CWTFigs(homedir,'Phase',params,'OLD','Awake')
@@ -121,24 +121,29 @@ runCwtCsd(homedir,'YNG',params,'Awake');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
+% PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
+for iCo = 1:length(Comps)
+    PermutationTest_Area(homedir,'Phase',Comps{iCo},params,yespermute,'Awake')
+end
 
 % create .csv with all of the ITPC means per stim presentation/subject/layer
-for iCon = 1:length(params.condList)
-    igetITPCmean(homedir,{'OLD' 'YNG'},params.condList{iCon},'Phase','Awake')
+for iCo = 1:length(Comps)
+    for iCon = 1:length(params.condList)
+        igetITPCmean(homedir,Comps{iCo},params.condList{iCon},'Phase','Awake')
+    end
 end
 
 %% ISPC 
 
-params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70'}; 
-LaminarPhaseLocking(homedir,'OLD',params)
-LaminarPhaseLocking(homedir,'YNG',params)
-params.condList = {'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'};
-LaminarPhaseLocking(homedir,'OLD',params)
-% figures
-params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70',...
-    'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'}; 
-interlamPhaseFig(homedir,{'OLD' 'YNG'},params)
+% params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70'}; 
+% LaminarPhaseLocking(homedir,'OLD',params)
+% LaminarPhaseLocking(homedir,'YNG',params)
+% params.condList = {'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'};
+% LaminarPhaseLocking(homedir,'OLD',params)
+% % figures
+% params.condList = {'NoiseBurst70','ClickTrain70','Chirp70','gapASSR70',...
+%     'NoiseBurst80','ClickTrain80','Chirp80','gapASSR80'}; 
+% interlamPhaseFig(homedir,{'OLD' 'YNG'},params)
 
 %% Pretty up all the figures for straight .png output
 
