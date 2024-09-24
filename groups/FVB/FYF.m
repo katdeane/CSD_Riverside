@@ -39,9 +39,9 @@ Layer.VI = {'[17:20]','[18:21]','[18:21]','[17:22]','[20:23]','[22:26]','[24:26]
 
 %% Conditions
 Cond.NoiseBurst70 = {...
+    {'01'},... FYS02
     {'01'},... FYS03
     {'02'},... FYS04
-    {'01'},... FYS02
     {'01'},... FYN04
     {'01'},... FYN06
     {'03'},... FYN07
@@ -51,9 +51,9 @@ Cond.NoiseBurst70 = {...
     
 
 Cond.NoiseBurst80 = {...
+    {[]},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -62,9 +62,9 @@ Cond.NoiseBurst80 = {...
     };
 
 Cond.gapASSR70 = {...
+    {'06'},... FYS02
     {'04'},... FYS03
     {'04'},... FYS04
-    {'06'},... FYS02
     {'04'},... FYN04
     {'02'},... FYN06
     {'04'},... FYN07
@@ -73,9 +73,9 @@ Cond.gapASSR70 = {...
     };
 
 Cond.gapASSR80 = {...
+    {[]},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -84,9 +84,9 @@ Cond.gapASSR80 = {...
     };  
 
 Cond.Tonotopy70 = {...
+    {'03'},... FYS02
     {'03'},... FYS03
     {'03'},... FYS04
-    {'03'},... FYS02
     {'03'},... FYN04
     {'05'},... FYN06
     {'07'},... FYN07
@@ -95,9 +95,9 @@ Cond.Tonotopy70 = {...
     };
 
  Cond.Tonotopy80 = {...
+    {[]},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -106,6 +106,7 @@ Cond.Tonotopy70 = {...
     };   
 
 Cond.Spontaneous = {...
+    {'02'},... FYS02
     {'05'},... FYS03
     {'07'},... FYS04
     {'03'},... FYS05
@@ -117,9 +118,9 @@ Cond.Spontaneous = {...
 	};
 
 Cond.ClickTrain70 = {...
+    {'02'},... FYS02
     {'05'},... FYS03
     {'07'},... FYS04
-    {'02'},... FYS02
     {'05'},... FYN04
     {'06'},... FYN06
     {'08'},... FYN07
@@ -128,9 +129,9 @@ Cond.ClickTrain70 = {...
     };
 
 Cond.ClickTrain80 = {...
+    {[]},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -139,6 +140,7 @@ Cond.ClickTrain80 = {...
     };
 
 Cond.Chirp70 = {...
+    {'04'},... FYS02
     {'06'},... FYS03
     {'06'},... FYS04
     {'07'},... FYS05
@@ -150,9 +152,9 @@ Cond.Chirp70 = {...
     };
 
 Cond.Chirp80 = {...
+    {'04'},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {'04'},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -161,9 +163,9 @@ Cond.Chirp80 = {...
     };
 
 Cond.TreatNoiseBurst1 = {...
+    {'07'},... FYS02 - directly after saline Noiseburst 70db
     {'07'},... FYS03 - directly after saline Noiseburst 70db
     {'08'},... FYS04 - directly after saline Noiseburst 70db
-    {'07'},... FYS02 - directly after saline Noiseburst 70db
     {'07'},... FYN04 -- Noiseburst 70db - survived nic injec
     {'07'},... FYN06- survived, Noiseburst 70db
     {'09'},... FYN07
@@ -172,9 +174,9 @@ Cond.TreatNoiseBurst1 = {...
     };
 
 Cond.TreatgapASSR70 = {...
+    {'08'},... FYS02
     {'08'},... FYS03
     {'09'},... FYS04
-    {'08'},... FYS02
     {'08'},... FYN04
     {'08'},... FYN06
     {'10'},... FYN07
@@ -183,9 +185,9 @@ Cond.TreatgapASSR70 = {...
     };
 
 Cond.TreatgapASSR80 = {...
+    {[]},... FYS02
     {[]},... FYS03
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -194,9 +196,9 @@ Cond.TreatgapASSR80 = {...
     };
 
 Cond.TreatTonotopy = {...
+    {[]},... FYS02
     {[]},... FYS03 
     {[]},... FYS04
-    {[]},... FYS02
     {[]},... FYN04
     {[]},... FYN06
     {[]},... FYN07
@@ -205,9 +207,9 @@ Cond.TreatTonotopy = {...
     };
 
 Cond.TreatNoiseBurst2 = {...
+    {'09'},... FYS02 Noiseburst 70db
     {'09'},... FYS03 Noiseburst 70db
     {'10'},... FYS04 Noiseburst 70db
-    {'09'},... FYS02 Noiseburst 70db
     {'09'},... FYN04 Noiseburst 70db
     {'09'},... FYN06
     {'11'},... FYN07
