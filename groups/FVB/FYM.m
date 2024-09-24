@@ -1,12 +1,9 @@
-%%% Group YNG = FVB Young Saline & Nicotine
-animals = {'FYN01', 'FYN02', 'FYN03','FYN05'};
+%%% Group FYM = FVB Young Male
+animals = {'FYS01','FYS05','FYN01', 'FYN02', 'FYN03','FYN05'};
 
 %notes
-
-%N01 - 4 months; male
-%N02 - 4 months; male
-%N03 - 4 months; male
-%N05 - 3.15 months; male
+%S01 - 4 months; male
+%S05 - 3.15 months; male
 
 
 
@@ -14,27 +11,31 @@ animals = {'FYN01', 'FYN02', 'FYN03','FYN05'};
 % channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]
 
 channels = {...
+    '[15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5]',... YS01
+    '[15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5]',... S05
     '[23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]',... YN01
     '[16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5]',... YN02
     '[19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4]',... YN03
     '[16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3]',... YN05
     };
 
-%            N01         N02        N03     N05
-Layer.II = {'[1:3]',   '[1:5]',   '[1:6]','[1:7]'}; 
-%            N01         N02        N03     N05
-Layer.IV = {'[4:8]',   '[6:10]',  '[7:12]','[8:13]'};
-%            N01         N02        N03     N05
-Layer.Va = {'[9:12]',  '[11:14]', '[13:15]','[14:15]'};
-%            N01         N02        N03     N05
-Layer.Vb = {'[13:15]', '[15:17]', '[16:17]','[15:21]'}; 
-%            N01         N02        N03     N05
-Layer.VI = {'[16:18]', '[18:23]', '[18:22]','[12:27]'}; 
+%           S01       S05     N01       N02        N03      N05
+Layer.II = {'[1:3]','[1:6]','[1:3]',   '[1:5]',   '[1:6]','[1:7]'}; 
+%           S01       S05
+Layer.IV = {'[4:8]','[7:9]','[4:8]',   '[6:10]',  '[7:12]','[8:13]'};
+%           S01       S05
+Layer.Va = {'[9:12]','[10:12]','[9:12]',  '[11:14]', '[13:15]','[14:15]'};
+%           S01       S05
+Layer.Vb = {'[13:15]','[13:14]','[13:15]', '[15:17]', '[16:17]','[15:21]'}; 
+%           S01       S05
+Layer.VI = {'[16:18]','[15:21]','[16:18]', '[18:23]', '[18:22]','[12:27]'}; 
 
 
 
 %% Conditions
 Cond.NoiseBurst70 = {...
+    {'01'},... FYS01
+    {'02'},... FYS05
     {'01'},... FYN01
     {'01'},... FYN02
     {'03'},... FYN03
@@ -43,6 +44,8 @@ Cond.NoiseBurst70 = {...
     
 
 Cond.NoiseBurst80 = {...
+    {'02'},... FYS01
+    {[]},... FYS05
     {'02'},... FYN01
     {'02'},... FYN02
     {'04'},... FYN03
@@ -50,6 +53,8 @@ Cond.NoiseBurst80 = {...
     };
 
 Cond.gapASSR70 = {...
+    {'03'},... FYS01
+    {'05'},... FYS05
     {'04'},... FYN01
     {'07'},... FYN02
     {'08'},... FYN03
@@ -57,6 +62,8 @@ Cond.gapASSR70 = {...
     };
 
 Cond.gapASSR80 = {...
+    {[]},... FYS01
+    {[]},... FYS05
     {[]},... FYN01 
     {[]},... FYN02
     {[]},... FYN03
@@ -64,6 +71,8 @@ Cond.gapASSR80 = {...
     };  
 
 Cond.Tonotopy70 = {...
+    {'04'},... FYS01
+    {'04'},... FYS05
     {'06'},... FYN01
     {'06'},... FYN02
     {'05'},... FYN03
@@ -71,6 +80,8 @@ Cond.Tonotopy70 = {...
     };
 
  Cond.Tonotopy80 = {...
+    {[]},... FYS01
+    {[]},... FYS05
     {[]},... FYN01 
     {[]},... FYN02
     {[]},... FYN03
@@ -78,20 +89,26 @@ Cond.Tonotopy70 = {...
     };   
 
 Cond.Spontaneous = {...
-	{[]},... FYN01
+    {[]},... FYS01
+    {'03'},... FYS05
+    {[]},... FYN01
     {'03'},... FYN02
     {[]},... FYN03
     {[]},... FYN05
 	};
 
 Cond.ClickTrain70 = {...
-	{'05'},... FYN01
+    {'05'},... FYS01
+    {'06'},... FYS05
+    {'05'},... FYN01
     {'05'},... FYN02
     {'07'},... FYN03
     {'07'},... FYN05
     };
 
 Cond.ClickTrain80 = {...
+    {[]},... FYS01
+    {[]},... FYS05
     {[]},... FYN01 
     {[]},... FYN02
     {[]},... FYN03
@@ -99,6 +116,8 @@ Cond.ClickTrain80 = {...
     };
 
 Cond.Chirp70 = {...
+    {'06'},... FYS01
+    {'07'},... FYS05
     {'03'},... FYN01
     {'04'},... FYN02
     {'06'},... FYN03
@@ -106,6 +125,8 @@ Cond.Chirp70 = {...
     };
 
 Cond.Chirp80 = {...
+    {[]},... FYS01
+    {[]},... FYS05
     {[]},... FYN01 
     {[]},... FYN02
     {[]},... FYN03
@@ -113,6 +134,8 @@ Cond.Chirp80 = {...
     };
 
 Cond.TreatNoiseBurst1 = {...
+    {'07'},... FYS01 - directly after saline
+    {'08'},... FYS05 - directly after saline Noiseburst 70db
     {'07'},... FYN01
     {'08'},... FYN02
     {[]},... FYN03 -- broke from head-fixation during injection
@@ -120,6 +143,8 @@ Cond.TreatNoiseBurst1 = {...
     };
 
 Cond.TreatgapASSR70 = {...
+    {'08'},... FYS01
+    {'09'},... FYS05
     {'08'},... FYN01 - died during
     {'09'},... FYN02 - died during
     {[]},... FYN03
@@ -127,6 +152,8 @@ Cond.TreatgapASSR70 = {...
     };
 
 Cond.TreatgapASSR80 = {...
+    {[]},... FYS01
+    {[]},... FYS05
     {[]},... FYN01
     {[]},... FYN02
     {[]},... FYN03
@@ -134,6 +161,8 @@ Cond.TreatgapASSR80 = {...
     };
 
 Cond.TreatTonotopy = {...
+    {'09'},... FYS01 
+    {[]},... FYS05
     {[]},... FYN01 
     {[]},... FYN02
     {[]},... FYN03
@@ -141,6 +170,8 @@ Cond.TreatTonotopy = {...
     };
 
 Cond.TreatNoiseBurst2 = {...
+    {'10'},... FYS01 - 31 minutes after saline
+    {'10'},... FYS05 Noiseburst 70db
     {[]},... FYN01
     {[]},... FYN02
     {[]},... FYN03
