@@ -4,6 +4,8 @@ clear; clc;
 
 if exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside');
+elseif exist('/Users/anjumhussain/Documents/GitHub/CSD_Riverside','dir')
+    cd('/Users/anjumhussain/Documents/GitHub/CSD_Riverside')
 else
        error('add your local repository as shown above')
 end 
