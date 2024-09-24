@@ -1,10 +1,10 @@
-function NoiseBurstStats(homedir,Groups)
+function NoiseBurstStats(homedir,Groups,whichdB)
 % Noiseburst statistics
 % collecting from ROIs based on group-averaged AVREC plots where three
 % peaks can be distinguished in the WT group from 0-50 ms, 50-100 ms, and
-% 100-300 ms after noise onset. Currently only being run on 70 dB SPL noise
-% but data for 10:10:90 is available. Peak amp, peak latency, and RMS are
-% compared at both single trial and trial-averaged levels. 
+% 100-300 ms after noise onset. Data for 10:10:90 is available. 
+% Peak amp, peak latency, and RMS are compared at both single trial and 
+% trial-averaged levels. 
 % Input:    csv's from ..\output\TracePeaks for single trial and
 %           trial-averaged data from running Avrec_Layers and
 %           Group_Avrec_Layers respectively. 
@@ -33,10 +33,10 @@ color22 = [160/255 64/255 85/255];
 color23 = [191/255 95/255 115/255]; 
 
 % so far, we're only looking at 70 dB, pull that out
-grp1sgl = grp1sgl(grp1sgl.ClickFreq == 70,:);
-grp2sgl = grp2sgl(grp2sgl.ClickFreq == 70,:);
-grp1avg = grp1avg(grp1avg.ClickFreq == 70,:);
-grp2avg = grp2avg(grp2avg.ClickFreq == 70,:);
+grp1sgl = grp1sgl(grp1sgl.ClickFreq == whichdB,:);
+grp2sgl = grp2sgl(grp2sgl.ClickFreq == whichdB,:);
+grp1avg = grp1avg(grp1avg.ClickFreq == whichdB,:);
+grp2avg = grp2avg(grp2avg.ClickFreq == whichdB,:);
 
 % initiate a huge stats table for the lawls (for the stats)
 PeakStats = table('Size',[length(layers)*length(statfill) 20],'VariableTypes',...
@@ -73,7 +73,7 @@ for iLay = 1:length(layers)
 
     % let's make a nice figure
     Peakfig = tiledlayout('flow');
-    title(Peakfig,[layers{iLay} ' Channels'])
+    title(Peakfig,[layers{iLay} ' Channels, ' num2str(whichdB) ' dB'])
     % single trial data
     nexttile
     plot(sgl1thalamic.PeakLat+BL,sgl1thalamic.PeakAmp,'o',...
@@ -182,7 +182,7 @@ for iLay = 1:length(layers)
     end
     cd PeakPlots
     h = gcf;
-    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_NoiseBurst']);
+    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_NoiseBurst_' num2str(whichdB)]);
     close(h)
 
     % no more stalling, it's stats time
@@ -255,4 +255,4 @@ for iLay = 1:length(layers)
 end
 
 cd(homedir); cd output; cd TracePeaks
-writetable(PeakStats,[Groups{1} 'v' Groups{2} '_NoiseBurst70_Stats.csv']);
+writetable(PeakStats,[Groups{1} 'v' Groups{2} '_NoiseBurst' num2str(whichdB) '_Stats.csv']);

@@ -34,16 +34,11 @@ for iGr = 1:length(params.groups)
             if isempty(index)
                 continue
             end
-            % we're combining response to 70, 80, and 90 dB SPL
-            curCSD = cat(3,Data(index).sngtrlCSD{6},Data(index).sngtrlCSD{7},Data(index).sngtrlCSD{8});
-            % fft is going to be taken from each trial. The baseline 
-            % (0:400 ms, overlapped with other trials),
-            % noiseburst (400:500 ms) and post stimulus cortical activity
-            % period (500:1000 ms, most activity within 300 ms so this is
-            % generous) will be removed. We have 500 ms from each trial that
-            % will be spontaneous activity within the context of ongoing noise
-            % bursts and within 1 second of a noise burst at least 70 dB
-            curCSD = curCSD(:,1001:1500,:);
+            % we're taking just the response to 70 dB
+            curCSD = Data(index).sngtrlCSD{6};
+            % fft is going to be taken from each trial. STP is summed power
+            % across stim and background
+           
         elseif matches(Condition,'ClickTrain')
             % pull data for this condition
             index = StimIndex({Data.Condition},Cond,iAn,Condition);

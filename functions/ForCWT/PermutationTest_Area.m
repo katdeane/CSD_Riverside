@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,Groups,params,yespermute,type)
+function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -107,10 +107,14 @@ for iCond = 1:length(params.condList)
             grp1Lay = group1WT(matches(group1WT.layer, params.layers{iLay}),:);
             grp2Lay = group2WT(matches(group2WT.layer, params.layers{iLay}),:);
 
-            if contains(whichtest, 'Power')
+            if contains(whichtest, 'Power') || contains(whichtest, 'STP')
 
-                grp1Out = getpowerout(grp1Lay);
-                grp2Out = getpowerout(grp2Lay);
+                % grp1Out = getpowerout(grp1Lay);
+                % grp2Out = getpowerout(grp2Lay);
+
+                grp1Out = getSTpowerout(grp1Lay);
+                grp2Out = getSTpowerout(grp2Lay);
+                whichtest = 'STP';
 
             elseif contains(whichtest, 'Phase')
 
@@ -346,3 +350,4 @@ for iCond = 1:length(params.condList)
     end % stimulus order
     toc
 end % condition
+cd(homedir)

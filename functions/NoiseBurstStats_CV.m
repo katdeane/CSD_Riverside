@@ -1,4 +1,4 @@
-function NoiseBurstStats_CV(homedir,Groups)
+function NoiseBurstStats_CV(homedir,Groups,whichdB)
 % Noiseburst statistics
 % collecting from ROIs based on group-averaged AVREC plots where three
 % peaks can be distinguished in the WT group from 0-50 ms, 50-100 ms, and
@@ -30,8 +30,8 @@ color22 = [160/255 64/255 85/255];
 color23 = [191/255 95/255 115/255]; 
 
 % so far, we're only looking at 70 dB, pull that out
-grp1 = grp1(grp1.ClickFreq == 70,:);
-grp2 = grp2(grp2.ClickFreq == 70,:);
+grp1 = grp1(grp1.ClickFreq == whichdB,:);
+grp2 = grp2(grp2.ClickFreq == whichdB,:);
 
 % initiate a huge stats table for the lawls (for the stats)
 PeakStats = table('Size',[length(layers)*length(statfill) 11],'VariableTypes',...
@@ -57,7 +57,7 @@ for iLay = 1:length(layers)
 
     % let's make a nice figure
     Peakfig = tiledlayout('flow');
-    title(Peakfig,[layers{iLay} ' Channels'])
+    title(Peakfig,[layers{iLay} ' Channels, ' num2str(whichdB) ' dB'])
     % single trial data
     nexttile
     plot(thalamic1.PeakLat+BL,thalamic1.PeakAmp,'o',...
@@ -169,7 +169,7 @@ for iLay = 1:length(layers)
     end
     cd PeakPlots
     h = gcf;
-    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_NoiseBurst_CV']);
+    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_NoiseBurst_' num2str(whichdB) '_CV']);
     close(h)
 
     % no more stalling, it's stats time
@@ -211,4 +211,4 @@ for iLay = 1:length(layers)
 end
 
 cd(homedir); cd output; cd TracePeaks
-writetable(PeakStats,[Groups{1} 'v' Groups{2} '_NoiseBurst70_CV_Stats.csv']);
+writetable(PeakStats,[Groups{1} 'v' Groups{2} '_NoiseBurst' num2str(whichdB) '_CV_Stats.csv']);

@@ -40,7 +40,7 @@ xlabel(FFTfig, 'f (Hz)')
 ylabel(FFTfig, 'Power')
 
 % initiate table here
-FFTStats = table('Size',[length(params.layers) 44],'VariableTypes',...
+FFTStats = table('Size',[length(params.layers) 51],'VariableTypes',...
     {'string','string','double','double','double','double','double',...
     'double','double','double','double','double',...
     'double','double','double','double','double',...
@@ -49,7 +49,8 @@ FFTStats = table('Size',[length(params.layers) 44],'VariableTypes',...
     'double','double','double','double','double',...
     'double','double','double','double','double',...
     'double','double','double','double','double',...
-    'double','double'});
+    'double','double','double','double','double',...
+    'double','double','double','double'});
 
 FFTStats.Properties.VariableNames = ["Condition", "Layer", "p_delta",...
     "meanko_delta","stdko_delta","meanwt_delta","stdwt_delta","df_delta",...
@@ -60,7 +61,8 @@ FFTStats.Properties.VariableNames = ["Condition", "Layer", "p_delta",...
     "df_beta","Cohensd_beta", "p_gammaL", "meanko_gammaL","stdko_gammaL",...
     "meanwt_gammaL","stdwt_gammaL", "df_gammaL","Cohensd_gammaL",...
     "p_gammaH", "meanko_gammaH", "stdko_gammaH","meanwt_gammaH",...
-    "stdwt_gammaH","df_gammaH","Cohensd_gammaH"];
+    "stdwt_gammaH","df_gammaH","Cohensd_gammaH", "p_pool", "meanko_pool",...
+    "stdko_pool","meanwt_pool", "stdwt_pool","df_pool","Cohensd_pool"];
 
 for iLay = 1:length(params.layers)
     
@@ -101,13 +103,15 @@ for iLay = 1:length(params.layers)
     nexttile
     semilogy(fftaxis,grp1m,'-','Color',color11)
     hold on
-    errorbar(fftaxis,grp1m,grp1sem,'Color',color12,'LineStyle','none');
+    errorbar(fftaxis,grp1m,grp1sem,'Color',color12,'LineStyle','none','CapSize',3);
     semilogy(fftaxis,grp2m,'-','Color',color21)
-    errorbar(fftaxis,grp2m,grp2sem,'Color',color22,'LineStyle','none');
+    errorbar(fftaxis,grp2m,grp2sem,'Color',color22,'LineStyle','none','CapSize',3);
     title(['Layer ' params.layers{iLay}])
     xlim([0 100])
     xticks(0:10:100)
-    legend({params.groups{1} params.groups{2}})
+    ax = gca;
+    ax.XScale = 'log';
+    legend({params.groups{1} '' params.groups{2}})
 
     nexttile 
     plot(fftaxis,ratioKOWTm,'-k')
@@ -115,10 +119,19 @@ for iLay = 1:length(params.layers)
     xlim([0 100])
     xticks(0:10:100)
     hold on 
-    line('XData', [0 100], 'YData', [1 1])
+    yline(1,'LineWidth',2)
     hold off
+    ax = gca;
+    ax.XScale = 'log';
 
     % sum data from freq bins to make bar graph so simple so clean
+    pool_range = fftaxis(fftaxis < 101); % take everything below 101 Hz
+    pool_range = pool_range > 0;
+    pool_KOm   = mean(ratioKOWT(pool_range,:),1);
+    pool_WTm   = mean(ratioWTWT(pool_range,:),1);
+    [p_P,p_DF,p_Cohd,pwtmean,pwtstd,pkomean,pkostd] = ...
+        myttest2(pool_WTm',pool_KOm',1,'both');
+
     gammahigh_range = fftaxis(fftaxis < 101); % cut off over 100
     gammahigh_range = gammahigh_range > 60; % get indices for over 60
     gammahigh_KOm   = mean(ratioKOWT(gammahigh_range,:),1);
@@ -197,7 +210,16 @@ for iLay = 1:length(params.layers)
     xticklabels([{'D'} {num2str(d_P)} {'T'} {num2str(t_P)} {'A'} {num2str(a_P)} ...
         {'BH'} {num2str(b_P)} {'GL'} {num2str(gl_P)} {'GH'} {num2str(gh_P)}])
     title(['Layer ' params.layers{iLay} ' ' params.groups{2} '/' params.groups{1} ' means'])
-    ylim([0 5])
+    ylim([0 2])
+
+    nexttile 
+    bar(1:2,[pwtmean pkomean])
+    hold on
+    errorbar(1:2,[pwtmean pkomean],[dwtstd/sqrt(d_DF+2) dkostd/sqrt(d_DF+2)],...
+        'Color',[0 0 0],'LineStyle','none');
+    xticklabels([{'p'} {num2str(p_P)}])
+    title('pooled means')
+    ylim([0 2])
 
     % fill the table
     FFTStats.Layer(iLay)     = params.layers{iLay};
@@ -231,6 +253,11 @@ for iLay = 1:length(params.layers)
     FFTStats.meanko_gammaH(iLay) = ghkomean; FFTStats.meanwt_gammaH(iLay) = ghwtmean;
     FFTStats.stdko_gammaH(iLay) = ghkostd; FFTStats.stdwt_gammaH(iLay) = ghwtstd; 
     FFTStats.df_gammaH(iLay) = gh_DF;
+    % pooled
+    FFTStats.p_pool(iLay) = p_P; FFTStats.Cohensd_pool(iLay) = p_Cohd;
+    FFTStats.meanko_pool(iLay) = pkomean; FFTStats.meanwt_pool(iLay) = pwtmean;
+    FFTStats.stdko_pool(iLay) = pkostd; FFTStats.stdwt_pool(iLay) = pwtstd; 
+    FFTStats.df_pool(iLay) = p_DF;
      
 end
 

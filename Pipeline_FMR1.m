@@ -38,7 +38,7 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
 
 % per subject Spike Script
-DynamicSpike(homedir, Condition)
+% DynamicSpike(homedir, Condition)
 
 % LFP single subject figures
 singleLFPfig(homedir, Groups, Condition,[-50 50])
@@ -82,12 +82,16 @@ end
 
 %% Peak and RMS statistics
 
-NoiseBurstStats(homedir,Groups)
+NoiseBurstStats(homedir,Groups,60)
+NoiseBurstStats(homedir,Groups,70)
+NoiseBurstStats(homedir,Groups,80)
 ClickTrainStats(homedir,Groups)
 gapASSRStats(homedir,Groups)
 
 % t tests between subject-wise coefficients of variance
-NoiseBurstStats_CV(homedir,Groups)
+NoiseBurstStats_CV(homedir,Groups,60)
+NoiseBurstStats_CV(homedir,Groups,70)
+NoiseBurstStats_CV(homedir,Groups,80)
 ClickTrainStats_CV(homedir,Groups)
 gapASSRStats_CV(homedir,Groups)
 
@@ -139,18 +143,20 @@ if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb 
 % delete(gcp('nocreate')) % end this par session
 
 PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
+params.condList = {'NoiseBurst'}; 
+PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Anesthetized')
 
 % this collects all of the stats and puts them into csv in \output\CWTPermStats
 collectPermStats(homedir,params)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','AB')
+% plotFFT(homedir,params,'Spontaneous','AB')
 plotFFT(homedir,params,'Spontaneous','RE')
 
 % now of the spontaneous windows between noisebursts at 70, 80, and 90 dB
 runFftCsd(homedir,params,'NoiseBurstSpont')
-plotFFT(homedir,params,'NoiseBurstSpont','AB')
+% plotFFT(homedir,params,'NoiseBurstSpont','AB')
 plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
