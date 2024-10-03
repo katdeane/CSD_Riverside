@@ -33,13 +33,17 @@ for iCond = 1:length(Condition)
                 length(unique(Grp2.Subject))]);
 
             nexttile
-            errorbar(mean(grp1means'),(std(grp1means')/sqrt(length(unique(Grp1.Subject)))))
+            errorbar(mean(grp1means'),(std(grp1means')/sqrt(length(unique(Grp1.Subject)))),...
+                'CapSize',1)
             hold on
-            errorbar(mean(grp2means'),(std(grp2means')/sqrt(length(unique(Grp2.Subject)))))
+            errorbar(mean(grp2means'),(std(grp2means')/sqrt(length(unique(Grp2.Subject)))),...
+                'CapSize',1)
             legend({'Virgin' 'Father'})
             title([bands{iOsc}])
 
         end % spectral bands
+        linkaxes
+        ylim([0 1])
         cd(homedir); cd figures;
         if ~exist('ITPCmeanfig','dir')
             mkdir('ITPCmeanfig')

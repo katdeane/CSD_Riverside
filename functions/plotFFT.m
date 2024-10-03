@@ -74,10 +74,10 @@ for iLay = 1:length(params.layers)
     % stack the trials
     grp1 = horzcat(grp1{:}); grp2 = horzcat(grp2{:});
 
-    grp1m = mean(grp1,2);
-    grp2m = mean(grp2,2);
-    grp1sem = std(grp1,0,2)/sqrt(L); 
-    grp2sem = std(grp2,0,2)/sqrt(L);
+    grp1m = nanmean(grp1,2);
+    grp2m = nanmean(grp2,2);
+    grp1sem = nanstd(grp1,0,2)/sqrt(L); 
+    grp2sem = nanstd(grp2,0,2)/sqrt(L);
 
     ratioKOWTm = grp2m ./ grp1m; % ratio mean line for plotting
     ratioKOWT  = grp2 ./ grp1m; % ratio of all KO to mean WT
@@ -127,50 +127,50 @@ for iLay = 1:length(params.layers)
     % sum data from freq bins to make bar graph so simple so clean
     pool_range = fftaxis(fftaxis < 101); % take everything below 101 Hz
     pool_range = pool_range > 0;
-    pool_KOm   = mean(ratioKOWT(pool_range,:),1);
-    pool_WTm   = mean(ratioWTWT(pool_range,:),1);
+    pool_KOm   = nanmean(ratioKOWT(pool_range,:),1);
+    pool_WTm   = nanmean(ratioWTWT(pool_range,:),1);
     [p_P,p_DF,p_Cohd,pwtmean,pwtstd,pkomean,pkostd] = ...
         myttest2(pool_WTm',pool_KOm',1,'both');
 
     gammahigh_range = fftaxis(fftaxis < 101); % cut off over 100
     gammahigh_range = gammahigh_range > 60; % get indices for over 60
-    gammahigh_KOm   = mean(ratioKOWT(gammahigh_range,:),1);
-    gammahigh_WTm   = mean(ratioWTWT(gammahigh_range,:),1);
+    gammahigh_KOm   = nanmean(ratioKOWT(gammahigh_range,:),1);
+    gammahigh_WTm   = nanmean(ratioWTWT(gammahigh_range,:),1);
     [gh_P,gh_DF,gh_Cohd,ghwtmean,ghwtstd,ghkomean,ghkostd] = ...
         myttest2(gammahigh_WTm',gammahigh_KOm',1,'both');
 
     gammalow_range  = fftaxis(fftaxis < 61); % cut off over 100
     gammalow_range  = gammalow_range > 30; % get indices for over 60
-    gammalow_KOm    = mean(ratioKOWT(gammalow_range,:),1);
-    gammalow_WTm    = mean(ratioWTWT(gammalow_range,:),1);
+    gammalow_KOm    = nanmean(ratioKOWT(gammalow_range,:),1);
+    gammalow_WTm    = nanmean(ratioWTWT(gammalow_range,:),1);
     [gl_P,gl_DF,gl_Cohd,glwtmean,glwtstd,glkomean,glkostd] = ...
         myttest2(gammalow_WTm',gammalow_KOm',1,'both');
 
     beta_range  = fftaxis(fftaxis < 31); % cut off over 100
     beta_range  = beta_range > 12; % get indices for over 60
-    beta_KOm    = mean(ratioKOWT(beta_range,:),1);
-    beta_WTm    = mean(ratioWTWT(beta_range,:),1);
+    beta_KOm    = nanmean(ratioKOWT(beta_range,:),1);
+    beta_WTm    = nanmean(ratioWTWT(beta_range,:),1);
     [b_P,b_DF,b_Cohd,bwtmean,bwtstd,bkomean,bkostd] = ...
         myttest2(beta_WTm',beta_KOm',1,'both');
 
     alpha_range     = fftaxis(fftaxis < 13); % cut off over 100
     alpha_range     = alpha_range > 7; % get indices for over 60
-    alpha_KOm       = mean(ratioKOWT(alpha_range,:),1);
-    alpha_WTm       = mean(ratioWTWT(alpha_range,:),1);
+    alpha_KOm       = nanmean(ratioKOWT(alpha_range,:),1);
+    alpha_WTm       = nanmean(ratioWTWT(alpha_range,:),1);
     [a_P,a_DF,a_Cohd,awtmean,awtstd,akomean,akostd] = ...
         myttest2(alpha_WTm',alpha_KOm',1,'both');
 
     theta_range     = fftaxis(fftaxis < 8); % cut off over 100
     theta_range     = theta_range > 3; % get indices for over 60
-    theta_KOm       = mean(ratioKOWT(theta_range,:),1);
-    theta_WTm       = mean(ratioWTWT(theta_range,:),1);
+    theta_KOm       = nanmean(ratioKOWT(theta_range,:),1);
+    theta_WTm       = nanmean(ratioWTWT(theta_range,:),1);
     [t_P,t_DF,t_Cohd,twtmean,twtstd,tkomean,tkostd] = ...
         myttest2(theta_WTm',theta_KOm',1,'both');
 
     delta_range     = fftaxis(fftaxis < 4); % cut off over 100
     delta_range     = delta_range > 0; % get indices for over 60
-    delta_KOm       = mean(ratioKOWT(delta_range,:),1);
-    delta_WTm       = mean(ratioWTWT(delta_range,:),1);
+    delta_KOm       = nanmean(ratioKOWT(delta_range,:),1);
+    delta_WTm       = nanmean(ratioWTWT(delta_range,:),1);
     [d_P,d_DF,d_Cohd,dwtmean,dwtstd,dkomean,dkostd] = ...
         myttest2(delta_WTm',delta_KOm',1,'both');
         

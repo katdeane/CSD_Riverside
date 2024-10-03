@@ -89,7 +89,8 @@ PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
 PCal_PupcallStats(homedir,Groups,[1,15,29,44,60]) % was [1,4,9,13,18]
-ITPCmeanfigsPCal(homedir)
+
+PCal_PupcallStats(homedir,Groups,[1,15,29,44,60]) 
 
 %% mTF analysis 
 
@@ -146,6 +147,11 @@ delete(gcp('nocreate')) % end this par session
 % get the ITPC mean across time
 igetITPCmeanPCal(homedir,{'VMP' 'PMP'},'Phase')
 % now plot and test it 
+ITPCmeanfigsPCal(homedir)
+% stats
+PCal_PupcallStatsITPC(homedir,'Pupcall_1',[1, 18, 30, 44, 60])
+PCal_PupcallStatsITPC(homedir,'ClickTrain_5',[1, 5, 10])
+PCal_PupcallStatsITPC(homedir,'gapASSR_10',4)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
@@ -175,12 +181,13 @@ PupcallCWT(homedir,subject,params) % having run runCwtCsd
 
 %% Average group pup call visualization
 
-GroupPupcallCSD(homedir,'VMP',cbar,'Anesthetized') % having run DynamicCSD
-GroupPupcallTraces(homedir,'VMP','Anesthetized') % having run Avrec_Layers
-GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
+% GroupPupcallCSD(homedir,'VMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallTraces(homedir,'VMP','Anesthetized',[1, 18, 30, 44, 60]) % having run Avrec_Layers
+% GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 
-GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
-GroupPupcallTraces(homedir,'PMP','Anesthetized') % having run Avrec_Layers
-GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
+% GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallTraces(homedir,'PMP','Anesthetized',[1, 18, 30, 44, 60]) % having run Avrec_Layers
+% GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
 
 cutPupcallFig(homedir,[1, 18, 30, 44, 60], [1 5 10])
+cutPupcall(homedir,[1, 18, 30, 44, 60])

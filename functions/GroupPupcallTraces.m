@@ -1,4 +1,4 @@
-function GroupPupcallTraces(homedir,Group,type)
+function GroupPupcallTraces(homedir,Group,type,callList)
 
 BL     = 399;
 [~, ~, stimDur, stimITI, ~] = StimVariable('Pupcall30',1,type);
@@ -49,7 +49,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('AVREC [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 
 % next up is the wave file
 nexttile
@@ -66,7 +66,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('II [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 % layer IV
 nexttile
 shadedErrorBar(1:size(IV,2),mean(IV,1),std(IV,0,1),'lineprops','b');
@@ -76,7 +76,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('IV [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 % layer Va
 nexttile
 shadedErrorBar(1:size(Va,2),mean(Va,1),std(Va,0,1),'lineprops','b');
@@ -86,7 +86,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('Va [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 % layer Vb
 nexttile
 shadedErrorBar(1:size(Vb,2),mean(Vb,1),std(Vb,0,1),'lineprops','b');
@@ -96,7 +96,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('Vb [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 % layer VI
 nexttile
 shadedErrorBar(1:size(VI,2),mean(VI,1),std(VI,0,1),'lineprops','b');
@@ -106,7 +106,7 @@ xticks([400 5000 10000 15000 20000 25000 25427])
 xticklabels({'On','5','10','15','20','','Off'})
 % ylabel
 ylabel('VI [mV/mm²]')
-ylim([0 max(max(AVREC))])
+ylim([0 3])
 
 cd(homedir); cd figures
 if ~exist('PupcallTraces','dir')
@@ -114,7 +114,10 @@ if ~exist('PupcallTraces','dir')
 end
 cd PupcallTraces
 
+set(gcf,'Position',[100 100 600 800])
+
 savefig(gcf,[Group '_Full_Call_Traces'])
+exportgraphics(gcf,[Group '_Full_Call_Traces.pdf'])
 close
 
 load('PupTimes.mat','PupTimes')
@@ -134,7 +137,6 @@ PupTimesCSD = PupTimes .* 1000; % match axes
 
 % I've looked at all the calls and arbitrarily picked out these few to
 % highlight
-callList = [1 3 18 21 26 49];
 
 for iCall = callList
 
@@ -224,7 +226,10 @@ for iCall = callList
     ylabel('VI [mV/mm²]')
     ylim([0 max(max(AVREC))])
 
+    set(gcf,'Position',[100 100 300 800])
+
     savefig(gcf,[Group '_Call_Traces_' num2str(iCall)])
+    exportgraphics(gcf,[Group '_Call_Traces_' num2str(iCall) '.pdf'])
     close
 
 end

@@ -13,6 +13,9 @@ for iCond = 1:length(Condition)
         clim(h.Parent.Children(6),[-0.25 0.25]) %top
         clim(h.Parent.Children(4),[-0.25 0.25]) %middle
         clim(h.Parent.Children(2),[-0.25 0.25]) %bottom
+        % change colormap for the difference plot
+        ax = h.Parent.Children(2);
+        colormap(ax,'pink')
         linkaxes
 
         exportgraphics(h.Parent,['VMPvPMP Observed CSD ' Condition{iCond} ' full.pdf'])
@@ -33,6 +36,8 @@ for iCond = 1:length(Condition)
         clim(h.Parent.Children(6),[-0.25 0.25]) %top
         clim(h.Parent.Children(4),[-0.25 0.25]) %middle
         clim(h.Parent.Children(2),[-0.25 0.25]) %bottom
+        ax = h.Parent.Children(2);
+        colormap(ax,'pink')
         linkaxes
 
         exportgraphics(h.Parent,['VMPvPMP Observed CSD ' Condition{iCond} ' full.pdf'])
@@ -60,6 +65,8 @@ for iCond = 1:length(Condition)
             clim(h.Parent.Children(6),[0 0.8]) %top
             clim(h.Parent.Children(4),[0 0.8]) %middle
             clim(h.Parent.Children(2),[-0.3 0.3]) %bottom
+            ax = h.Parent.Children(2);
+            colormap(ax,'pink')
             linkaxes
 
             exportgraphics(h.Parent,['VMPvPMP_Observed Phase ' Condition{iCond}  Layers{iLay} ' full.pdf'])
@@ -81,6 +88,8 @@ for iCond = 1:length(Condition)
             clim(h.Parent.Children(6),[0 0.7]) %top
             clim(h.Parent.Children(4),[0 0.7]) %middle
             clim(h.Parent.Children(2),[-0.3 0.3]) %bottom
+            ax = h.Parent.Children(2);
+            colormap(ax,'pink')
             linkaxes
 
             exportgraphics(h.Parent,['VMPvPMP_Observed Phase ' Condition{iCond}  Layers{iLay} ' full.pdf'])

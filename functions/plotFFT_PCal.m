@@ -181,18 +181,21 @@ for iLay = 1:length(params.layers)
     fftaxis = (Fs/LS)*(0:LS-1);
 
     nexttile
-    semilogy(fftaxis,grp1mS,'-','Color',color11)
+    plot(fftaxis,grp1mS,'-','Color',color11)
     hold on
-    errorbar(fftaxis,grp1mS,grp1semS,'Color',color11,'LineStyle','none');
+    errorbar(fftaxis,grp1mS,grp1semS,'Color',color11,'LineStyle','none','CapSize',3);
     semilogy(fftaxis,grp2mS,'-','Color',color21)
-    errorbar(fftaxis,grp2mS,grp2semS,'Color',color21,'LineStyle','none');
+    errorbar(fftaxis,grp2mS,grp2semS,'Color',color21,'LineStyle','none','CapSize',3);
     semilogy(fftaxis,grp1mP,'-','Color',color13)
-    errorbar(fftaxis,grp1mP,grp1semP,'Color',color13,'LineStyle','none');
-    semilogy(fftaxis,grp2mP,'-','Color',color23)
-    errorbar(fftaxis,grp2mP,grp2semP,'Color',color23,'LineStyle','none');
+    errorbar(fftaxis,grp1mP,grp1semP,'Color',color13,'LineStyle','none','CapSize',3);
+    plot(fftaxis,grp2mP,'-','Color',color23)
+    errorbar(fftaxis,grp2mP,grp2semP,'Color',color23,'LineStyle','none','CapSize',3);
     title(['Layer ' params.layers{iLay} ' ' type])
     xlim([0 100])
     xticks(0:10:100)
+    ax = gca;
+    ax.XScale = 'log';
+    ax.YScale = 'log';
     legend({[params.groups{1} ' resting'] '' [params.groups{2} ' resting']...
         '' [params.groups{1} ' ' Comparison] '' [params.groups{2} ' ' Comparison]})
 
@@ -204,6 +207,8 @@ for iLay = 1:length(params.layers)
     xlim([0 100])
     xticks(0:10:100)
     line('XData', [0 100], 'YData', [1 1])
+    ax = gca;
+    ax.XScale = 'log';
     legend({params.groups{1} params.groups{2}})
 
     % for stats... 
