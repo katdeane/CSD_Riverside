@@ -1,26 +1,34 @@
-function CWTorderedfigs(homedir, Groups, Condition, c_axisind, c_axiscomp)
+function CWTorderedfigs(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp)
 
 % figure order matters here
 close all
 
+grp1 = fvbgroupname(Groups(1:3));
+grp2 = fvbgroupname(Groups(5:7));
+    
 % set some things straight for naming convention
 layers = {'II' 'IV' 'Va' 'Vb' 'VI'};
-if contains(Condition,'70') 
-    grp1 = 'Old 70';
-elseif contains(Condition,'80')
-    grp1 = 'Old 80';
+if contains(Condition,'70')
+    grp1 = [grp1 ' 70'];
+    grp2 = [grp2 ' 70'];
+elseif contains(Condition,'80') && contains(Groups(1:3),'Y')
+    grp1 = [grp1 ' 70'];
+    grp2 = [grp2 ' 80'];
+elseif contains(Condition,'80') && contains(Groups(5:7),'Y')
+    grp1 = [grp1 ' 80'];
+    grp2 = [grp2 ' 70'];
 end
-grp2 = 'Young 70';
+
 % make some decisions for plotting
 if contains(Condition,'ClickTrain')
-    condname = 'ASSR 40 Hz';
-    tidbit = ' 40Hz ';
+    condname = 'ASSR';
+    tidbit = [' ' whichstim 'Hz '];
     thisxlim = [300 2500];
     thisxtick = 400:400:2400;
     thisxtlab = 0:400:2000;
 elseif contains(Condition,'gapASSR')
-    condname = 'ASSR 9 ms gaps';
-    tidbit = ' 9 [ms] gap width ';
+    condname = 'gap ASSR';
+    tidbit = [' ' whichstim ' [ms] gap width '];
     thisxlim = [2550 3000];
     thisxtick = 2650:100:3000;
     thisxtlab = 0:100:400;
@@ -42,7 +50,7 @@ cd(homedir); cd figures; cd CWT
 
 figure(1)
 targetfig = tiledlayout(5,3); % 5 layers x YNG OLD Y-O
-title(targetfig,[condname ' ITPC'])
+title(targetfig,[condname tidbit ' ITPC'])
 xlabel(targetfig, 'time [ms]')
 ylabel(targetfig, 'layers')
 

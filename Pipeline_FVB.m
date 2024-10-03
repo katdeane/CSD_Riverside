@@ -34,8 +34,8 @@ Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}};
 Subjects = {'ALL'};
 % Condition = {'NoiseBurst70'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'}; % 'Tonotopy70' 'Tonotopy80' 
-    % 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatTonotopy' 'TreatNoiseBurst2'
+  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
+% 'Tonotop y70' 'Tonotopy80' 'TreatTonotopy'
 
 
 %% Data generation per subject ⊂◉‿◉つ
@@ -44,14 +44,14 @@ c_axis = [-0.2 0.2];
 
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
-DynamicCSD_AJ(homedir, Condition, Subjects, c_axis, 'Awake')
+DynamicCSD_AJ(homedir, Condition, Subjects{:}, c_axis, 'Awake')
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
 for iCon = 1:length(Condition)
-    disp(['Single traces for ' Groups{iGro} ' ' Condition{iCon}])
+    disp(['Single traces for subjects ' Condition{iCon}])
     tic
-    Avrec_Layers(homedir, Subjects, Condition{iCon}, 'Awake')
+    Avrec_Layers(homedir, Subjects{:}, Condition{iCon}, 'Awake')
     toc
 end
 
@@ -88,7 +88,7 @@ for iGro = 1:length(Groups)
     for iCon = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iCon}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iCon},'Awake')
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iCon},'Awake',Subjects{:})
         toc
     end
 end
@@ -103,10 +103,12 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = Condition; %   
+params.condList = {'NoiseBurst70' 'NoiseBurst80' 'ClickTrain70' 'ClickTrain80' ...
+  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' ...
+  'TreatgapASSR80' 'TreatNoiseBurst2'};  %   
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,Subjects,params,'Awake');
+runCwtCsd(homedir,Subjects{:},params,'Awake');
 
 % Just individual inter-trial phase coherence figures
 % CWTFigs(homedir,'Phase',params,'OLD','Awake')
@@ -120,10 +122,10 @@ runCwtCsd(homedir,Subjects,params,'Awake');
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
+yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
 % PermutationTest_Area(homedir,'Phase',{'OLD' 'YNG'},params,yespermute,'Awake')
 for iCo = 1:length(Comps)
-    PermutationTest_Area(homedir,'Phase',Comps{iCo},params,yespermute,'Awake')
+    PermutationTest_Area(homedir,'Phase',params,Comps{iCo},yespermute,'Awake')
 end
 
 % create .csv with all of the ITPC means per stim presentation/subject/layer
@@ -131,7 +133,7 @@ for iCo = 1:length(Comps)
     for iCon = 1:length(params.condList)
         igetITPCmean(homedir,Comps{iCo},params.condList{iCon},'Phase','Awake')
     end
-end
+end 
 
 %% ISPC 
 
@@ -155,11 +157,42 @@ Group_single_CSD(homedir, 'OLD', 'NoiseBurst70',  c_axis, ncolum)
 Group_single_CSD(homedir, 'OLD', 'NoiseBurst80',  c_axis, ncolum)
 Group_single_CSD(homedir, 'YNG', 'NoiseBurst70',  c_axis, ncolum)
 
-CWTorderedfigs(homedir, 'OLDvYNG', 'ClickTrain70', [0 0.6], [-0.2 0.2])
-CWTorderedfigs(homedir, 'OLDvYNG', 'ClickTrain80', [0 0.6], [-0.2 0.2])
-CWTorderedfigs(homedir, 'OLDvYNG', 'gapASSR70',    [0 0.4], [-0.15 0.15])
-CWTorderedfigs(homedir, 'OLDvYNG', 'gapASSR80',    [0 0.4], [-0.15 0.15])
-CWTorderedfigs(homedir, 'OLDvYNG', 'Chirp70',      [0 0.4], [-0.15 0.15])
-CWTorderedfigs(homedir, 'OLDvYNG', 'Chirp80',      [0 0.4], [-0.15 0.15])
-CWTorderedfigs(homedir, 'OLDvYNG', 'NoiseBurst70', [0 0.7], [-0.25 0.25])
-CWTorderedfigs(homedir, 'OLDvYNG', 'NoiseBurst80', [0 0.7], [-0.25 0.25])
+for iGro = 1:length(Groups)
+    for iCond = 1:length(Condition)
+        CSDorderedfigs(homedir,Groups{iGro},Condition{iCond},[1 21])
+    end
+end
+
+CondList = {'NoiseBurst70' 'ClickTrain70' 'Chirp70' 'gapASSR70'};
+for iCond = 1:length(CondList)
+    TracesOLDvYNGfig(homedir, CondList{iCond})
+end
+
+for iCo = 2:length(Comps)
+    for iCond = 1:length(Condition)
+        Tracesorderedfig(homedir, Comps{iCo}, Condition{iCond})
+    end
+end
+
+for iCo = 1:length(Comps)
+    thisComp = [Comps{iCo}{1} 'v' Comps{iCo}{2}];
+    CWTorderedfigs(homedir, thisComp, 'ClickTrain70', '40',  [0 0.6], [-0.2 0.2])
+    CWTorderedfigs(homedir, thisComp, 'gapASSR70', '3',      [0 0.4], [-0.15 0.15])
+    CWTorderedfigs(homedir, thisComp, 'gapASSR70', '5',      [0 0.4], [-0.15 0.15])
+    CWTorderedfigs(homedir, thisComp, 'gapASSR70', '7',      [0 0.4], [-0.15 0.15])
+    CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15])
+    CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15])
+    CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25])
+    CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst1','0',[0 0.7], [-0.25 0.25])
+    CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25])
+    if iCo == 1 || iCo == 2 || iCo == 4
+        CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2])
+        CWTorderedfigs(homedir, thisComp, 'gapASSR80', '3',     [0 0.4], [-0.15 0.15])
+        CWTorderedfigs(homedir, thisComp, 'gapASSR80', '5',     [0 0.4], [-0.15 0.15])
+        CWTorderedfigs(homedir, thisComp, 'gapASSR80', '7',     [0 0.4], [-0.15 0.15])
+        CWTorderedfigs(homedir, thisComp, 'gapASSR80', '9',     [0 0.4], [-0.15 0.15])
+        CWTorderedfigs(homedir, thisComp, 'Chirp80', '0',       [0 0.4], [-0.15 0.15])
+        CWTorderedfigs(homedir, thisComp, 'NoiseBurst80', '0',  [0 0.7], [-0.25 0.25])
+        CWTorderedfigs(homedir, thisComp, 'TreatgapASSR80', '9',[0 0.7], [-0.25 0.25])
+    end
+end

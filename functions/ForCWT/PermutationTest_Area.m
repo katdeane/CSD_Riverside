@@ -18,7 +18,7 @@ end
 
 % number of permutations
 nperms = 1000; % 500 when ready
-pthresh = 0.05; 
+pthresh = 0.05;
 
 if yespermute == 1
     disp(['Observed ' whichtest ' with ' num2str(nperms) ' permutations'])
@@ -30,8 +30,8 @@ BL = 399;
 
 % set up subject call lists
 run([Groups{1} '.m'])
-grp1sub = animals; 
-clear animals 
+grp1sub = animals;
+clear animals
 run([Groups{2} '.m'])
 grp2sub = animals;
 clear animals channels Cond Layer
@@ -46,15 +46,15 @@ for iCond = 1:length(params.condList)
 
     [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
         StimVariableCWT(params.condList{iCond},1,type);
-    
-    % old 80 dB to be compared with young 70 dB
+
+    % aged 80 dB to be compared with young 70 dB
     if contains(params.condList{iCond},'80')
-        if matches(Groups{1},'YNG')
+        if contains(Groups{1},'Y')
             grp1cond = [params.condList{iCond}(1:end-2) '70'];
         else
             grp1cond = params.condList{iCond};
         end
-        if matches(Groups{2},'YNG')
+        if contains(Groups{2},'Y')
             grp2cond = [params.condList{iCond}(1:end-2) '70'];
         else
             grp2cond = params.condList{iCond};
@@ -67,36 +67,38 @@ for iCond = 1:length(params.condList)
     for iStim = 1:length(stimList)
         disp(['For stimulus: ' num2str(stimList(iStim))])
 
+        clear group1WT group2WT
         % stack first group data
-        load([grp1sub{1} '_' grp1cond ...
-            '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
-        group1WT = wtTable; clear wtTable
-        % start on 2 and add further input to full tables
-        for iIn = 2:length(grp1sub)
+        for iIn = 1:length(grp1sub)
             input = [grp1sub{iIn} '_' grp1cond ...
-            '_' num2str(stimList(iStim)) '_WT.mat'];
+                '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
             end
             load(input, 'wtTable')
-            group1WT = [group1WT; wtTable]; %#ok<AGROW>
+            if exist('group1WT','var')
+                group1WT = [group1WT; wtTable]; %#ok<AGROW>
+            else
+                group1WT = wtTable; clear wtTable
+            end
+            clear wtTable
         end
 
         % stack second group data
-        load([grp2sub{1} '_' grp2cond ...
-            '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable')
-        group2WT = wtTable; clear wtTable
-        % start on 2 and add further input to full tables
-        for iIn = 2:length(grp2sub)
+        for iIn = 1:length(grp2sub)
             input = [grp2sub{iIn} '_' grp2cond ...
-            '_' num2str(stimList(iStim)) '_WT.mat'];
+                '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
                 continue
             end
             load(input, 'wtTable')
-            group2WT = [group2WT; wtTable]; %#ok<AGROW>
+            if exist('group2WT','var')
+                group2WT = [group2WT; wtTable]; %#ok<AGROW>
+            else
+                group2WT = wtTable; clear wtTable
+            end
+            clear wtTable
         end
-        clear wtTable
 
         % loop through layers here
         %Stack the individual animals' data (animal#x54x600)
@@ -209,7 +211,7 @@ for iCond = 1:length(params.condList)
                 % statistic comparison above
                 [BsigPOSchan,LsigPOSchan,~] = bwboundaries(POSpval<pthresh);
                 [BsigNEGchan,LsigNEGchan,~] = bwboundaries(NEGpval<pthresh);
-                
+
                 % sanity check
                 % imagesc(POSpval<pthresh); hold on
                 % for k = 1:length(BsigPOSchan)
@@ -274,7 +276,7 @@ for iCond = 1:length(params.condList)
                 hold on % plot areas of significance p < 0.05
                 for k = 1:length(BsigPOSchan)
                     boundary = BsigPOSchan{k};
-                    % only keep boundaries that are larger than 3x3  
+                    % only keep boundaries that are larger than 3x3
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
                         plot(boundary(:,2),boundary(:,1),POScolor,'Linewidth',2)
@@ -282,7 +284,7 @@ for iCond = 1:length(params.condList)
                 end
                 for k = 1:length(BsigNEGchan)
                     boundary = BsigNEGchan{k};
-                    % only keep boundaries that are larger than 3x3  
+                    % only keep boundaries that are larger than 3x3
                     if length(unique(boundary(:,2))) > 3 && ...
                             length(unique(boundary(:,1))) > 3
                         plot(boundary(:,2),boundary(:,1),NEGcolor,'Linewidth',2)
