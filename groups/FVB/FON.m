@@ -99,7 +99,7 @@ Cond.Spontaneous = {...
 	};
 
 Cond.ClickTrain70 = {...
-    {'07'},... FON01
+    {[]},... FON01 '07'
     {'05'},... FON02
     {'04'},... FON03
     {'07'},... FON04

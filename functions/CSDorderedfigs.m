@@ -57,7 +57,11 @@ pause(1)
 h = gca;
 
 % change the title
-h.Parent.Title.String = [grpname ' ' condname ' at ' dB 'dB CSD'];
+if matches(dB,'no')
+    h.Parent.Title.String = [grpname ' ' condname ' CSD'];
+else
+    h.Parent.Title.String = [grpname ' ' condname ' at ' dB 'dB CSD'];
+end
 % discard the label maybe
 if keeplabel == 0
     h.Title.String = []; % this is only done in cases of single images anyway

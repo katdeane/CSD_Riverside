@@ -140,7 +140,7 @@ for iCond = 1:length(params.condList)
             obs2_mean = squeeze(mean(grp2Out,1));
             obs2_std = squeeze(std(grp2Out,0,1));
 
-            obs_difmeans = obs2_mean - obs1_mean; % for fmr1 = KO - WT
+            obs_difmeans = obs2_mean - obs1_mean; % for fmr1 = KO - WT, always 2 - 1
 
             %% Permutation Step 2 - t test or mwu test
             %find the t values along all data points for each frequency bin

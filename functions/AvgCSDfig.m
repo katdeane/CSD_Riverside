@@ -40,7 +40,7 @@ end
 
 %% now run through and pull data from each animal into containers
 
-for iSub = 1:length(animals)
+for iSub = 2:length(animals)
 
     if matches(Group, 'MWT') && matches(Condition, 'NoiseBurst') ...
             && matches(animals{iSub},'MWT16b')
@@ -69,7 +69,7 @@ for iSub = 1:length(animals)
         CurLFP = nanmean(Data(index).sngtrlLFP{1, iStim},3);
         LFPhold{iStim}(1:size(CurLFP,1),1:size(CurLFP,2),iSub) = CurLFP;
     end
-    clear index
+    clear index Data
 end
 
 %% produce CSD and LFP figure

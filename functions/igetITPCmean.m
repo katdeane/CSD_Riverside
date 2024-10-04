@@ -89,7 +89,7 @@ for iStim = 1:length(stimList)
                 DataT.GammaHigh_mean(count) = mean(mean(WTLay(21:23,:))); % ~80 Hz
             else
                 % theta - high gamma                                        % Hz
-                DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,:)));    % (4:7);
+                DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,:)));   % (4:7);
                 DataT.Alpha_mean(count)     = mean(mean(WTLay(44:48,:)));   % (8:12);
                 DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,:)));   % (13:18);
                 DataT.GammaLow_mean(count)  = mean(mean(WTLay(26:33,:)));   % (31:60);

@@ -310,7 +310,7 @@ Cond.Spontaneous = {...
 	};
 
 Cond.ClickTrain70 = {...
-    {'07'},... %FON01
+    {[]},... %FON01 '07'
     {'06'},... FOS01
     {'06'},... FOS02
     {'06'},... FOS03
