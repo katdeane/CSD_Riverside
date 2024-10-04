@@ -43,15 +43,15 @@ if matches(Condition,'ClickTrain')
         end
     end
 
-elseif matches(Condition,'NoiseBurst')
+elseif contains(Condition,'NoiseBurst')
     numreps = 3; % 0 - 50, 50 - 100, 100 - 300 
     det_on  = [1, 51, 101] + BL; % 
     det_off = [51, 101,301] + BL; % last window is longer
-elseif matches(Condition, 'gapASSR')
+elseif contains(Condition, 'gapASSR')
     numreps = 6; % 6 gap in noise blocks, every 500 ms
     det_on  = [1, 501, 1001, 1501, 2001, 2501]+BL+250; % 250 ms noise block
     det_off = [251, 751, 1251, 1751, 2251, 2751]+BL+250; % full 250 ms gap in noise blocks
-elseif matches(Condition,'Chirp')
+elseif contains(Condition,'Chirp')
     numreps = 1;
     det_on  = BL+1001; % after the 1 s noise ramp
     det_off = BL+3001; % mostly just to get RMS for the full chirp
