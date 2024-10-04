@@ -129,6 +129,11 @@ for iGro = 1:length(Groups)
                         caxis(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
+                        yline(L.II(end)); yline(L.IV(end)); 
+                        yline(L.Va(end)); yline(L.Vb(end));
+                        if L.VI(end) > size(sngtrlCSD,1)
+                            yline(L.VI(end));
+                        end
                     end
                     
                     colorbar
