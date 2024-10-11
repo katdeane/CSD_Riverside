@@ -1,13 +1,13 @@
-function cordata = icorrectartifacts(data,thresh)
+function cordata = icorrectartifacts(data,thresh,durlength)
 % this function performs a rough artifact correction, wherein the channels
-% are averaged, rectified, and then gaussian filters to a factor of 10. The
+% are averaged, rectified, and then gaussian filtered to a factor of 10. The
 % input thresh is a multiplier on the std of the data, setting how many
 % standard deviations from the mean the data can be before the cut-off. If
 % thresh == 3 then there will be a threshold line of 3 standard deviations.
 % The guassian filtered trace will have intercept points checked against
 % this threshold. Any part of the trace that remains above threshold for at
-% least 5 seconds will be counted as artifact and replaced with nan.
-% Identical data will be returned except with NaN'd artifacts. 
+% least the durlength variable in seconds will be counted as artifact and 
+% replaced with nan. Identical data will be returned except with NaN'd artifacts. 
 
 % changing the thresh input and the duration over which the signal must
 % stay above threshold will determine how strict artifact correction is
@@ -18,17 +18,16 @@ function cordata = icorrectartifacts(data,thresh)
 % upside is uniform treatment of the data with no tedious manual
 % correction.
 
-% set how long the signal must stay above threshold to count as artifact
-durlength  = 5;
 % mean all channels and rectify trace
 trace      = abs(mean(data,1));
 % gaussian filter the data to get better detection windows
 gaustrace  = imgaussfilt(trace,10);
 % find the std of the rectified data
-tracestd   = std(trace);
+tracestd   = nanstd(trace);
+tracemean  = nanmean(trace);
 % multiply by the threshold. This will determine how aggressive artifact
 % correction will be
-datathresh = tracestd*thresh;
+datathresh = tracemean + (tracestd*thresh);
 %find intercept points 
 location   = datathresh < gaustrace; % 1 is above, 0 is below
 
@@ -76,6 +75,7 @@ durbool   = durations > durlength;
 onsets    = onsets(durbool);
 offsets   = offsets(durbool);
 
+% figure
 % nexttile
 % yline(datathresh)
 % hold on 

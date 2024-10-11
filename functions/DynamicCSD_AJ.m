@@ -140,7 +140,7 @@ for iGro = 1:length(Groups)
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
                     % saveas(h,[name '_' measurement '_CSD.png' ])
-                    close (h)
+                    % close (h)
 
                     % determine BF of each layer from 1st sink's rms
                     clear BF_II BF_IV BF_Va BF_Vb BF_VI

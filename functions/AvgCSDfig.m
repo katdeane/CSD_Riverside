@@ -40,7 +40,7 @@ end
 
 %% now run through and pull data from each animal into containers
 
-for iSub = 2:length(animals)
+for iSub = 1:length(animals)
 
     if matches(Group, 'MWT') && matches(Condition, 'NoiseBurst') ...
             && matches(animals{iSub},'MWT16b')

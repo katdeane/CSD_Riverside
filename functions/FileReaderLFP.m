@@ -37,8 +37,9 @@ nexttile
 imagesc(data)
 % artifact correction on all awake data
 if matches(type,'Awake')
-    % thresh = 3 standard deviations
-    data = icorrectartifacts(data,3);
+    % threshold = 3 standard deviations
+    % duration  = 3 seconds of data above threshold
+    data = icorrectartifacts(data,3,3);
 end
 
 nexttile

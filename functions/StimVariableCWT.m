@@ -87,7 +87,8 @@ if matches(type, 'Anesthetized')
         compDur2 = {1750:2000; 1750:2000; 1750:2000; ...
             1750:2000; 1750:2000; 1750:2000; 1750:2000};
         % for ITPCmean
-        ITPCwin = {1250:3000}; % from 3rd gap-noise block to last (no final noise block)
+        ITPCwin = {1750:2000}; % just 4th gap-in-noise block
+        % ITPCwin = {1250:3000}; % from 3rd gap-noise block to last (no final noise block)
 
     elseif contains(Condition,'Pupcall')
         stimList = 1;

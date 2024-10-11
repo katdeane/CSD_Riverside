@@ -32,9 +32,9 @@ set(0, 'DefaultFigureRenderer', 'painters');
 Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
 Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}};
 Subjects = {'ALL'};
-Condition = {'ClickTrain70'};
-% Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-%   'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
+% Condition = {'NoiseBurst70'};
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
 % 'Tonotop y70' 'Tonotopy80' 'TreatTonotopy'
 
 
@@ -45,6 +45,9 @@ c_axis = [-0.2 0.2];
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
 DynamicCSD_AJ(homedir, Condition, Subjects, c_axis, 'Awake')
+
+%% verify sound response of noise burst over background activity 
+STDaboveBL(homedir, Subjects{:}, 'NoiseBurst70')
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -129,9 +132,9 @@ for iCo = 1:length(Comps)
 end
 
 % create .csv with all of the ITPC means per stim presentation/subject/layer
-for iCo = 1:length(Comps)
+for iGro = 1:length(Groups)
     for iCon = 1:length(params.condList)
-        igetITPCmean(homedir,Comps{iCo},params.condList{iCon},'Phase','Awake')
+        igetITPCmean(homedir,Groups(iGro),params.condList{iCon},'Phase','Awake')
     end
 end 
 

@@ -50,7 +50,11 @@ for iStim = 1:length(stimList)
         end
         load(input,'wtTable')
 
-        group = wtTable.group{1};
+        if length(Groups) == 1
+            group = 'Groups';
+        else
+            group = wtTable.group{1};
+        end
 
         for iLay = 1:length(layers)
 
@@ -85,13 +89,19 @@ for iStim = 1:length(stimList)
                 DataT.Theta_mean(count)     = NaN;
                 DataT.Alpha_mean(count)     = NaN;
                 DataT.Beta_mean(count)      = NaN;
-                DataT.GammaLow_mean(count)  = mean(mean(WTLay(29:31,:))); % ~40 Hz
-                DataT.GammaHigh_mean(count) = mean(mean(WTLay(21:23,:))); % ~80 Hz
+                DataT.GammaLow_mean(count)  = mean(mean(WTLay(30,:))); % ~40 Hz center chan
+                DataT.GammaHigh_mean(count) = mean(mean(WTLay(22,:))); % ~80 Hz center chan
+            elseif contains(Condition,'NoiseBurst') || (contains(Condition,'Click') && stimList(iStim) < 40)
+                DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,1:400)));  % (4:7);
+                DataT.Alpha_mean(count)     = mean(mean(WTLay(44:48,1:300)));  % (8:12);
+                DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,1:150)));  % (13:30);
+                DataT.GammaLow_mean(count)  = mean(mean(WTLay(26:33,1:75)));   % (31:60);
+                DataT.GammaHigh_mean(count) = mean(mean(WTLay(19:25,1:50)));   % (61:100);
             else
                 % theta - high gamma                                        % Hz
                 DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,:)));   % (4:7);
                 DataT.Alpha_mean(count)     = mean(mean(WTLay(44:48,:)));   % (8:12);
-                DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,:)));   % (13:18);
+                DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,:)));   % (13:30);
                 DataT.GammaLow_mean(count)  = mean(mean(WTLay(26:33,:)));   % (31:60);
                 DataT.GammaHigh_mean(count) = mean(mean(WTLay(19:25,:)));   % (61:100);
             end
