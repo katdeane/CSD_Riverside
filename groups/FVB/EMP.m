@@ -1,6 +1,6 @@
 %%EMP - Just an empty script for AJ to fill in single animals to look at
 %%CSD
-animals = {'FYN10'};  
+animals = {'FON06'};  
  
 % notes:
 
@@ -9,23 +9,23 @@ animals = {'FYN10'};
 %channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]
 
 channels = {...
-  '[24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]'
+  '[15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28]'
    };
 
 %             
 Layer.II = {'[1:3]'}; 
 %              
-Layer.IV = {'[4:9]'};
+Layer.IV = {'[4:7]'};
 %              
-Layer.Va = {'[10:13]'};
+Layer.Va = {'[8:10]'};
 %              
-Layer.Vb = {'[14:16]'}; 
+Layer.Vb = {'[11:14]'}; 
 %              
-Layer.VI = {'[17:18]'};
+Layer.VI = {'[15:20]'};
 
 %% Conditions
 Cond.NoiseBurst70 = {...
-    {'01'},... FYN10
+    {'04'},... 
     
     };
 
