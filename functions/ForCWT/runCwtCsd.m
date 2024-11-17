@@ -42,7 +42,11 @@ for iAn = 1:subjects
         % pull the variables and index for this condition
         [stimList, thisUnit, stimDur, stimITI, ~] = ...
             StimVariable(params.condList{iCond},1,type);
-        timeAxis = BL + stimDur + stimITI; 
+        if contains(params.condList{iCond},'Spont')
+            timeAxis = stimDur + stimITI; 
+        else
+            timeAxis = BL + stimDur + stimITI;
+        end
         index = StimIndex({Data.Condition},Cond,iAn,params.condList{iCond});
         
         if isempty(index)

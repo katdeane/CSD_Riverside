@@ -76,18 +76,18 @@ for iCond = 1:length(Condition)
                 ON = round(TimeListOn(iOn));
 
                 % relevant spectral bands
-                if contains(Condition{iCond},'gapASSR') % || (contains(Condition,'Click') && stimList(iStim) >= 40)
+                if contains(Condition{iCond},'gapASSR') 
                     % narrowed to specific areas
                     DataT.Theta_mean(count)     = NaN;
                     DataT.Alpha_mean(count)     = NaN;
                     DataT.Beta_mean(count)      = NaN;
-                    DataT.GammaLow_mean(count)  = mean(mean(WTLay(29:31,ON:ON+250))); % ~40 Hz
-                    DataT.GammaHigh_mean(count) = mean(mean(WTLay(21:23,ON:ON+250))); % ~80 Hz
+                    DataT.GammaLow_mean(count)  = mean(mean(WTLay(30,ON+100:ON+230))); % 40 Hz
+                    DataT.GammaHigh_mean(count) = mean(mean(WTLay(22,ON+50:ON+230))); % 80 Hz
                 else
                     % theta - high gamma                                                % Hz
-                    DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,ON:ON+200)));   % (4:7);
-                    DataT.Alpha_mean(count)     = mean(mean(WTLay(44:48,ON:ON+150)));   % (8:12);
-                    DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,ON:ON+100)));   % (13:30);
+                    DataT.Theta_mean(count)     = mean(mean(WTLay(49:54,ON+20:ON+200)));   % (4:7);
+                    DataT.Alpha_mean(count)     = mean(mean(WTLay(44:48,ON+20:ON+150)));   % (8:12);
+                    DataT.Beta_mean(count)      = mean(mean(WTLay(34:43,ON+10:ON+100)));   % (13:30);
                     DataT.GammaLow_mean(count)  = mean(mean(WTLay(26:33,ON:ON+50)));    % (31:60);
                     DataT.GammaHigh_mean(count) = mean(mean(WTLay(19:25,ON:ON+30)));    % (61:100);
                 end

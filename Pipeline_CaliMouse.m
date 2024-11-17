@@ -5,8 +5,8 @@ clear; clc;
 % set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-elseif exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside'); 
+elseif exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 else
     error('add your local repository as shown above')
 end
@@ -36,7 +36,7 @@ SpecialPCals(homedir)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
-        tic 
+        tic
         Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
@@ -88,9 +88,10 @@ end
 PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
-PCal_PupcallStats(homedir,Groups,[1,15,29,44,60]) % was [1,4,9,13,18]
-
-PCal_PupcallStats(homedir,Groups,[1,15,29,44,60]) 
+% careful re-running the stats, all peak amps taken rather than just 5
+% targets
+PCal_PupcallStats(homedir,Groups,[1,18,29,44,60]) % was [1,4,9,13,18]
+PCal_HighLowStats(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57]) % determined by findPupCallRMS.m
 
 %% mTF analysis 
 
@@ -116,28 +117,22 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.groups = {'VMP','PMP'}; % for permutation test
+params.condList = {'Spontaneous'}; % careful, this variable is edited continuously
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'PMP',params,'Anesthetized');
-% runCwtCsd(homedir,'VMP',params,'Anesthetized');
+runCwtCsd(homedir,'VMP',params,'Anesthetized');
 
-% specifying Power: trials are averaged and then power is taken from
-% the complex WT output of runCwtCsd function above. Student's t test
-% and Cohen'd d effect size are the stats used for observed and
-% permutation difference
-% specifying Phase: phase is taken per trial. mwu test and r effect
-% size are the stats used
-% Output:   Figures for means and observed difference of comparison;
-%           figures for observed t values, clusters
-%           output; boxplot and significance of permutation test
+% run once to get each subject's background Time Frequency 
+TimeFreqBackground(homedir,params,Groups)
 
+% run permutation clustermass analysis
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 if yespermute == 1; parpool(3); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
 % PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
-% PermutationTest(homedir,'Phase',params,yespermute,'Anesthetized')
 
-% params.condList = {'ClickTrain','gapASSR'}; %
-% PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+params.condList = {'ClickTrain','gapASSR'}; %
+PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
 
 params.condList = {'Pupcall'}; % needs to be broken down by layers earlier
 PermutationTest_PupcallArea(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
@@ -150,8 +145,9 @@ igetITPCmeanPCal(homedir,{'VMP' 'PMP'},'Phase')
 ITPCmeanfigsPCal(homedir)
 % stats
 PCal_PupcallStatsITPC(homedir,'Pupcall_1',[1, 18, 30, 44, 60])
+PCal_Pupcall_HighLowStatsITPC(homedir,[18,48,45,49,53],[7,30,16,31,57])
 PCal_PupcallStatsITPC(homedir,'ClickTrain_5',[1, 5, 10])
-PCal_PupcallStatsITPC(homedir,'gapASSR_10',4)
+PCal_PupcallStatsITPC(homedir,'gapASSR_10',5)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
@@ -191,3 +187,5 @@ GroupPupcallTraces(homedir,'PMP','Anesthetized',[1, 18, 30, 44, 60]) % having ru
 
 cutPupcallFig(homedir,[1, 18, 30, 44, 60], [1 5 10])
 cutPupcall(homedir,[1, 18, 30, 44, 60])
+% get the high and low figs
+cutPupcallFig(homedir,[18,48,45,49,53,7,30,16,31,57],[])

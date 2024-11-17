@@ -153,10 +153,9 @@ for iCall = callList
     % title
     title(['Avg response to Pupcall for ' Group])
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('AVREC [mV/mm²]')
     ylim([0 max(max(AVREC))])
@@ -164,7 +163,7 @@ for iCall = callList
     % next up is the wave file
     nexttile
     plot(t,ymod,'k'); ylabel('PupCall');
-    xlim([callWAV-0.2 callWAV+0.4])
+    xlim([callWAV-0.05 callWAV+0.2])
     xticks([callWAV-0.2 callWAV-0.1 callWAV callWAV+0.1 ...
         callWAV+0.2 callWAV+0.3 callWAV+0.4])
     xticklabels({'0', '100','200','300','400','500','600'})
@@ -174,10 +173,9 @@ for iCall = callList
     nexttile
     shadedErrorBar(1:size(II,2),mean(II,1),std(II,0,1),'lineprops','b');
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('II [mV/mm²]')
     ylim([0 max(max(AVREC))])
@@ -185,10 +183,9 @@ for iCall = callList
     nexttile
     shadedErrorBar(1:size(IV,2),mean(IV,1),std(IV,0,1),'lineprops','b');
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('IV [mV/mm²]')
     ylim([0 max(max(AVREC))])
@@ -196,10 +193,9 @@ for iCall = callList
     nexttile
     shadedErrorBar(1:size(Va,2),mean(Va,1),std(Va,0,1),'lineprops','b');
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('Va [mV/mm²]')
     ylim([0 max(max(AVREC))])
@@ -207,10 +203,9 @@ for iCall = callList
     nexttile
     shadedErrorBar(1:size(Vb,2),mean(Vb,1),std(Vb,0,1),'lineprops','b');
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('Vb [mV/mm²]')
     ylim([0 max(max(AVREC))])
@@ -218,10 +213,9 @@ for iCall = callList
     nexttile
     shadedErrorBar(1:size(VI,2),mean(VI,1),std(VI,0,1),'lineprops','b');
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD callCSD+100 callCSD+200])
+    xticklabels({'0', '100','200'})
     % ylabel
     ylabel('VI [mV/mm²]')
     ylim([0 max(max(AVREC))])

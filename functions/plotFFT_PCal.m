@@ -20,9 +20,15 @@ end
 if matches(Comparison, 'Pupcall')
     % Load in Pupcall FFT
     loadname2 = [params.groups{1} 'v' params.groups{2} '_Pupcall_' type '_FFT.mat'];
+    color11 = [255/255 175/255 105/255]; % light orange
+    color12 = [224/255 115/255 0/255]; % dark orange
+
 elseif matches(Comparison,'ClickTrain')
     % Load in ClickTrain FFT
     loadname2 = [params.groups{1} 'v' params.groups{2} '_ClickTrain_' type '_FFT.mat'];
+    color11 = [74/255 183/255 255/255]; % light blue
+    color12 = [0/255  77/255  125/255]; % dark dark
+
 end
 load(loadname2,['fftStruct' type])
 if matches(type,'AB')
@@ -35,12 +41,12 @@ clear fftStructAB fftStructRE % kat, just save it as a table in the other script
 % for plotting
 Fs = 1000; % Sampling frequency
 LS  = length(fftTabS.fft{1}); % Length of signal [ms]
-color11 = [15/255 63/255 111/255]; %indigo blue
+
+
 % color12 = [24/255 102/255 180/255]; 
-color13 = [40/255 133/255 226/255]; 
-color21 = [115/255 46/255 61/255]; % wine
-% color22 = [160/255 64/255 85/255]; 
-color23 = [191/255 95/255 115/255]; 
+
+color21 = [87/255 255/255 210/255]; % light teal
+color22 = [0/255  209/255 153/255]; % dark teal
 
 cd (homedir); cd figures;
 if ~exist('FFTfig','dir')
@@ -181,21 +187,22 @@ for iLay = 1:length(params.layers)
     fftaxis = (Fs/LS)*(0:LS-1);
 
     nexttile
-    plot(fftaxis,grp1mS,'-','Color',color11)
+    plot(fftaxis,grp1mS,'-','Color',color21)
     hold on
-    errorbar(fftaxis,grp1mS,grp1semS,'Color',color11,'LineStyle','none','CapSize',3);
-    semilogy(fftaxis,grp2mS,'-','Color',color21)
-    errorbar(fftaxis,grp2mS,grp2semS,'Color',color21,'LineStyle','none','CapSize',3);
-    semilogy(fftaxis,grp1mP,'-','Color',color13)
-    errorbar(fftaxis,grp1mP,grp1semP,'Color',color13,'LineStyle','none','CapSize',3);
-    plot(fftaxis,grp2mP,'-','Color',color23)
-    errorbar(fftaxis,grp2mP,grp2semP,'Color',color23,'LineStyle','none','CapSize',3);
+    errorbar(fftaxis,grp1mS,grp1semS,'Color',color21,'LineStyle','none','CapSize',3);
+    semilogy(fftaxis,grp2mS,'-','Color',color22)
+    errorbar(fftaxis,grp2mS,grp2semS,'Color',color22,'LineStyle','none','CapSize',3);
+    semilogy(fftaxis,grp1mP,'-','Color',color11)
+    errorbar(fftaxis,grp1mP,grp1semP,'Color',color11,'LineStyle','none','CapSize',3);
+    plot(fftaxis,grp2mP,'-','Color',color12)
+    errorbar(fftaxis,grp2mP,grp2semP,'Color',color12,'LineStyle','none','CapSize',3);
     title(['Layer ' params.layers{iLay} ' ' type])
     xlim([0 100])
     xticks(0:10:100)
     ax = gca;
-    ax.XScale = 'log';
+    % ax.XScale = 'log';
     ax.YScale = 'log';
+    ylim([0.01 1000])
     legend({[params.groups{1} ' resting'] '' [params.groups{2} ' resting']...
         '' [params.groups{1} ' ' Comparison] '' [params.groups{2} ' ' Comparison]})
 
@@ -208,7 +215,8 @@ for iLay = 1:length(params.layers)
     xticks(0:10:100)
     line('XData', [0 100], 'YData', [1 1])
     ax = gca;
-    ax.XScale = 'log';
+    % ax.XScale = 'log';
+    ylim([0.1 100])
     legend({params.groups{1} params.groups{2}})
 
     % for stats... 

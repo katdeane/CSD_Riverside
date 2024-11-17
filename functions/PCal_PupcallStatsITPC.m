@@ -44,7 +44,6 @@ for iLay = 1:length(layers)
             grp1means = Gp1call.([bands{iOsc} '_mean']);
             grp2means = Gp2call.([bands{iOsc} '_mean']);
 
-
             Xbars  = [Xbars nanmean(grp1means) nanmean(grp2means)];
             Xerror = [Xerror nanstd(grp1means)/sqrt(length(grp1means)) ...
                 nanstd(grp2means)/sqrt(length(grp2means))];

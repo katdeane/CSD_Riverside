@@ -51,7 +51,7 @@ for iCond = 1:length(Condition)
         cd ITPCmeanfig
         h = gcf;
         savefig(h,['VMPvPMP_' Condition{iCond}(1:end-2) '_L' layers{iLay}]);
-        exportgraphics(h,['VMPvPMP_' Condition{iCond}(1:end-2) '_L' layers{iLay} '.pdf'])
+        % exportgraphics(h,['VMPvPMP_' Condition{iCond}(1:end-2) '_L' layers{iLay} '.pdf'])
         close(h)
     end % layers
 end % conditions

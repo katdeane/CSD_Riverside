@@ -51,7 +51,7 @@ for iCond = 1:length(Condition)
 end
 
 % for the pup call CWT
-Condition = {'Pupcall 1 ' 'ClickTrain 5Hz '};  
+Condition = {'Pupcall 1 ' 'ClickTrain 5Hz ' 'gapASSR 10 [ms] gap width '};  
 Layers = {'II' 'IV' 'Va' 'Vb' 'VI'};
 cd(homedir); cd figures; cd CWT;
 
@@ -83,7 +83,7 @@ for iCond = 1:length(Condition)
                 xlim([(PupTimes(icall,1)-50) (PupTimes(icall,1)+200)])
                 exportgraphics(h.Parent,['VMPvPMP_Observed Phase ' Condition{iCond}  Layers{iLay} ' ' num2str(icall) '.pdf'])
             end
-        else
+        elseif matches(Condition{iCond},'ClickTrain 5Hz ')
             % standardize clims
             clim(h.Parent.Children(6),[0 0.7]) %top
             clim(h.Parent.Children(4),[0 0.7]) %middle
@@ -100,6 +100,17 @@ for iCond = 1:length(Condition)
                 xlim([(xtime-50) (xtime+200)])
                 exportgraphics(h.Parent,['VMPvPMP_Observed Phase ' Condition{iCond}  Layers{iLay} ' ' num2str(iclick) '.pdf'])
             end
+        else  % gaps
+            clim(h.Parent.Children(6),[0 0.7]) %top
+            clim(h.Parent.Children(4),[0 0.7]) %middle
+            clim(h.Parent.Children(2),[-0.3 0.3]) %bottom
+            ax = h.Parent.Children(2);
+            colormap(ax,'pink')
+            linkaxes
+
+            xlim([2600 3000])
+            exportgraphics(h.Parent,['VMPvPMP_Observed Phase ' Condition{iCond}  Layers{iLay} ' 5.pdf'])
+
         end
     end
 end
