@@ -29,12 +29,12 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
-Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}};
-Subjects = {'ALL'};
-% Condition = {'NoiseBurst70'};
-Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
+%Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
+%Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}};
+Subjects = {'EMP'};
+Condition = {'NoiseBurst70'};
+%Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+ % 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
 % 'Tonotop y70' 'Tonotopy80' 'TreatTonotopy'
 
 
