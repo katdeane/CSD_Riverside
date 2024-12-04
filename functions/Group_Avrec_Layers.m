@@ -41,6 +41,11 @@ else
     FileName = Group;
 end
 
+% chirp 70 FYN10_02 is withheld so it never filled the 40th row
+if matches(subjects{end},'FYN10') && matches(Condition,'Chirp70')
+    subList = subList(1:end-1);
+end
+
 %% Choose Type
 
 yesnorm = 0;            % 1 = normalize to highest Pre peak; 0 = don't
