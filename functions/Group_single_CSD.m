@@ -1,4 +1,4 @@
-function Group_single_CSD(homedir, Group, Condition, c_axis, ncolumn)
+function Group_single_CSD(homedir, Group, folder, Condition, c_axis, ncolumn)
 
 % figure order matters here
 close all
@@ -7,7 +7,7 @@ run([Group '.m'])
 subjects = length(animals);
 nrows = ceil(subjects/ncolumn); % four columns
 
-cd(homedir); cd figures; cd(['Single_' Group])
+cd(homedir); cd figures; cd(['Single_' folder])
 
 figure(1)
 targetfig = tiledlayout(nrows,ncolumn);
