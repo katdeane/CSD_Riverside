@@ -142,7 +142,7 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
                 for iSub = 1:size(stackgroup,1)
                     if matches(Condition, 'Pupcall30')
                         [peakout,latencyout,rmsout] = pupcall_peaks(stackgroup(iSub,:), ...
-                            [1, 4, 9, 13, 18]); % pup call order
+                            1:60); % pup call order
                     else
                         [peakout,latencyout,rmsout] = consec_peaks(stackgroup(iSub,:), ...
                             reprate, stimDur, BL, Condition);

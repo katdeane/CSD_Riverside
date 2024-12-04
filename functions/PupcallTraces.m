@@ -161,7 +161,7 @@ for iMeas = 1:length(pupCondList)
     % xline(PupTimes(:,1).*1000,'b')
     % xline(PupTimes(:,2).*1000,'r')
 
-    callList = [1 3 18 21 26 49];
+    callList = [1 18 30 44 60];
 
     for iCall = callList
 
@@ -178,10 +178,9 @@ for iMeas = 1:length(pupCondList)
         % title
         title(['Response to Pupcall for subject ' subject ' measurement ' pupCondList{iMeas}])
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('AVREC [mV/mm²]')
         ylim([0 max(max(AVREC))])
@@ -189,20 +188,18 @@ for iMeas = 1:length(pupCondList)
         % next up is the wave file
         nexttile
         plot(t,ymod,'k'); ylabel('PupCall');
-        xlim([callWAV-0.2 callWAV+0.4])
-        xticks([callWAV-0.2 callWAV-0.1 callWAV callWAV+0.1 ...
-            callWAV+0.2 callWAV+0.3 callWAV+0.4])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callWAV-0.05 callWAV+0.2])
+        xticks([callWAV callWAV+0.1 callWAV+0.2])
+        xticklabels({'0', '100','200'})
         ylim([-1 1])
 
         % layer II
         nexttile
         shadedErrorBar(1:size(IItrace,2),mean(IItrace,3),std(IItrace,0,3),'lineprops','b');
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('II [mV/mm²]')
         ylim([0 max(max(AVREC))])
@@ -210,10 +207,9 @@ for iMeas = 1:length(pupCondList)
         nexttile
         shadedErrorBar(1:size(IVtrace,2),mean(IVtrace,3),std(IVtrace,0,3),'lineprops','b');
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('IV [mV/mm²]')
         ylim([0 max(max(AVREC))])
@@ -221,10 +217,9 @@ for iMeas = 1:length(pupCondList)
         nexttile
         shadedErrorBar(1:size(Vatrace,2),mean(Vatrace,3),std(Vatrace,0,3),'lineprops','b');
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('Va [mV/mm²]')
         ylim([0 max(max(AVREC))])
@@ -232,10 +227,9 @@ for iMeas = 1:length(pupCondList)
         nexttile
         shadedErrorBar(1:size(Vbtrace,2),mean(Vbtrace,3),std(Vbtrace,0,3),'lineprops','b');
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('Vb [mV/mm²]')
         ylim([0 max(max(AVREC))])
@@ -243,10 +237,9 @@ for iMeas = 1:length(pupCondList)
         nexttile
         shadedErrorBar(1:size(VItrace,2),mean(VItrace,3),std(VItrace,0,3),'lineprops','b');
         % x axis
-        xlim([callCSD-200,callCSD+400])
-        xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-            callCSD+200 callCSD+300 callCSD+400])
-        xticklabels({'0', '100','200','300','400','500','600'})
+        xlim([callCSD-50,callCSD+200])
+        xticks([callCSD callCSD+100 callCSD+200])
+        xticklabels({'0', '100','200'})
         % ylabel
         ylabel('VI [mV/mm²]')
         ylim([0 max(max(AVREC))])
