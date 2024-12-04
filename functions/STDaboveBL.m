@@ -87,5 +87,5 @@ if ~exist('Verification','dir')
 end
 cd Verification;
 
-writetable(DataT,[Groups '_' Condition '_STDabove.csv'])
+writetable(STDabove,[Group '_' Condition '_STDabove.csv'])
 cd(homedir)
