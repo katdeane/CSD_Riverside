@@ -16,8 +16,8 @@ clear; clc;
 % set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-elseif exist('E:\CSD_Riverside','dir')
-    cd('E:\CSD_Riverside'); 
+elseif exist('D:\CSD_Riverside','dir')
+    cd('D:\CSD_Riverside'); 
 else
     error('add your local repository as shown above')
 end
@@ -27,7 +27,7 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
-% Condition = {'NoiseBurst'};
+% Condition = {'gapASSR'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise'};
 
@@ -35,7 +35,7 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
+DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
@@ -51,7 +51,7 @@ for iGro = 1:length(Groups)
 
         disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50])
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Anesthetized')
         toc
 
     end
@@ -59,11 +59,11 @@ end
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
-for iGro = 2:length(Groups)
-    for iST = 4:length(Condition)
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -75,7 +75,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -120,12 +120,12 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset
+params.condList = {'gapASSR'}; % subset 'NoiseBurst','ClickTrain','Chirp',
 params.groups = {'MWT','MKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'MWT',params);
-runCwtCsd(homedir,'MKO',params);
+runCwtCsd(homedir,'MWT',params,'Anesthetized');
+runCwtCsd(homedir,'MKO',params,'Anesthetized');
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -137,27 +137,29 @@ runCwtCsd(homedir,'MKO',params);
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
+PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
+% params.condList = {'NoiseBurst'}; 
+% PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Anesthetized')
+
+% old way
 % PermutationTest(homedir,'Power',params,yespermute)
 % PermutationTest(homedir,'Phase',params,yespermute)
-% delete(gcp('nocreate')) % end this par session
-
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
-params.condList = {'NoiseBurst'}; 
-PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Anesthetized')
-
 % this collects all of the stats and puts them into csv in \output\CWTPermStats
-collectPermStats(homedir,params)
+% collectPermStats(homedir,params)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
 % plotFFT(homedir,params,'Spontaneous','AB')
 plotFFT(homedir,params,'Spontaneous','RE')
 
+% for the LFP side
+runFftLfp(homedir,params,'Spontaneous')
+plotFFTLfp(homedir,params,'Spontaneous','RE')
+
 % now of the spontaneous windows between noisebursts at 70, 80, and 90 dB
-runFftCsd(homedir,params,'NoiseBurstSpont')
+% runFftCsd(homedir,params,'NoiseBurstSpont')
 % plotFFT(homedir,params,'NoiseBurstSpont','AB')
-plotFFT(homedir,params,'NoiseBurstSpont','RE')
+% plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
 LaminarPhaseLocking(homedir,params)
@@ -188,5 +190,12 @@ for iST = 1:length(Condition)
     toc
 end
 
+%% Pretty up some figures
+
 % run a permutation test and save the output results (no figures)
 % permtest_PAC(homedir,'CSD')
+CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '2',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '4',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '6',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '8',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '10',     [0 0.4], [-0.15 0.15],'FMR1')
