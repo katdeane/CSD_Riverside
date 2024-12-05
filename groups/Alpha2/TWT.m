@@ -1,6 +1,6 @@
 %%EMP - Just an empty script for AJ to fill in single animals to look at
 %%CSD
-animals = {'AWT01','AWT02','AWT03','AWT04','AWT05','AWT06','AWT07','AWT08','AWT09'};  
+animals = {'TWT01','TWT02','TWT03','TWT04','TWT05','TWT06','TWT07','TWT08','TWT09'};  
  
 % notes:
 
@@ -32,7 +32,7 @@ Layer.Vb = {'[12:14]','[13:16]','[11:15]','[11:14]','[14:18]','[14:16]','[11:13]
 Layer.VI = {'[15:20]','[17:20]','[16:21]','[15:19]','[19:23]','[17:20]','[14:18]','[19:22]','[17:22]'};
 
 %% Conditions
-Cond.NoiseBurst70 = {...
+Cond.NoiseBurst = {...
     {'01'},... AWT01
     {'01'},... AWT02
     {'01'},... AWT03
@@ -44,19 +44,7 @@ Cond.NoiseBurst70 = {...
     {'03'},... AWT09
     };
 
-Cond.NoiseBurst80 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.gapASSR70 = {...
+Cond.gapASSR = {...
     {'06'},... AWT01
     {'05'},... AWT02
     {'02'},... AWT03
@@ -68,19 +56,7 @@ Cond.gapASSR70 = {...
     {'07'},... AWT09
     };
 
-Cond.gapASSR80 = {...
-   {[]},... AWT01
-   {[]},... AWT02
-   {[]},... AWT03
-   {[]},... AWT04
-   {[]},... AWT05
-   {[]},... AWT06
-   {[]},... AWT07
-   {[]},... AWT08
-   {[]},... AWT09
-    };
-
-Cond.Tonotopy70 = {...
+Cond.Tonotopy = {...
    {'02'},... AWT01
    {'02'},... AWT02
    {'04'},... AWT03
@@ -90,18 +66,6 @@ Cond.Tonotopy70 = {...
    {'03'},... AWT07
    {'05'},... AWT08
    {'06'},... AWT09
-    };
-
-Cond.Tonotopy80 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
     };
 
 Cond.Spontaneous = {...
@@ -116,7 +80,7 @@ Cond.Spontaneous = {...
     {'08'},... AWT09
 	};
 
-Cond.ClickTrain70 = {...
+Cond.ClickTrain = {...
    {'05'},... AWT01
    {'04'},... AWT02
    {'06'},... AWT03
@@ -128,19 +92,7 @@ Cond.ClickTrain70 = {...
    {'04'},... AWT09
 	};
 
-Cond.ClickTrain80 = {...
-   {[]},... AWT01
-   {[]},... AWT02
-   {[]},... AWT03
-   {[]},... AWT04
-   {[]},... AWT05
-   {[]},... AWT06
-   {[]},... AWT07
-   {[]},... AWT08
-   {[]},... AWT09
-    };
-
-Cond.Chirp70 = {...
+Cond.Chirp = {...
     {'04'},... AWT01
     {'03'},... AWT02
     {'03'},... AWT03
@@ -152,74 +104,3 @@ Cond.Chirp70 = {...
     {'05'},... AWT09
     };
 
-Cond.Chirp80 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.TreatNoiseBurst1 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.TreatgapASSR70 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.TreatgapASSR80 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.TreatTonotopy = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
-
-Cond.TreatNoiseBurst2 = {...
-    {[]},... AWT01
-    {[]},... AWT02
-    {[]},... AWT03
-    {[]},... AWT04
-    {[]},... AWT05
-    {[]},... AWT06
-    {[]},... AWT07
-    {[]},... AWT08
-    {[]},... AWT09
-    };
