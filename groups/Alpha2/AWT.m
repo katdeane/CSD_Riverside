@@ -1,6 +1,6 @@
 %%EMP - Just an empty script for AJ to fill in single animals to look at
 %%CSD
-animals = {'AWT01','AWT02','AWT03','AWT04','AWT05','AWT06','AWT07','AWT08','AWT09'};  
+animals = {'TWT01','TWT02','TWT03','TWT04','TWT05','TWT06','TWT07','TWT08','TWT09'};  
  
 % notes:
 

@@ -1,6 +1,6 @@
 %%EMP - Just an empty script for AJ to fill in single animals to look at
 %%CSD
-animals = {'AKO01','AKO02','AKO03','AKO04','AKO05','AKO06','AKO07','AKO08'};  
+animals = {'TKO01','TKO02','TKO03','TKO04','TKO05','TKO06','TKO07','TKO08'};  
  
 % notes:
 %AKO03 - CSD was hard to assign layers...
