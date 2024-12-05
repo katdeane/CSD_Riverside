@@ -1,13 +1,6 @@
-% Pipeline - FMR1 Comparison Study ~( °٢° )~
+% Pipeline - Alpha2 Comparison Study ~( °٢° )~
 
-% This is the master script for the FMR1 KO and WT study, run by Katrina
-% Deane at University of California, Riverside in Khaleel Razak's lab in
-% the Psychology Department. 
-
-% The overall goal of this study is to characterize A1 laminar differences
-% between groups. FMR1 KOs have auditory hypersensitivity and in vitro it
-% was found that their layer 2/3 and 5 were more synchronized in response
-% to stimulation in layer 2/3 specifically (Goswami 2019, Neurobiol Dis)
+% A little description here :D
 
 %% Get started
 
@@ -26,8 +19,7 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
-% Condition = {'gapASSR'};
+Groups = {'TWT' 'TKO'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoise'};
 
@@ -35,7 +27,7 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
+DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2],'Awake')
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
@@ -51,7 +43,7 @@ for iGro = 1:length(Groups)
 
         disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Anesthetized')
+        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},[-0.2 0.2],[-50 50],'Awake')
         toc
 
     end
@@ -63,7 +55,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
@@ -75,7 +67,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
@@ -121,11 +113,11 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.condList = {'gapASSR'}; % subset 'NoiseBurst','ClickTrain','Chirp',
-params.groups = {'MWT','MKO'}; % for permutation test
+params.groups = {'TWT','TKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,'MWT',params,'Anesthetized');
-runCwtCsd(homedir,'MKO',params,'Anesthetized');
+runCwtCsd(homedir,'TWT',params,'Awake');
+runCwtCsd(homedir,'TKO',params,'Awake');
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -137,9 +129,9 @@ runCwtCsd(homedir,'MKO',params,'Anesthetized');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Anesthetized')
+PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
 % params.condList = {'NoiseBurst'}; 
-% PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Anesthetized')
+% PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Awake')
 
 % old way
 % PermutationTest(homedir,'Power',params,yespermute)
@@ -168,7 +160,7 @@ interlamPhaseFig(homedir,params)
 %% Phase amplitude coupling
 
 % it's been a while
-Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
+Groups = {'TWT' 'TKO'}; %'TWT' 'TKO' 
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
 
 % based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
@@ -194,8 +186,8 @@ end
 
 % run a permutation test and save the output results (no figures)
 % permtest_PAC(homedir,'CSD')
-CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '2',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '4',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '6',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '8',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'MWTvMKO', 'gapASSR', '10',     [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'TWTvTKO', 'gapASSR', '2',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'TWTvTKO', 'gapASSR', '4',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'TWTvTKO', 'gapASSR', '6',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'TWTvTKO', 'gapASSR', '8',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'TWTvTKO', 'gapASSR', '10',     [0 0.4], [-0.15 0.15],'FMR1')

@@ -1,23 +1,31 @@
-function CWTorderedfigs(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp)
+function CWTorderedfigs(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp, whichstudy)
 
 % figure order matters here
 close all
 
-grp1 = fvbgroupname(Groups(1:3));
-grp2 = fvbgroupname(Groups(5:7));
-    
+if matches(whichstudy,'FVB')
+    grp1 = fvbgroupname(Groups(1:3));
+    grp2 = fvbgroupname(Groups(5:7));
+    diftitle = [grp2(1:end-3) ' - ' grp1(1:end-3)];
+    if contains(Condition,'70')
+        grp1 = [grp1 ' 70'];
+        grp2 = [grp2 ' 70'];
+    elseif contains(Condition,'80') && contains(Groups(1:3),'Y')
+        grp1 = [grp1 ' 70'];
+        grp2 = [grp2 ' 80'];
+    elseif contains(Condition,'80') && contains(Groups(5:7),'Y')
+        grp1 = [grp1 ' 80'];
+        grp2 = [grp2 ' 70'];
+    end
+else
+    grp1 = Groups(1:3);
+    grp2 = Groups(5:7);
+    diftitle = [grp1 ' - ' grp2];
+end
+
 % set some things straight for naming convention
 layers = {'II' 'IV' 'Va' 'Vb' 'VI'};
-if contains(Condition,'70')
-    grp1 = [grp1 ' 70'];
-    grp2 = [grp2 ' 70'];
-elseif contains(Condition,'80') && contains(Groups(1:3),'Y')
-    grp1 = [grp1 ' 70'];
-    grp2 = [grp2 ' 80'];
-elseif contains(Condition,'80') && contains(Groups(5:7),'Y')
-    grp1 = [grp1 ' 80'];
-    grp2 = [grp2 ' 70'];
-end
+
 
 % make some decisions for plotting
 if contains(Condition,'ClickTrain')
@@ -130,7 +138,7 @@ for iLay = 1:length(layers)
     xticks(thisxtick)
     xticklabels([])
     if matches(layers{iLay},'II')
-        title([grp2(1:end-3) ' - ' grp1(1:end-3)])
+        title(diftitle)
     elseif matches(layers{iLay},'VI')
         % -400 so 0 is always stim onset
         xticklabels(thisxtlab)

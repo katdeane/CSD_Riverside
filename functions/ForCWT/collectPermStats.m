@@ -15,7 +15,7 @@ for iCond = 1:length(params.condList)
 
     % condition specific info
     [stimList, ~, ~, ~, ~,~,~] = ...
-        StimVariableCWT(params.condList{iCond},1);
+        StimVariableCWT(params.condList{iCond},1,'Anesthetized');
 
     for iStim = 1:length(stimList)
 
