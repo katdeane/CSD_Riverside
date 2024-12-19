@@ -128,10 +128,8 @@ TimeFreqBackground(homedir,params,Groups)
 
 % run permutation clustermass analysis
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-if yespermute == 1; parpool(3); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-% PermutationTest(homedir,'Power',params,yespermute,'Anesthetized')
 
-params.condList = {'ClickTrain','gapASSR'}; %
+params.condList = {'gapASSR'}; %'ClickTrain','gapASSR'
 PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
 
 params.condList = {'Pupcall'}; % needs to be broken down by layers earlier

@@ -26,4 +26,4 @@ save('PMP04_Data.mat','Data')
 
 clear Data
 
-cd(homdir)
+cd(homedir)
