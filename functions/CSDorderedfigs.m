@@ -1,9 +1,13 @@
-function CSDorderedfigs(homedir, Group, Condition,thisylim)
+function CSDorderedfigs(homedir, Group, Condition,thisylim,whichstudy)
 
 % figure order matters here
 close all
 
-grpname = fvbgroupname(Group);
+if matches(whichstudy,'FVB')
+    grpname = fvbgroupname(Group);
+else 
+    grpname = Group;
+end
 
 % set some things straight for naming convention
 if contains(Condition,'70')

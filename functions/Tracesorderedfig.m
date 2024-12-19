@@ -1,10 +1,15 @@
-function Tracesorderedfig(homedir, Groups, Condition)
+function Tracesorderedfig(homedir, Groups, Condition,whichstudy)
 
 % figure order matters here
 close all
 
-grp1 = fvbgroupname(Groups{1});
-grp2 = fvbgroupname(Groups{2});
+if matches(whichstudy,'FVB')
+    grp1 = fvbgroupname(Groups{1});
+    grp2 = fvbgroupname(Groups{2});
+else
+    grp1 = Groups{1};
+    grp2 = Groups{2};
+end
 
 y7color = [255/255 120/255 0/255];
 o7color = [51/255  241/255 255/255];

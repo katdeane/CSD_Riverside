@@ -28,8 +28,8 @@ color12 = [24/255 102/255 180/255];
 color21 = [115/255 46/255 61/255]; % wine
 color22 = [160/255 64/255 85/255]; 
 
-% so far, we're only looking at 40 Hz, pull that out
-gapwidth = 10;
+% so far, we're only looking at 10 ms, pull that out
+gapwidth = 6;
 grp1sgl = grp1sgl(grp1sgl.ClickFreq == gapwidth,:);
 grp2sgl = grp2sgl(grp2sgl.ClickFreq == gapwidth,:);
 grp1avg = grp1avg(grp1avg.ClickFreq == gapwidth,:);

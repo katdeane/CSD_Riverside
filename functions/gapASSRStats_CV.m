@@ -22,8 +22,8 @@ statfill = {'p' 'df' 'CD' 'mean1' 'mean2' 'sd1' 'sd2'};
 color11 = [15/255 63/255 111/255]; %indigo blue
 color21 = [115/255 46/255 61/255]; % wine
 
-% so far, we're only looking at 40 Hz, pull that out
-gapwidth = 10;
+% so far, we're only looking at 10 ms, pull that out
+gapwidth = 6;
 grp1 = grp1(grp1.ClickFreq == gapwidth,:);
 grp2 = grp2(grp2.ClickFreq == gapwidth,:);
 
