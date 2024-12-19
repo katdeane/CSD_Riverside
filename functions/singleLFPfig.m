@@ -1,4 +1,4 @@
-function singleLFPfig(homedir, Groups, Condition,cbar)
+function singleLFPfig(homedir, Groups, Condition,cbar,type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -42,7 +42,7 @@ for iGro = 1:length(Groups)
 
             % The next part depends on the stimulus, pull the relevant details
             [stimList, thisUnit, stimDur, ~, ~] = ...
-                StimVariable(Condition{iCond},1);
+                StimVariable(Condition{iCond},1,type);
 
             %% Plot
 
@@ -62,7 +62,7 @@ for iGro = 1:length(Groups)
 
             for istim = 1:length(stimList)
                 nexttile
-                imagesc(mean(sngtrlLFP{istim},3))
+                imagesc(nanmean(sngtrlLFP{istim},3))
                 title([num2str(stimList(istim)) thisUnit])
                 % colormap jet
                 clim(cbar)
