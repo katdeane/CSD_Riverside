@@ -44,7 +44,7 @@ c_axis = [-0.2 0.2];
 
 % per subject CSD Script
 % artifact correction algorithm is triggered by 'Awake' tag
-DynamicCSD_AJ(homedir, Condition, Subjects, c_axis, 'Awake')
+DynamicCSD(homedir, Condition, Subjects, c_axis, 'Awake')
 
 %% verify sound response of noise burst over background activity 
 STDaboveBL(homedir, Subjects{:}, 'NoiseBurst70')
