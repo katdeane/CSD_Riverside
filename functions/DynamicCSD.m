@@ -60,6 +60,7 @@ for iGro = 1:length(Groups)
                     file = [name(1:5) '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     tic
+                    
                     if matches(file,'PMP09_05_LFP')
                         [StimIn, DataIn] = FileReaderLFPresamp(file,str2num(channels{iA}),type);
                     else
@@ -80,6 +81,9 @@ for iGro = 1:length(Groups)
                     if matches(thisTag,'single') || matches(thisTag,'spont')
                         sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
                             stimDur, stimITI, thisTag);
+                    elseif matches(thisTag,'gapASSRRate') 
+                        sngtrlLFP = icutGAPdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, stimITI, thisTag);
                     else
                         sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
                             BL, stimDur, stimITI, thisTag);
@@ -130,13 +134,18 @@ for iGro = 1:length(Groups)
                         caxis(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
+                        yline(L.II(end)); yline(L.IV(end)); 
+                        yline(L.Va(end)); yline(L.Vb(end));
+                        if L.VI(end) > size(sngtrlCSD,1)
+                            yline(L.VI(end));
+                        end
                     end
                     
                     colorbar
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
                     % saveas(h,[name '_' measurement '_CSD.png' ])
-                    close (h)
+                    % close (h)
 
                     % determine BF of each layer from 1st sink's rms
                     clear BF_II BF_IV BF_Va BF_Vb BF_VI
@@ -170,16 +179,16 @@ for iGro = 1:length(Groups)
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % sink data removed 08/07/23
-
-                    % BFs
+                    % % sink data removed 08/07/23
+                    % 
+                    % % BFs
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
                     Data(CondIDX).BF_Va         = BF_Va;
                     Data(CondIDX).BF_Vb         = BF_Vb;
                     Data(CondIDX).BF_VI         = BF_VI;
-
-                    % CSD data
+                    % 
+                    % % CSD data
                     Data(CondIDX).sngtrlLFP     = sngtrlLFP;
                     Data(CondIDX).sngtrlCSD     = sngtrlCSD;
                     Data(CondIDX).AVREC         = AvrecCSD;
