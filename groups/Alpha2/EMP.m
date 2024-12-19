@@ -1,6 +1,6 @@
 %%EMP - Just an empty script for AJ to fill in single animals to look at
 %%CSD
-animals = {'AKO08'};  
+animals = {'TKO09'};  
  
 % notes:
 
@@ -9,7 +9,7 @@ animals = {'AKO08'};
 %channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]
 
 channels = {...
-  '[11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]'
+  '[20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30]'
    };
 
 %             
@@ -25,7 +25,7 @@ Layer.VI = {'[]'};
 
 %% Conditions
 Cond.NoiseBurst70 = {...
-    {'04'},... 
+    {'02'},... 
     
     };
 
