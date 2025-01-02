@@ -128,7 +128,11 @@ for iLay = 1:length(layers)
     for iline = 1:length(h.Parent.Children(2).Children)-1
         thisx = h.Parent.Children(2).Children(iline).XData;
         thisy = h.Parent.Children(2).Children(iline).YData;
-        plot(thisx,thisy,'color','k')
+        if sum(h.Parent.Children(2).Children(iline).Color) == 0 % black
+            plot(thisx,thisy,':','color','k')
+        elseif sum(h.Parent.Children(2).Children(iline).Color) == 3 % white
+            plot(thisx,thisy,'-','color','k')
+        end
     end
     % y tick labels on far left
     yticks([])
