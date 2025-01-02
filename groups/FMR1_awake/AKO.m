@@ -2,12 +2,7 @@
 animals = {'AKO01','AKO02','AKO03','AKO04','AKO05','AKO06','AKO07','AKO08','AKO09','AKO10','AKO11','AKO12'};
 
 % notes:
-% AKO01, 16 died during noise bursts
-% AKO04, 05 died after tonotopies
-% account for 08 09 10
 
-% AKO14 is split in two because the subject became quickly wakeful and
-% broke the probe
 
 %% Channels and Layers
 % channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]
