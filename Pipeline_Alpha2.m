@@ -26,7 +26,7 @@ Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2],'Awake')
+DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
@@ -111,7 +111,7 @@ PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Awake')
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
-% plotFFT(homedir,params,'Spontaneous','AB')
+plotFFT(homedir,params,'Spontaneous','AB')
 plotFFT(homedir,params,'Spontaneous','RE')
 
 %% Pretty up some figures
