@@ -17,7 +17,7 @@ if ~exist('whichtest','var')
 end
 
 % number of permutations
-nperms = 1000; % 500 when ready
+nperms = 1000; 
 pthresh = 0.05;
 
 if yespermute == 1
