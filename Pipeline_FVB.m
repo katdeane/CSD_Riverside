@@ -30,13 +30,14 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
-Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'}};
+Comps = {{'FOM' 'FYM'} {'FOF' 'FYF'}};
+% Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'}};
 Subjects = {'ALL'};
 % Condition = {'NoiseBurst70'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
- 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatNoiseBurst1' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'}; 
-% 'Tonotop y70' 'Tonotopy80' 'TreatTonotopy'
-
+ 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
+ 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
+% Condition = {'Tonotopy70' 'Tonotopy80' 'TreatTonotopy'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -47,7 +48,7 @@ c_axis = [-0.2 0.2];
 DynamicCSD(homedir, Condition, Subjects, c_axis, 'Awake')
 
 %% verify sound response of noise burst over background activity 
-STDaboveBL(homedir, Subjects{:}, 'NoiseBurst70')
+% STDaboveBL(homedir, Subjects{:}, 'NoiseBurst70')
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -96,6 +97,9 @@ for iGro = 1:length(Groups)
     end
 end
 
+%% Tuning / Tonotopy 
+
+
 %% SPECTRAL ANALYSIS %%
 
 %% CWT analysis 
@@ -106,8 +110,8 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'TreatNoiseBurst1' 'TreatgapASSR70'};  %  'NoiseBurst70' 'NoiseBurst80' 'ClickTrain70' 'ClickTrain80' ...
-  % 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'  'TreatgapASSR80' 'TreatNoiseBurst2'
+params.condList = {'NoiseBurst70' 'NoiseBurst80' 'ClickTrain70' 'ClickTrain80' ...
+ 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'  'TreatgapASSR80' 'TreatNoiseBurst2'};  
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,Subjects{:},params,'Awake');

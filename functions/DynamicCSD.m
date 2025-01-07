@@ -108,7 +108,7 @@ for iGro = 1:length(Groups)
                     Layers = fieldnames(L); 
                     
                     %Generate Sink Boxes
-                    [~,~,~,RMS,~,~,~,~,~] =...
+                    [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_SinkPeak,PLAT,SINGLE_PeakLat] =...
                         sink_dura(L,sngtrlCSD,BL);                        
                     
                     %% Plots 
@@ -179,8 +179,16 @@ for iGro = 1:length(Groups)
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % % sink data removed 08/07/23
-                    % 
+                    % % sink data
+                    Data(CondIDX).sinkdur       = DUR;
+                    Data(CondIDX).sinkonset     = ONSET;
+                    Data(CondIDX).sinkoffset    = OFFSET;
+                    Data(CondIDX).sinkRMS       = RMS;
+                    Data(CondIDX).sinkSGLRMS    = SINGLE_RMS;
+                    Data(CondIDX).sinkPeakAmp   = PAMP;
+                    Data(CondIDX).sinkSGLPAMP   = SINGLE_SinkPeak;
+                    Data(CondIDX).sinkPeakLat   = PLAT;
+                    Data(CondIDX).sinkSGLPLAT   = SINGLE_PeakLat;
                     % % BFs
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
