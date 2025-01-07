@@ -50,11 +50,11 @@ SINGLE_RMS      = struct;
 
 for istim = 1:length(sngtrlCSD)
     
-    AvgCSD = mean(sngtrlCSD{istim},3);
+    AvgCSD = nanmean(sngtrlCSD{istim},3);
     
     %create std and mean line from BL
-    std_BL = std(AvgCSD(:,1:BL),0,'all'); 
-    mean_BL = mean(AvgCSD(:,1:BL),'all'); 
+    std_BL = nanstd(AvgCSD(:,1:BL),0,'all'); 
+    mean_BL = nanmean(AvgCSD(:,1:BL),'all'); 
     
     for iOrder = 1:length(Order)
         
@@ -99,14 +99,14 @@ for istim = 1:length(sngtrlCSD)
         offsets     = find(crossover == -1); %BELOW threshold
         
         % sanity check plot
-        % T = ones(1,length(AvgCSD_layer));
-        % plot(AvgCSD_layer) 
-        % hold on
-        % plot(thresh_find*T)
-        % plot(thresh_contain*T)
-        % for ion  = 1:length(onsets); plot(onsets(ion),thresh_find,'o'); end
-        % for ioff = 1:length(offsets); plot(offsets(ioff),thresh_find,'d'); end
-        % hold off
+        T = ones(1,length(AvgCSD_layer));
+        plot(AvgCSD_layer) 
+        hold on
+        plot(thresh_find*T)
+        plot(thresh_contain*T)
+        for ion  = 1:length(onsets); plot(onsets(ion),thresh_find,'o'); end
+        for ioff = 1:length(offsets); plot(offsets(ioff),thresh_find,'d'); end
+        hold off
         
         rmslist = NaN(1,length(onsets));
         pamplist = NaN(1,length(onsets));
@@ -115,7 +115,7 @@ for istim = 1:length(sngtrlCSD)
             %if the first point less than the onset level and if there's a peak following it, calculate rms
             if (nanmax(AvgCSD_layer(:,onsets(iCross):offsets(iCross)))) > thresh_contain
                 % if the sink is wide enough at the base 
-                if (offsets(iCross)-onsets(iCross)) > 30
+                if (offsets(iCross)-onsets(iCross)) > 15
                     % take actual rms and peak from RAW CSD
                     rmslist(iCross)  = rms(rawCSD(:,onsets(iCross):onsets(iCross+1)),'omitnan');
                     pamplist(iCross) = nanmax(rawCSD(:,onsets(iCross):onsets(iCross+1)));
