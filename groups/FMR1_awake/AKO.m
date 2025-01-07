@@ -118,7 +118,7 @@ Cond.gapASSR = {...
     {'05'},... %AKO04 - {allego 28}
     {'07'},... %AKO05 - {allego 38}
     {'08'},... %AKO06 - {allego 47}
-    {'06'},... %AKO07 - {allego 5}
+    {[]},... %AKO07 - {allego 5} '06' was only 2000 sp
     {'06'},... %AKO08 - {allego 13}
     {'06'},... %AKO09 - {allego 21}
     {'09'},... %AKO10 - {allego 8}

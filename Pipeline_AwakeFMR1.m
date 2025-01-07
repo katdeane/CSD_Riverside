@@ -28,9 +28,9 @@ set(0, 'DefaultFigureRenderer', 'painters');
 % set consistently needed variables
 Groups = {'AWT' 'AKO'}; 
 % Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
-% Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-%     'gapASSR' 'postNoiseBurst'};
+% Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
+Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+    'gapASSR' 'postNoiseBurst'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -38,11 +38,8 @@ Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
 % note that this reads automatically what's in groups/
 DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
 
-% per subject Spike Script
-DynamicSpike(homedir, Condition)
-
 % LFP single subject figures
-singleLFPfig(homedir, Groups, Condition,[-50 50])
+singleLFPfig(homedir, Groups, Condition,[-50 50],'Awake')
 
 %% Group pics (⌐▨_▨)
 
@@ -60,11 +57,11 @@ end
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
-for iGro = 2:length(Groups)
-    for iST = 4:length(Condition)
+for iGro = 1:length(Groups)
+    for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
@@ -76,19 +73,23 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST})
+        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
 
 %% Peak and RMS statistics
 
-NoiseBurstStats(homedir,Groups)
+NoiseBurstStats(homedir,Groups,60)
+NoiseBurstStats(homedir,Groups,70)
+NoiseBurstStats(homedir,Groups,80)
 ClickTrainStats(homedir,Groups)
 gapASSRStats(homedir,Groups)
 
 % t tests between subject-wise coefficients of variance
-NoiseBurstStats_CV(homedir,Groups)
+NoiseBurstStats_CV(homedir,Groups,60)
+NoiseBurstStats_CV(homedir,Groups,70)
+NoiseBurstStats_CV(homedir,Groups,80)
 ClickTrainStats_CV(homedir,Groups)
 gapASSRStats_CV(homedir,Groups)
 
@@ -96,16 +97,16 @@ gapASSRStats_CV(homedir,Groups)
 
 % this is specifically to explore temporal dynamics over recording day and
 % uses single trial peak detection CSVs created by Avrec_Layers.m
-
-disp('Determining cortical strength over time')
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['For ' Groups{iGro} ' ' Condition{iST}])
-        tic 
-        StrengthxTime(homedir, Groups{iGro}, Condition{iST})
-        toc
-    end
-end
+% 
+% disp('Determining cortical strength over time')
+% for iGro = 1:length(Groups)
+%     for iST = 1:length(Condition)
+%         disp(['For ' Groups{iGro} ' ' Condition{iST}])
+%         tic 
+%         StrengthxTime(homedir, Groups{iGro}, Condition{iST})
+%         toc
+%     end
+% end
 
 %% SPECTRAL ANALYSIS %%
 
@@ -125,8 +126,8 @@ runCwtCsd(homedir,'AWT',params,'Awake');
 runCwtCsd(homedir,'AKO',params,'Awake');
 
 % single subject ITPC figures
-CWTFigs(homedir,'Phase',params,'AWT','Awake')
-CWTFigs(homedir,'Phase',params,'AKO','Awake')
+% CWTFigs(homedir,'Phase',params,'AWT','Awake')
+% CWTFigs(homedir,'Phase',params,'AKO','Awake')
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -137,55 +138,63 @@ CWTFigs(homedir,'Phase',params,'AKO','Awake')
 % Output:   Figures for means and observed difference of comparison;
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
-yespermute = 0; % 0 just observed pics, 1 observed pics and perumation test
-if yespermute == 1; parpool(4); end % 4 workers in an 8 core machine with 64 gb ram (16 gb each)
-% PermutationTest(homedir,'Power',params,yespermute)
-% PermutationTest(homedir,'Phase',params,yespermute)
-% delete(gcp('nocreate')) % end this par session
-
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
-
-% this collects all of the stats and puts them into csv in \output\CWTPermStats
-collectPermStats(homedir,params)
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','AB')
+% plotFFT(homedir,params,'Spontaneous','AB')
 plotFFT(homedir,params,'Spontaneous','RE')
 
+% for the LFP side
+runFftLfp(homedir,params,'Spontaneous')
+plotFFTLfp(homedir,params,'Spontaneous','RE')
+
 % now of the spontaneous windows between noisebursts at 70, 80, and 90 dB
-runFftCsd(homedir,params,'NoiseBurstSpont')
-plotFFT(homedir,params,'NoiseBurstSpont','AB')
-plotFFT(homedir,params,'NoiseBurstSpont','RE')
+% runFftCsd(homedir,params,'NoiseBurstSpont')
+% plotFFT(homedir,params,'NoiseBurstSpont','AB')
+% plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
-LaminarPhaseLocking(homedir,params)
-interlamPhaseFig(homedir,params)
+LaminarPhaseLocking(homedir,'AKO',params)
+interlamPhaseFig(homedir,'AKO',params)
+
+LaminarPhaseLocking(homedir,'AWT',params)
+interlamPhaseFig(homedir,'AWT',params)
 
 %% Phase amplitude coupling
 
-% it's been a while
-Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
-Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
+% % it's been a while
+% Groups = {'AWT' 'KKO'};  
+% Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
+% 
+% % based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
+% disp('CSD Phase Amplitude Coupling Analysis')
+% for iGro = 1:length(Groups)
+%     for iST = 1:length(Condition)
+%         disp(['Phase Amp coupling for ' Groups{iGro} ' ' Condition{iST}])
+%         tic 
+%         runPAC(homedir, Groups{iGro}, Condition{iST}, 'CSD')
+%         toc
+%     end
+% end
+% 
+% % save all of the visual data output and some data files
+% for iST = 1:length(Condition)
+%     disp(['Phase Amp coupling figures for ' Condition{iST}])
+%     tic
+%     visualize_PAC(homedir,Groups, Condition{iST}, 'CSD')
+%     toc
+% end
+% 
+% % run a permutation test and save the output results (no figures)
+% % permtest_PAC(homedir,'CSD')
 
-% based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
-disp('CSD Phase Amplitude Coupling Analysis')
-for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
-        disp(['Phase Amp coupling for ' Groups{iGro} ' ' Condition{iST}])
-        tic 
-        runPAC(homedir, Groups{iGro}, Condition{iST}, 'CSD')
-        toc
-    end
-end
-
-% save all of the visual data output and some data files
-for iST = 1:length(Condition)
-    disp(['Phase Amp coupling figures for ' Condition{iST}])
-    tic
-    visualize_PAC(homedir,Groups, Condition{iST}, 'CSD')
-    toc
-end
+%% Pretty up some figures
 
 % run a permutation test and save the output results (no figures)
 % permtest_PAC(homedir,'CSD')
+CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '8',      [0 0.4], [-0.15 0.15],'FMR1')

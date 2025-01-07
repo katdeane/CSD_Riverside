@@ -66,7 +66,7 @@ for iLay = 1:length(layers)
     % stack groups for pics
     for iSub = 1:grp1size
         % groups stacks have subjects numbered as order gone in
-        avg1stk(iSub,:) = avg1lay(avg1lay.Animal == iSub,:).PeakAmp';
+        avg1stk(iSub,:) = avg1lay(matches(avg1lay.Animal,grp1name{iSub}),:).PeakAmp';
 
         % single trial needs to be sorted 
         sgl1sub = sgl1lay(matches(sgl1lay.Animal,grp1name{iSub}),:);
@@ -78,7 +78,7 @@ for iLay = 1:length(layers)
     end
     for iSub = 1:grp2size
         % groups stacks have subjects numbered as order gone in
-        avg2stk(iSub,:) = avg2lay(avg2lay.Animal == iSub,:).PeakAmp';
+        avg2stk(iSub,:) = avg2lay(matches(avg2lay.Animal,grp2name{iSub}),:).PeakAmp';
 
         % single trial needs to be sorted 
         sgl2sub = sgl2lay(matches(sgl2lay.Animal,grp2name{iSub}),:);

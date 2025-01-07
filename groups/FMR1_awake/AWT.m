@@ -141,7 +141,7 @@ Cond.postNoiseBurst = {...
     {'08'},... %AWT07 - {allego 10}
     {'08'},... %AWT08 - {allego 19}
     {'08'},... %AWT10 - {allego 7}
-    {'08'},... %AWT11 - {allego 15}
+    {[]},... %AWT11 - {allego 15} - 08 didn't have stim data
     {'08'},... %AWT12 - {allego 23}
     {'07'},... %AWT13 - {allego 30}
     {'07'},... %AWT14 - {allego 37}
