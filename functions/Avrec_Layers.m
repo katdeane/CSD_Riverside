@@ -158,7 +158,7 @@ for iSub = 1:subjects
             end
 
             % peak detection over single trials
-            if matches(Condition, 'ClickTrain')
+            if contains(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
             else
                 reprate = 1;

@@ -20,7 +20,7 @@ if ~exist('stim_freq','var')
     dur_stim  = 2000; % 1 s of stimulus
 end
 
-if matches(Condition,'ClickTrain')
+if contains(Condition,'ClickTrain')
     numreps = ceil(dur_stim / (1000/stim_freq)); % assuming sr 1k
 
     % detection windows 

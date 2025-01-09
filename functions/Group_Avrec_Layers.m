@@ -136,7 +136,7 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
                 xticks(0:200:timeaxis)
 
                 % peak detection
-                if matches(Condition, 'ClickTrain')
+                if contains(Condition, 'ClickTrain')
                     reprate = stimList(iStim);
                 else
                     reprate = 1;

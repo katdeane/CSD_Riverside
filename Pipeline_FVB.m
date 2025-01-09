@@ -33,7 +33,7 @@ Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
 Comps = {{'FOM' 'FYM'} {'FOF' 'FYF'}};
 % Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'}};
 Subjects = {'ALL'};
-% Condition = {'NoiseBurst70'};
+% Condition = {'ClickTrain70' 'ClickTrain80'};
 Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
  'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
@@ -114,7 +114,7 @@ params.condList = {'NoiseBurst70' 'NoiseBurst80' 'ClickTrain70' 'ClickTrain80' .
  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'  'TreatgapASSR80' 'TreatNoiseBurst2'};  
 
 % Only run when data regeneration is needed:
-runCwtCsd(homedir,Subjects{:},params,'Awake');
+% runCwtCsd(homedir,Subjects{:},params,'Awake');
 
 % Just individual inter-trial phase coherence figures
 % CWTFigs(homedir,'Phase',params,'OLD','Awake')
@@ -174,7 +174,7 @@ for iCond = 1:length(CondList)
     TracesOLDvYNGfig(homedir, CondList{iCond})
 end
 
-for iCo = 1:length(Comps)
+for iCo = 2:length(Comps)
     for iCond = 1:length(Condition)
         Tracesorderedfig(homedir, Comps{iCo}, Condition{iCond},'FVB')
     end
