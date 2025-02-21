@@ -90,5 +90,5 @@ else % this is only done in cases of single images
     set(gcf,'Position',[100 100 650 500])
 end
 
-exportgraphics(gcf,[Group ' Avg CSD to ' Condition '.png'])
+exportgraphics(gcf,[Group ' Avg CSD to ' Condition '.pdf'])
 close; cd(homedir)

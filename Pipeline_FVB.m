@@ -30,13 +30,13 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
-Comps = {{'FOM' 'FYM'} {'FOF' 'FYF'}};
-% Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'}};
+% Comps = {{'FOM' 'FYM'} {'FOF' 'FYF'}};
+Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'} {'FOM' 'FYM'} {'FOF' 'FYF'}};
 Subjects = {'ALL'};
-% Condition = {'ClickTrain70' 'ClickTrain80'};
-Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
- 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
- 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'gapASSR70' 'gapASSR80' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'};
+% Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+%  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
+%  'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
 % Condition = {'Tonotopy70' 'Tonotopy80' 'TreatTonotopy'};
 
 %% Data generation per subject ⊂◉‿◉つ
@@ -174,12 +174,14 @@ for iCond = 1:length(CondList)
     TracesOLDvYNGfig(homedir, CondList{iCond})
 end
 
-for iCo = 2:length(Comps)
+for iCo = 1:length(Comps)
     for iCond = 1:length(Condition)
         Tracesorderedfig(homedir, Comps{iCo}, Condition{iCond},'FVB')
     end
 end
 
+% Comps = {{'FOS' 'FON'}}; 
+% thisComp = [Comps{1}{1} 'v' Comps{1}{2}];
 % keep in mind, the comp pairs need to match what they were when
 % PermutationTest_Area.m was run, it will hard call the order of where the
 % panels are based on the pair, e.g. {'OLD' 'YNG'}
@@ -193,7 +195,7 @@ for iCo = 1:length(Comps)
         CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15],'FVB')
         CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15],'FVB')
         CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst1','0',[0 0.7], [-0.25 0.25],'FVB')
+        CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
         CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
         if iCo == 1 || iCo == 2 || iCo == 4 % pairs containing old groups
             CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2],'FVB')

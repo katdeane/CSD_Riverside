@@ -163,5 +163,5 @@ colorbar(k,'Position',[0.63 0.4 0.012 0.2]);  % attach colorbar
 clim(k,c_axisind); 
 set(gcf,'Position',[100 100 700 800])
 
-exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.png'])
+exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.pdf'])
 close; cd(homedir)

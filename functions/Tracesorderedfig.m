@@ -41,9 +41,9 @@ elseif contains(Condition,'Chirp')
     thisstim  = {'1'};
 elseif contains(Condition,'NoiseBurst')
     condname  = 'NoiseBurst';
-    thisxlim  = [300 900];
-    thisxtick = 400:200:900;
-    thisxtlab = 0:200:700;
+    thisxlim  = [350 600];
+    thisxtick = 400:100:600;
+    thisxtlab = 0:100:200;
     thischild = 1;
     thisstim  = {'1'};
 elseif contains(Condition,'Spontaneous')
@@ -130,7 +130,7 @@ for iStim = 1:length(thisstim)
         % final asthetics
         set(gcf,'Position',[100 100 600 700])
 
-        exportgraphics(targetfig,[Groups{1} 'v' Groups{2} '_Traces_' Condition '_' thisstim{iStim} '.png'])
+        exportgraphics(targetfig,[Groups{1} 'v' Groups{2} '_Traces_' Condition '_' thisstim{iStim} '.pdf'])
     end
     close;
 

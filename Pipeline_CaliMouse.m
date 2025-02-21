@@ -162,6 +162,10 @@ plotFFT_PCal(homedir,params,'AB','Pupcall') % spont compared to pupcalls
 plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 40 HZ)
 % plotFFT_PCal(homedir,params,'RE')
 
+% Analysis of covariance to determine if age or group is predictor
+AnCoVaFFT_PCal(homedir,params,'AB','ClickTrain')
+AnCoVaFFT_PCal(homedir,params,'AB','Pupcall')
+
 %% Interlaminar Phase Coherence
 % LaminarPhaseLocking(homedir,params)
 % interlamPhaseFig(homedir,params)

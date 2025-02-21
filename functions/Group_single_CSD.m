@@ -53,5 +53,5 @@ colorbar(h,'Position',[0.93 0.33 0.012 0.33]);  % attach colorbar to h
 clim(h,c_axis); 
 set(gcf,'Position',[100 100 850 550])
 
-exportgraphics(targetfig,['Single_' Group '_' Condition '_CSDs.png'])
+exportgraphics(targetfig,['Single_' Group '_' Condition '_CSDs.pdf'])
 close; cd(homedir)

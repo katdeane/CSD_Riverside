@@ -244,6 +244,8 @@ for iLay = 1:length(params.layers)
     % baseline difference: difference between groups during rest
     GHS1 = mean(grp1S(gammahigh_range,:),1);
     GHS2 = mean(grp2S(gammahigh_range,:),1);
+    [gh_h,gh_AN,gh_CO,gh_Stats] = aoctool(ages,)
+
     [ghss_P,ghss_DF,ghss_Cohd,ghssmean1,ghssstd1,ghssmean2,ghssstd2] = ...
         myttest2(GHS1',GHS2',1,'both');
 
