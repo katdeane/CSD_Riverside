@@ -8,7 +8,7 @@ end
 
 %% get the stimulus onsets
 
-threshold = 0.05; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
+threshold = 0.01; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
 
 % do we need to throw out the first trial in this case? 
@@ -44,6 +44,11 @@ if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
 
     % this should match or something is wrong
     if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
+
+elseif matches(thistype, 'Mask')
+
+    stimList = readmatrix('Masks4.txt')';
+    shortlist = unique(stimList(2:end)); % first row is unread
 
 elseif matches(thistype, 'noise') % noise bursts
     
