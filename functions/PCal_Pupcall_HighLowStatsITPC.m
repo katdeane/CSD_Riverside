@@ -135,7 +135,7 @@ for iLay = 1:length(layers)
         ITPCstat.Comp(cnt)      = 'HighLowParents';
         cnt = cnt + 1;
 
-    end % spectral bands   
+    end % spectral bands 
     set(gcf,'Position',[100 100 1000 900])
     cd(homedir); cd figures;
     if ~exist('ITPCmeanfig','dir')

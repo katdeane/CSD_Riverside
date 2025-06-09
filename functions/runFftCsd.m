@@ -12,7 +12,7 @@ cd(homedir); cd datastructs;
 % Init datastruct to pass out
 fftStructAB = struct(); % absolute (normalized by half sampling points)
 fftStructRE = struct(); % relative (normalized by sum of full spectrum)
-count = 1;
+stcount = 1;
 
 % and go
 for iGr = 1:length(params.groups)
@@ -39,6 +39,25 @@ for iGr = 1:length(params.groups)
             % fft is going to be taken from each trial. STP is summed power
             % across stim and background
            
+        elseif matches(Condition,'NoiseBurst')
+            % pull data for this condition
+            index = StimIndex({Data.Condition},Cond,iAn,Condition);
+            if isempty(index)
+                continue
+            end
+            % we're going to look through 20-50 dB as that's the main range
+            % of pup calls covered 
+            % stacked in 1.5 second blocks: 100 ms of NB, 1 second
+            % ITI, 400 ms baseline. 
+            curCSD = nan(size(Data(index).sngtrlCSD{1},1), size(Data(index).sngtrlCSD{1},2),...
+                (size(Data(index).sngtrlCSD{1},3))*4);
+            % limit to 50 trials
+            for idB = 1:4
+                count   = ((idB-1)*50)+1;
+                countto = count+49;
+                curCSD(:,:,count:countto) = Data(index).sngtrlCSD{idB}(:,:,1:50);
+            end
+            
         elseif matches(Condition,'ClickTrain')
             % pull data for this condition
             index = StimIndex({Data.Condition},Cond,iAn,Condition);
@@ -49,7 +68,7 @@ for iGr = 1:length(params.groups)
             % closest approximate to pup call rate
             % stacked in 3.4 second blocks: 2 seconds of clicks, 1 second
             % ITI, 400 ms baseline. 
-            curCSD = Data(index).sngtrlCSD{5};
+            curCSD = Data(index).sngtrlCSD{2};
             % we want to focus on clicks, so we'll keep just 200 ms on both
             % sides
             curCSD = curCSD(:,201:2600,:);
@@ -81,27 +100,27 @@ for iGr = 1:length(params.groups)
             fftcsd = fft(chanCSD);
             fftcsd = squeeze(abs(fftcsd) .^2); % take power
             fftcsdAB = fftcsd ./ (size(curCSD,2)/2); % normalize by half sampling points
-            fftcsdRE = (fftcsd ./ sum(sum(fftcsd)))*params.sampleRate; % normalize by sum of full power spectrum
+            fftcsdRE = (fftcsd ./ nansum(nansum(fftcsd)))*params.sampleRate; % normalize by sum of full power spectrum
 
-            fftStructAB(count).group        = Group;
-            fftStructAB(count).animal       = Aname;
-            fftStructAB(count).layer        = params.layers{iLay};
+            fftStructAB(stcount).group        = Group;
+            fftStructAB(stcount).animal       = Aname;
+            fftStructAB(stcount).layer        = params.layers{iLay};
 
-            fftStructRE(count).group        = Group;
-            fftStructRE(count).animal       = Aname;
-            fftStructRE(count).layer        = params.layers{iLay};
+            fftStructRE(stcount).group        = Group;
+            fftStructRE(stcount).animal       = Aname;
+            fftStructRE(stcount).layer        = params.layers{iLay};
 
             if matches(Condition,'Spontaneous')
                 if size(fftcsd,2) < 60
                     continue
                 end
-                fftStructAB(count).fft      = {fftcsdAB(:,1:60)}; % limit to my recording min, 2 min
-                fftStructRE(count).fft      = {fftcsdRE(:,1:60)}; % limit to my recording min, 2 min
-                count = count + 1;
+                fftStructAB(stcount).fft      = {fftcsdAB(:,1:60)}; % limit to my recording min, 2 min
+                fftStructRE(stcount).fft      = {fftcsdRE(:,1:60)}; % limit to my recording min, 2 min
+                stcount = stcount + 1;
             else
-                fftStructAB(count).fft      = {fftcsdAB};
-                fftStructRE(count).fft      = {fftcsdRE};
-                count = count + 1;
+                fftStructAB(stcount).fft      = {fftcsdAB};
+                fftStructRE(stcount).fft      = {fftcsdRE};
+                stcount = stcount + 1;
             end
             
         end % layer

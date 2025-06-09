@@ -29,6 +29,12 @@ elseif matches(Comparison,'ClickTrain')
     color11 = [74/255 183/255 255/255]; % light blue
     color12 = [0/255  77/255  125/255]; % dark dark
 
+elseif matches(Comparison,'NoiseBurst')
+    % Load in ClickTrain FFT
+    loadname2 = [params.groups{1} 'v' params.groups{2} '_NoiseBurst_' type '_FFT.mat'];
+    color11 = [74/255 183/255 255/255]; % light blue
+    color12 = [0/255  77/255  125/255]; % dark dark
+
 end
 load(loadname2,['fftStruct' type])
 if matches(type,'AB')
@@ -150,19 +156,46 @@ for iLay = 1:length(params.layers)
     grp1P = layTabP.fft(matches(layTabP.group,params.groups{1}),:);
     grp2P = layTabP.fft(matches(layTabP.group,params.groups{2}),:);
     % stack the trials
+    if matches(Comparison,'NoiseBurst')
+        % noiseburst has too many trials, we want the spread of 20 - 50 dB
+        % but we want to pare it down. Randomly take 60 from the 200 trials
+        % but keep it the same every time
+        rng(42) % create seed for repeatable random set
+        p = randperm(200,60);
+        grpsize = size(grp1P);
+        for iSub = 1:grpsize
+            thisSub = grp1P{iSub}(:,p);
+            if iSub == 1
+                tmpgrp1p = thisSub;
+            else
+            tmpgrp1p = horzcat(tmpgrp1p, thisSub);
+            end
+        end
+        grpsize = size(grp2P);
+        for iSub = 1:grpsize
+            thisSub = grp2P{iSub}(:,p);
+            if iSub == 1
+                tmpgrp2p = thisSub;
+            else
+            tmpgrp2p = horzcat(tmpgrp2p, thisSub);
+            end
+        end
+        grp1P = tmpgrp1p; grp2P = tmpgrp2p; % not my cleanest work
+    else
+        grp1P = horzcat(grp1P{:}); grp2P = horzcat(grp2P{:});
+    end
     grp1S = horzcat(grp1S{:}); grp2S = horzcat(grp2S{:});
-    grp1P = horzcat(grp1P{:}); grp2P = horzcat(grp2P{:});
 
     if matches(Comparison,'Pupcall')
         % Pupcall data needs to be gaussian filtered because it's too many
         % sampling points (Clicks don't need to be)
         grp1P = imgaussfilt(grp1P,10);
         grp2P = imgaussfilt(grp2P,10);
+        grp1P = downsample(grp1P,10);
+        grp2P = downsample(grp2P,10);
     end
     % now it needs to be resampled so we can use Spont data to ratio
-    grp1P = downsample(grp1P,10);
     grp1P = resample(grp1P,LS,size(grp1P,1));
-    grp2P = downsample(grp2P,10);
     grp2P = resample(grp2P,LS,size(grp2P,1));
     % that felt good :)
 
@@ -244,7 +277,7 @@ for iLay = 1:length(params.layers)
     % baseline difference: difference between groups during rest
     GHS1 = mean(grp1S(gammahigh_range,:),1);
     GHS2 = mean(grp2S(gammahigh_range,:),1);
-    [gh_h,gh_AN,gh_CO,gh_Stats] = aoctool(ages,)
+    % [gh_h,gh_AN,gh_CO,gh_Stats] = aoctool(ages,)
 
     [ghss_P,ghss_DF,ghss_Cohd,ghssmean1,ghssstd1,ghssmean2,ghssstd2] = ...
         myttest2(GHS1',GHS2',1,'both');

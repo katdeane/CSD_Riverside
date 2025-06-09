@@ -74,11 +74,11 @@ for iLay = 1:length(layers)
     end
     cd ITPCmeanfig
     h = gcf;
-    savefig(h,['VMPvPMP_' Condition(1:end-2) '_L' layers{iLay} '_stats']);
-    exportgraphics(h,['VMPvPMP_' Condition(1:end-2) '_L' layers{iLay} '_stats.pdf'])
+    savefig(h,['VMPvPMP_' Condition '_L' layers{iLay} '_stats']);
+    exportgraphics(h,['VMPvPMP_' Condition '_L' layers{iLay} '_stats.pdf'])
     close(h)
 end % layers
 
-writetable(ITPCstat,['VMPvPMP_' Condition(1:end-2) '_L' layers{iLay} '_stats.csv']);
+writetable(ITPCstat,['VMPvPMP_' Condition '_L' layers{iLay} '_stats.csv']);
 
 cd(homedir)
