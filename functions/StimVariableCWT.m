@@ -20,7 +20,7 @@ if matches(type, 'Anesthetized')
     if matches(Condition,'NoiseBurst') || ...
             matches(Condition,'postNoise') || ...
             matches(Condition, 'PostNoiseBurst')
-        stimList = [20 70];
+        stimList = [20 50 70];
         thisUnit = 'dB';
         stimDur  = 100*sr_mult; % ms
         stimITI  = 1000*sr_mult;
