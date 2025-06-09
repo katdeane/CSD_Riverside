@@ -29,15 +29,19 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF'};
-% Comps = {{'FOM' 'FYM'} {'FOF' 'FYF'}};
-Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'} {'FOM' 'FYM'} {'FOF' 'FYF'}};
+Groups = {'OLD' 'YNG' 'FOS' 'FON' 'FYS' 'FYN' 'FOM' 'FOF' 'FYM' 'FYF' 'ONF' 'ONM' 'OSF' 'OSM' 'YNF' 'YNM' 'YSF' 'YSM'};
+Comps = {{'OLD' 'YNG'} {'FOS' 'FON'} {'FYS' 'FYN'} {'FOM' 'FOF'} {'FYM' 'FYF'}  {'FYS' 'FOS'} {'FYS' 'FON'} {'FOM' 'FYM'}...
+    {'FOF' 'FYF'} {'ONF' 'OSF'} {'ONM' 'OSM'} {'YNF' 'YSF'} {'YNM' 'YSM'} {'ONF' 'OSF'} {'ONM' 'OSM'} {'YNF' 'YSF'} {'YNM' 'YSM'}};
+
+% seperating sex in the nicotine groups
+% Groups = {'ONF' 'ONM' 'OSF' 'OSM' 'YNF' 'YNM' 'YSF' 'YSM'};
+% Comps = {{'ONF' 'OSF'} {'ONM' 'OSM'} {'YNF' 'YSF'} {'YNM' 'YSM'}};
 Subjects = {'ALL'};
-Condition = {'NoiseBurst70' 'NoiseBurst80' 'gapASSR70' 'gapASSR80' 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'};
-% Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
-%  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
-%  'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
-% Condition = {'Tonotopy70' 'Tonotopy80' 'TreatTonotopy'};
+% Condition = {'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'};
+Condition = {'NoiseBurst70' 'NoiseBurst80' 'Spontaneous' 'ClickTrain70' 'ClickTrain80' ...
+ 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'Tonotopy70' 'Tonotopy80' 'TreatNoiseBurst1' ...
+ 'TreatgapASSR70' 'TreatgapASSR80' 'TreatNoiseBurst2'  'TreatTonotopy'}; 
+
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -111,7 +115,7 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.condList = {'NoiseBurst70' 'NoiseBurst80' 'ClickTrain70' 'ClickTrain80' ...
- 'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80'  'TreatgapASSR80' 'TreatNoiseBurst2'};  
+  'Chirp70' 'Chirp80' 'gapASSR70' 'gapASSR80' 'TreatgapASSR70' 'TreatNoiseBurst2'};
 
 % Only run when data regeneration is needed:
 % runCwtCsd(homedir,Subjects{:},params,'Awake');
@@ -187,28 +191,28 @@ end
 % panels are based on the pair, e.g. {'OLD' 'YNG'}
 for iCo = 1:length(Comps)
     thisComp = [Comps{iCo}{1} 'v' Comps{iCo}{2}];
-    if iCo < 6
-        CWTorderedfigs(homedir, thisComp, 'ClickTrain70', '40',  [0 0.6], [-0.2 0.2],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'gapASSR70', '3',      [0 0.4], [-0.15 0.15],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'gapASSR70', '5',      [0 0.4], [-0.15 0.15],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'gapASSR70', '7',      [0 0.4], [-0.15 0.15],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25],'FVB')
+    % if iCo < 6
+    %     CWTorderedfigs(homedir, thisComp, 'ClickTrain70', '40',  [0 0.6], [-0.2 0.2],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '3',      [0 0.4], [-0.15 0.15],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '5',      [0 0.4], [-0.15 0.15],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '7',      [0 0.4], [-0.15 0.15],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
+    %     CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
+    %     if iCo == 1 || iCo == 2 || iCo == 4 % pairs containing old groups
+    %         CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '3',     [0 0.4], [-0.15 0.15],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '5',     [0 0.4], [-0.15 0.15],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '7',     [0 0.4], [-0.15 0.15],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '9',     [0 0.4], [-0.15 0.15],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'Chirp80', '0',       [0 0.4], [-0.15 0.15],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'NoiseBurst80', '0',  [0 0.7], [-0.25 0.25],'FVB')
+    %         CWTorderedfigs(homedir, thisComp, 'TreatgapASSR80', '9',[0 0.7], [-0.25 0.25],'FVB')
+    %     end
+    % else
         CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
         CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
-        if iCo == 1 || iCo == 2 || iCo == 4 % pairs containing old groups
-            CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'gapASSR80', '3',     [0 0.4], [-0.15 0.15],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'gapASSR80', '5',     [0 0.4], [-0.15 0.15],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'gapASSR80', '7',     [0 0.4], [-0.15 0.15],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'gapASSR80', '9',     [0 0.4], [-0.15 0.15],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'Chirp80', '0',       [0 0.4], [-0.15 0.15],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'NoiseBurst80', '0',  [0 0.7], [-0.25 0.25],'FVB')
-            CWTorderedfigs(homedir, thisComp, 'TreatgapASSR80', '9',[0 0.7], [-0.25 0.25],'FVB')
-        end
-    else
-        CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst1','0',[0 0.7], [-0.25 0.25],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
-    end
+    % end
 end
