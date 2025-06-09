@@ -127,6 +127,20 @@ elseif matches(type,'Awake')
         stimITI  = 1000*sr_mult; % actually 2 s
         thisTag  = 'single';
 
+    elseif contains(Condition,'MaskCall')
+        stimList = [0, 1, 2, 3];
+        thisUnit = 'level';
+        stimDur  = 3878*sr_mult; % ms
+        stimITI  = 500*sr_mult;
+        thisTag  = 'Mask';
+
+    elseif contains(Condition,'ShortCall')
+        stimList = 1;
+        thisUnit = [];
+        stimDur  = 3878*sr_mult; % ms
+        stimITI  = 500*sr_mult;
+        thisTag  = 'single';
+
     elseif contains(Condition,'Tonotopy')
         stimList = [2, 4, 8, 16, 24, 32];
         thisUnit = 'kHz';

@@ -145,6 +145,9 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
                     if matches(Condition, 'Pupcall30')
                         [peakout,latencyout,rmsout] = pupcall_peaks(stackgroup(iSub,:), ...
                             1:60); % pup call order
+                    elseif (contains(Group,'VM') || contains(Group,'PM')) && ...
+                            matches(Condition, 'NoiseBurst')
+                        [peakout,latencyout,rmsout] = consec_peaks_longNB(stackgroup(iSub,:), BL);
                     else
                         [peakout,latencyout,rmsout] = consec_peaks(stackgroup(iSub,:), ...
                             reprate, stimDur, BL, Condition);

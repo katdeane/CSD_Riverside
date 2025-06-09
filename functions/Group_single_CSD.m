@@ -20,9 +20,9 @@ colormap jet
 for iA = 1:subjects
 
     name = animals{iA}; %#ok<*IDISVAR>
-    % this will ALWAYS take just the first measurment for the subject if
+    % this will ALWAYS take just the LAST measurment for the subject if
     % there are multiple
-    measurement = Cond.(Condition){iA}{1};
+    measurement = Cond.(Condition){iA}{end};
     if isempty(measurement)
         continue
     end

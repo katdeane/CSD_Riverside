@@ -15,6 +15,7 @@ function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
 if ~exist('whichtest','var')
     whichtest = 'Power'; % or 'Phase'
 end
+close all
 
 % number of permutations
 nperms = 1000; 
