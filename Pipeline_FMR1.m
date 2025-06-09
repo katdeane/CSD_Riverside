@@ -27,15 +27,15 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'MWT' 'MKO'}; %'MWT' 'MKO' 
-% Condition = {'gapASSR'};
-Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    'gapASSR' 'postNoise'};
+Condition = {'NoiseBurst'};
+% Condition = {'NoiseBurst' 'Tonotopy' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+%     'gapASSR' 'postNoise'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD_AJ(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
+DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Anesthetized')
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
@@ -82,9 +82,14 @@ end
 
 %% Peak and RMS statistics
 
+NoiseBurstStats(homedir,Groups,20)
+NoiseBurstStats(homedir,Groups,30)
+NoiseBurstStats(homedir,Groups,40)
+NoiseBurstStats(homedir,Groups,50)
 NoiseBurstStats(homedir,Groups,60)
 NoiseBurstStats(homedir,Groups,70)
 NoiseBurstStats(homedir,Groups,80)
+NoiseBurstStats(homedir,Groups,90)
 ClickTrainStats(homedir,Groups)
 gapASSRStats(homedir,Groups)
 
