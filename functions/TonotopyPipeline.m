@@ -1,13 +1,14 @@
-% function genBF(homedir, Group, Condition, type, whichlayer)
+% function genBF(homedir, Group, Condition, type)
 
 % this code assumes 6 tones in the tuning curve
 cd(homedir)
-Group = 'FYN';
-Condition = 'Tonotopy70';
-whichlayer = 'IV';
-type = 'Awake';
+Group = 'MWT';
+Condition = 'Tonotopy';
+type = 'Anesthetized';
 BL = 400;
 cbar_csd = [-0.2 0.2];
+
+whichlayer = 'IV';
 
 %% Load in
 run([Group '.m']); % brings in animals, channels, Layer, and Cond
@@ -38,8 +39,8 @@ for iSub = 1:subjects
         continue
     end
 
-    peakAmp = nan(1,6);
-    for istim = 1:6 % always 6 
+    peakAmp = nan(1,length(stimList));
+    for istim = 1:length(stimList)
         % check first lat within 50 ms
         thislat = Data(index).sinkPeakLat(istim).(whichlayer)(1);
         thislat = thislat(1);
@@ -53,11 +54,11 @@ for iSub = 1:subjects
 
     % of those, which is the highest peak amp
     BF = find(peakAmp==max(peakAmp));
-    % 6 freq, 11 total spaces (1 center, 5 on each side)
-    % fill the columns so that the center is now always 6
-    newCSDs = cell(1,11);
+    % 8 freq max, 15 total spaces (1 center, 7 on each side)
+    % fill the columns so that the center is now always 8
+    newCSDs = cell(1,15);
     if ~isempty(BF)
-        newCSDs(7-BF:7-BF+5) = Data.sngtrlCSD;
+        newCSDs(9-BF:9-BF+7) = Data.sngtrlCSD;
     end
 
     % sort data into new struct
