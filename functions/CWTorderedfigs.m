@@ -17,7 +17,11 @@ if matches(whichstudy,'FVB')
         grp1 = [grp1 ' 80'];
         grp2 = [grp2 ' 70'];
     end
-else
+elseif matches(whichstudy,'FMR1')
+    grp1 = Groups(1:3);
+    grp2 = Groups(5:7);
+    diftitle = [grp2 ' - ' grp1];
+else 
     grp1 = Groups(1:3);
     grp2 = Groups(5:7);
     diftitle = [grp1 ' - ' grp2];
@@ -76,7 +80,7 @@ for iLay = 1:length(layers)
     h = gca;
 
     % young
-    handles = imhandles(h.Parent.Children(4));
+    handles = imhandles(h.Parent.Children(6));
     data_goal = handles.CData;
     figure(1); nexttile(count)
     imagesc(data_goal,c_axisind)
@@ -90,7 +94,7 @@ for iLay = 1:length(layers)
     xticks(thisxtick)
     xticklabels([])
     if matches(layers{iLay},'II')
-        title(grp2)
+        title(grp1)
     elseif matches(layers{iLay},'VI')
         % -400 so 0 is always stim onset
         xticklabels(thisxtlab)
@@ -98,7 +102,7 @@ for iLay = 1:length(layers)
     count = count+1;
 
     % old
-    handles = imhandles(h.Parent.Children(6));
+    handles = imhandles(h.Parent.Children(4));
     data_goal = handles.CData;
     figure(1); nexttile(count)
     imagesc(data_goal,c_axisind)
@@ -111,7 +115,7 @@ for iLay = 1:length(layers)
     xticks(thisxtick)
     xticklabels([])
     if matches(layers{iLay},'II')
-        title(grp1)
+        title(grp2)
     elseif matches(layers{iLay},'VI')
         % -400 so 0 is always stim onset
         xticklabels(thisxtlab)
@@ -163,5 +167,5 @@ colorbar(k,'Position',[0.63 0.4 0.012 0.2]);  % attach colorbar
 clim(k,c_axisind); 
 set(gcf,'Position',[100 100 700 800])
 
-exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.pdf'])
+exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.png'])
 close; cd(homedir)
