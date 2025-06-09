@@ -18,8 +18,8 @@ elseif length(Groups) == 2
     clear animals grp1sub
 end
 
-Condition = {'Pupcall_1' 'ClickTrain_5' 'gapASSR_10' 'NoiseBurst_20' 'NoiseBurst_50' 'NoiseBurst_70'}; 
-
+Condition = {'gapASSR_2' 'gapASSR_4' 'gapASSR_6' 'gapASSR_8'}; 
+%'Pupcall_1' 'ClickTrain_5' 'gapASSR_10' 'NoiseBurst_20' 'NoiseBurst_50' 'NoiseBurst_70'
 for iCond = 1:length(Condition)
 
     if matches(Condition{iCond},'Pupcall_1')
@@ -29,7 +29,7 @@ for iCond = 1:length(Condition)
         TimeListOn = PupTimes .* 1000; % match axes for CSD
     elseif matches(Condition{iCond},'ClickTrain_5')
         TimeListOn = 400 + [0 200 400 600 800 1000 1200 1400 1600 1800 2000];
-    elseif matches(Condition{iCond},'gapASSR_10')
+    elseif contains(Condition{iCond},'gapASSR')
         TimeListOn = 400 + [250, 750, 1250, 1750, 2250, 2750];
     elseif contains(Condition{iCond},'NoiseBurst')
         TimeListOn = 400;

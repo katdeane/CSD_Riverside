@@ -152,6 +152,10 @@ ITPCmeanfigsPCal(homedir)
 PCal_PupcallStatsITPC(homedir,'Pupcall_1',[1, 18, 30, 44, 60])
 PCal_Pupcall_HighLowStatsITPC(homedir,[18,48,45,49,53],[7,30,16,31,57])
 PCal_PupcallStatsITPC(homedir,'ClickTrain_5',[1, 5, 10])
+PCal_PupcallStatsITPC(homedir,'gapASSR_2',5)
+PCal_PupcallStatsITPC(homedir,'gapASSR_4',5)
+PCal_PupcallStatsITPC(homedir,'gapASSR_6',5)
+PCal_PupcallStatsITPC(homedir,'gapASSR_8',5)
 PCal_PupcallStatsITPC(homedir,'gapASSR_10',5)
 PCal_PupcallStatsITPC(homedir,'NoiseBurst_20',1)
 PCal_PupcallStatsITPC(homedir,'NoiseBurst_50',1)
@@ -179,9 +183,8 @@ plotFFT_PCal(homedir,params,'AB','NoiseBurst') % spont compared to noisebursts
 AnCoVaFFT_PCal(homedir,params,'AB','ClickTrain')
 AnCoVaFFT_PCal(homedir,params,'AB','Pupcall')
 
-%% Interlaminar Phase Coherence
-% LaminarPhaseLocking(homedir,params)
-% interlamPhaseFig(homedir,params)
+%% Correlate age with FFT data
+agecorr_FFT(homedir,Groups,'Spontaneous','AB')
 
 %% Subject specific pup call visualization
 subject = 'PMP09';
