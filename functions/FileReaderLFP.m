@@ -32,19 +32,19 @@ else % or
     data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
 end
 
-tiledlayout('flow')
-nexttile
-imagesc(data)
-% artifact correction on all awake data
-if matches(type,'Awake')
-    % threshold = 3 standard deviations
-    % duration  = 3 seconds of data above threshold
-    data = icorrectartifacts(data,3,3);
-end
-
-nexttile
-imagesc(data)
-close
+% tiledlayout('flow')
+% nexttile
+% imagesc(data)
+% % artifact correction on all awake data
+% if matches(type,'Awake')
+%     % threshold = 3 standard deviations
+%     % duration  = 3 seconds of data above threshold
+%     data = icorrectartifacts(data,3,3);
+% end
+% 
+% nexttile
+% imagesc(data)
+% close
 
 
 
