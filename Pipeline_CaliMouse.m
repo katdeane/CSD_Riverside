@@ -85,6 +85,12 @@ end
 
 %% Peak Stats
 
+PCal_NoiseBurstStats(homedir,Groups,20)
+PCal_NoiseBurstStats(homedir,Groups,50)
+PCal_NoiseBurstStats(homedir,Groups,70)
+PCal_NB_HighLowStats(homedir,Groups,20,50)
+
+
 PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
@@ -93,7 +99,7 @@ PCal_ClickTrainStats5(homedir,Groups)
 PCal_PupcallStats(homedir,Groups,[1,18,29,44,60]) % was [1,4,9,13,18]
 PCal_HighLowStats(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57]) % determined by findPupCallRMS.m
 
-%% mTF analysis 
+%% mTF analysis
 
 % Input:    group metadata file in /groups and curate converted files in
 %           /data that correspond to pup call (30 dB att) measurements
@@ -117,7 +123,10 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.groups = {'VMP','PMP'}; % for permutation test
-params.condList = {'Spontaneous'}; % careful, this variable is edited continuously
+params.condList = {'NoiseBurst'}; % careful, this variable is edited continuously
+
+% run permutation clustermass analysis
+yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'PMP',params,'Anesthetized');
@@ -126,14 +135,12 @@ runCwtCsd(homedir,'VMP',params,'Anesthetized');
 % run once to get each subject's background Time Frequency 
 TimeFreqBackground(homedir,params,Groups)
 
-% run permutation clustermass analysis
-yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-
-params.condList = {'gapASSR'}; %'ClickTrain','gapASSR'
-PermutationTest_Area(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+% diff = second group - first group
+params.condList = {'ClickTrain','gapASSR','NoiseBurst'}; %'ClickTrain','gapASSR'
+PermutationTest_Area(homedir,'Phase',params,{'PMP' 'VMP'},yespermute,'Anesthetized') 
 
 params.condList = {'Pupcall'}; % needs to be broken down by layers earlier
-PermutationTest_PupcallArea(homedir,'Phase',params,{'VMP' 'PMP'},yespermute,'Anesthetized')
+PermutationTest_PupcallArea(homedir,'Phase',params,{'PMP' 'VMP'},yespermute,'Anesthetized')
 
 delete(gcp('nocreate')) % end this par session
 
@@ -146,6 +153,10 @@ PCal_PupcallStatsITPC(homedir,'Pupcall_1',[1, 18, 30, 44, 60])
 PCal_Pupcall_HighLowStatsITPC(homedir,[18,48,45,49,53],[7,30,16,31,57])
 PCal_PupcallStatsITPC(homedir,'ClickTrain_5',[1, 5, 10])
 PCal_PupcallStatsITPC(homedir,'gapASSR_10',5)
+PCal_PupcallStatsITPC(homedir,'NoiseBurst_20',1)
+PCal_PupcallStatsITPC(homedir,'NoiseBurst_50',1)
+PCal_PupcallStatsITPC(homedir,'NoiseBurst_70',1)
+PCal_NoiseBurst_HighLowStatsITPC(homedir,'20','50')
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
@@ -157,9 +168,11 @@ runFftCsd(homedir,params,'Spontaneous')
 % plotFFT(homedir,params,'Spontaneous','RE')
 
 runFftCsd(homedir,params,'ClickTrain')
+runFftCsd(homedir,params,'NoiseBurst')
 
 plotFFT_PCal(homedir,params,'AB','Pupcall') % spont compared to pupcalls
-plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 40 HZ)
+plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 5 HZ)
+plotFFT_PCal(homedir,params,'AB','NoiseBurst') % spont compared to noisebursts
 % plotFFT_PCal(homedir,params,'RE')
 
 % Analysis of covariance to determine if age or group is predictor
