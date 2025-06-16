@@ -17,10 +17,11 @@ end
 homedir = pwd;
 addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
+c_axis = ([-0.2 0.2]); % this sets the default scale for all csds
 
 % set consistently needed variables
-Groups = {'VMA'};  %'VMA' 'PMA' 
-Condition = {'NoiseBurst'}; %  'MaskCall' 'ShortCall'
+Groups = {'VMA' 'PMA'};  %'VMA' 'PMA' 
+Condition = {'NoiseBurst' 'MaskCall' 'ShortCall'}; %  'MaskCall' 'ShortCall'
 
 
 %% Data generation per subject ⊂◉‿◉つ
@@ -28,4 +29,14 @@ Condition = {'NoiseBurst'}; %  'MaskCall' 'ShortCall'
 % per subject CSD Script
 % note that this reads automatically what's in groups/
 DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
+
+%% Sorted figures for visualization
+
+% single subject CSDs
+ncolum = 4;
+Group_single_CSD(homedir, 'VMA', 'VMA', 'NoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, 'PMA', 'PMA', 'NoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, 'VMA', 'VMA', 'ShortCall',  c_axis, ncolum)
+Group_single_CSD(homedir, 'PMA', 'PMA', 'ShortCall',  c_axis, ncolum)
+
 

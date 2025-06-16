@@ -1,5 +1,14 @@
 function Group_single_CSD(homedir, Group, folder, Condition, c_axis, ncolumn)
 
+% set some parameters 
+if contains(Condition,'NoiseBurst')
+    thisxlim = [300 900];
+elseif matches(Condition,'ShortCall')
+    thisxlim = [300 4400];
+else
+    error('assign this condition xlim please, line 9')
+end
+
 % figure order matters here
 close all
 
@@ -37,9 +46,9 @@ for iA = 1:subjects
     figure(1); nexttile(iA)
     imagesc(data_goal,c_axis)
     title(name)
-    xlim([300 900])
-    xticks(     [400 600 800 1000 1200 1400 2400])
-    xticklabels([0   200 400 600  800  1000 2000])
+    xlim(thisxlim)
+    xticks(     [400 600 800 1000 1200 1400 1600 1800 2000 2200 2400 2600 2800 3000 3200 3400 3600 3800 4000 4200 4400])
+    xticklabels([0   200 400 600  800  1000 1200 1400 1600 1800 2000 2200 2400 2600 2800 3000 3200 3400 3600 3800 4000])
     yticks([5 10 15 20]) % just to keep it consistent
      
     figure(2)
@@ -54,4 +63,5 @@ clim(h,c_axis);
 set(gcf,'Position',[100 100 850 550])
 
 exportgraphics(targetfig,['Single_' Group '_' Condition '_CSDs.pdf'])
+exportgraphics(targetfig,['Single_' Group '_' Condition '_CSDs.png'])
 close; cd(homedir)
