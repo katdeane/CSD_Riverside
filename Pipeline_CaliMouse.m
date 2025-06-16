@@ -162,6 +162,9 @@ PCal_PupcallStatsITPC(homedir,'NoiseBurst_50',1)
 PCal_PupcallStatsITPC(homedir,'NoiseBurst_70',1)
 PCal_NoiseBurst_HighLowStatsITPC(homedir,'20','50')
 
+% correlate gap ASSR results with loud and quiet calls and noise
+gapASSRcorr_ITPCmean(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57])
+
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Pupcall')
 % plotFFT(homedir,params,'Pupcall','AB')
@@ -180,8 +183,8 @@ plotFFT_PCal(homedir,params,'AB','NoiseBurst') % spont compared to noisebursts
 % plotFFT_PCal(homedir,params,'RE')
 
 % Analysis of covariance to determine if age or group is predictor
-AnCoVaFFT_PCal(homedir,params,'AB','ClickTrain')
-AnCoVaFFT_PCal(homedir,params,'AB','Pupcall')
+% AnCoVaFFT_PCal(homedir,params,'AB','ClickTrain')
+% AnCoVaFFT_PCal(homedir,params,'AB','Pupcall')
 
 %% Correlate age with FFT data
 agecorr_FFT(homedir,Groups,'Spontaneous','AB')
