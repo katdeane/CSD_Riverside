@@ -128,37 +128,37 @@ for iLay = 1:length(Layers)
 
     nexttile
     [r_highg, p_highg] = corr(agelist,gahlist);
-    scatter(agelist,poolist);
+    scatter(agelist,gahlist);
     title([Layers{iLay} ' high gamma r=' num2str(round(r_highg,2,'significant'))...
         ' p=' num2str(round(p_highg,2,'significant'))])
 
     nexttile
     [r_lowg, p_lowg] = corr(agelist,gallist);
-    scatter(agelist,poolist);
+    scatter(agelist,gallist);
     title([Layers{iLay} ' low gamma r=' num2str(round(r_lowg,2,'significant'))...
         ' p=' num2str(round(p_lowg,2,'significant'))])
 
     nexttile
     [r_beta, p_beta] = corr(agelist,betlist);
-    scatter(agelist,poolist);
+    scatter(agelist,betlist);
     title([Layers{iLay} ' beta r=' num2str(round(r_beta,2,'significant'))...
         ' p=' num2str(round(p_beta,2,'significant'))])
 
     nexttile
     [r_alph, p_alph] = corr(agelist,alplist);
-    scatter(agelist,poolist);
+    scatter(agelist,alplist);
     title([Layers{iLay} ' alpha r=' num2str(round(r_alph,2,'significant'))...
         ' p=' num2str(round(p_alph,2,'significant'))])
 
     nexttile
     [r_thet, p_thet] = corr(agelist,thelist);
-    scatter(agelist,poolist);
+    scatter(agelist,thelist);
     title([Layers{iLay} ' theta r=' num2str(round(r_thet,2,'significant'))...
         ' p=' num2str(round(p_thet,2,'significant'))])
 
     nexttile
     [r_delt, p_delt] = corr(agelist,dellist);
-    scatter(agelist,poolist);
+    scatter(agelist,dellist);
     title([Layers{iLay} ' delta r=' num2str(round(r_delt,2,'significant'))...
         ' p=' num2str(round(p_delt,2,'significant'))])
 
