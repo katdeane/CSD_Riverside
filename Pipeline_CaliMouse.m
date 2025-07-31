@@ -7,6 +7,8 @@ if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
 elseif exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside'); 
+elseif exist('D:\GitHub\CSD_Riverside', 'dir')
+    cd('D:\GitHub\CSD_Riverside');
 else
     error('add your local repository as shown above')
 end
