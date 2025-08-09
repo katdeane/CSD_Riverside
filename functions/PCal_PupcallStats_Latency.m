@@ -1,4 +1,4 @@
-function PCal_PupcallStats(homedir,Groups,call_list)
+function PCal_PupcallStats_Latency(homedir,Groups,call_list)
 % ROIs are from the onset of one pupcall to the onset of the next with a
 % maximum of 100 ms time windows (for lower freq click trains). Currently
 % 40 Hz click trains are being analyzed on the onset peak response (highest
@@ -58,25 +58,25 @@ for iLay = 1:length(layers)
     % stack groups for pics
     for iSub = 1:grp1size
         % groups stacks have subjects numbered as order gone in
-        avg1stk(iSub,:) = avg1lay(matches(avg1lay.Animal,grp1name{iSub}),:).PeakAmp';
+        avg1stk(iSub,:) = avg1lay(matches(avg1lay.Animal,grp1name{iSub}),:).PeakLat';
 
         % single trial needs to be sorted 
         sgl1sub = sgl1lay(matches(sgl1lay.Animal,grp1name{iSub}),:);
         for itrial = 1:length(unique(sgl1sub.trial))
             if itrial <= 50 % just in case more than 50 were taken
-                sgl1stk(iSub,:,itrial) = sgl1sub(sgl1sub.trial == itrial,:).PeakAmp';
+                sgl1stk(iSub,:,itrial) = sgl1sub(sgl1sub.trial == itrial,:).PeakLat';
             end
         end
     end
     for iSub = 1:grp2size
         % groups stacks have subjects numbered as order gone in
-        avg2stk(iSub,:) = avg2lay(matches(avg2lay.Animal,grp2name{iSub}),:).PeakAmp';
+        avg2stk(iSub,:) = avg2lay(matches(avg2lay.Animal,grp2name{iSub}),:).PeakLat';
 
         % single trial needs to be sorted 
         sgl2sub = sgl2lay(matches(sgl2lay.Animal,grp2name{iSub}),:);
         for itrial = 1:length(unique(sgl2sub.trial))
             if itrial <= 50 % just in case more than 50 were taken
-                sgl2stk(iSub,:,itrial) = sgl2sub(sgl2sub.trial == itrial,:).PeakAmp';
+                sgl2stk(iSub,:,itrial) = sgl2sub(sgl2sub.trial == itrial,:).PeakLat';
             end
         end
     end
@@ -93,12 +93,13 @@ for iLay = 1:length(layers)
     plot(nanmean(avg1stk,1),'color',color11,'LineWidth',4)
     plot(nanmean(avg2stk,1),'color',color21,'LineWidth',4)
     xlabel('Calls')
-    ylabel('Peak Amplitude [mV/mm²]')
+    ylabel('Peak Latency [ms]')
     title('Trial-Average Peaks')
 
     % onset peak
-    avg1onpeak = avg1stk(:,call_list(1));
-    avg2onpeak = avg2stk(:,call_list(1));
+    avg1onpeak = avg1stk(:,1);
+    avg2onpeak = avg2stk(:,1);
+    peak1 = call_list(1);
     peak2 = call_list(2); peak3 = call_list(3); peak4 = call_list(4); peak5 = call_list(5);
     
     xboxPA = [nanmean(avg1onpeak), nanmean(avg2onpeak), nanmean(avg1stk(:,peak2)),...
@@ -122,43 +123,10 @@ for iLay = 1:length(layers)
     bar(xboxPA)
     hold on
     errorbar(xboxPA,semPA,'LineStyle','none')
-    ylabel('Peak Amplitude [mV/mm²]')
+    ylabel('Peak Latency [ms]')
     xlabel('Group / Calls')
     xticklabels({[Groups{1} ' ' num2str(call_list(1))] [Groups{2} ' ' num2str(call_list(1))]...
         [Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
-        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
-        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
-        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
-    title('Trial-Average Peaks')
-
-    % here we're going to calculate the ratios and store them for stats
-    avg1r2 = avg1stk(:,peak2)./avg1onpeak;
-    avg1r3 = avg1stk(:,peak3)./avg1onpeak;
-    avg1r4 = avg1stk(:,peak4)./avg1onpeak;
-    avg1r5 = avg1stk(:,peak5)./avg1onpeak;
-
-    avg2r2 = avg2stk(:,peak2)./avg2onpeak;
-    avg2r3 = avg2stk(:,peak3)./avg2onpeak;
-    avg2r4 = avg2stk(:,peak4)./avg2onpeak;
-    avg2r5 = avg2stk(:,peak5)./avg2onpeak;
-    
-    xboxPAratio = [nanmean(avg1r2), nanmean(avg2r2), nanmean(avg1r3),...
-        nanmean(avg2r3), nanmean(avg1r4), nanmean(avg2r4),...
-        nanmean(avg1r5), nanmean(avg2r5)];
-
-    semPAratio = [nanstd(avg1r2)/sqrt(length(avg1r2)), ...
-        nanstd(avg2r2)/sqrt(length(avg2r2)), nanstd(avg1r3)/sqrt(length(avg1r3)),...
-        nanstd(avg2r3)/sqrt(length(avg2r3)), nanstd(avg1r4)/sqrt(length(avg1r4)),...
-        nanstd(avg2r4)/sqrt(length(avg2r4)), nanstd(avg1r5)/sqrt(length(avg1r5)),...
-        nanstd(avg2r5)/sqrt(length(avg2r5))];
-
-    nexttile
-    bar(xboxPAratio)
-    hold on
-    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
-    ylabel('Ratio Peak Amplitude [mV/mm²]')
-    xlabel('Group / Call')
-    xticklabels({[Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
         [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
         [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
         [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
@@ -170,7 +138,7 @@ for iLay = 1:length(layers)
     hold on 
     shadedErrorBar(1:size(sgl2stk,2),nanmean(nanmean(sgl2stk,3),1),nanstd(nanmean(sgl2stk,3),0,1),'lineprops','r')    
     xlabel('Calls')
-    ylabel('PeakAmp [mV/mm²] mean and std')
+    ylabel('PeakLat [ms] mean and std')
     title('Single Trial Peaks')
 
     % we will take the max peak call determined in averaged data
@@ -183,7 +151,7 @@ for iLay = 1:length(layers)
     for iSub = 1:length(avg1onpeak)
         count = ((iSub-1)*50)+1;
         countto = count+49;
-        sgl1onpeak(count:countto) = squeeze(sgl1stk(iSub,avg1stk(iSub,:)==avg1onpeak(iSub),:));
+        sgl1onpeak(count:countto) = squeeze(sgl1stk(iSub,peak1,:));
         sgl1_2(count:countto)    = squeeze(sgl1stk(iSub,peak2,:));
         sgl1_3(count:countto)    = squeeze(sgl1stk(iSub,peak3,:));
         sgl1_4(count:countto)    = squeeze(sgl1stk(iSub,peak4,:));
@@ -197,7 +165,7 @@ for iLay = 1:length(layers)
     for iSub = 1:length(avg2onpeak)
         count = ((iSub-1)*50)+1;
         countto = count+49;
-        sgl2onpeak(count:countto) = squeeze(sgl2stk(iSub,avg2stk(iSub,:)==avg2onpeak(iSub),:));
+        sgl2onpeak(count:countto) = squeeze(sgl2stk(iSub,peak1,:));
         sgl2_2(count:countto)    = squeeze(sgl2stk(iSub,peak2,:));
         sgl2_3(count:countto)    = squeeze(sgl2stk(iSub,peak3,:));
         sgl2_4(count:countto)    = squeeze(sgl2stk(iSub,peak4,:));
@@ -210,13 +178,10 @@ for iLay = 1:length(layers)
 
 
     semPA = [nanstd(sgl1onpeak)/sqrt(length(sgl1onpeak)), ...
-        nanstd(sgl2onpeak)/sqrt(length(sgl2onpeak)),...
-        nanstd(sgl1_2)/sqrt(length(sgl1_2)),...
-        nanstd(sgl2_2)/sqrt(length(sgl2_2)),...
-        nanstd(sgl1_3)/sqrt(length(sgl1_3)),...
+        nanstd(sgl2onpeak)/sqrt(length(sgl2onpeak)), nanstd(sgl1_2)/sqrt(length(sgl1_2)),...
+        nanstd(sgl2_2)/sqrt(length(sgl2_2)), nanstd(sgl1_3)/sqrt(length(sgl1_3)),...
         nanstd(sgl2_3)/sqrt(length(sgl2_3)),...
-        nanstd(sgl1_4)/sqrt(length(sgl1_4)),...
-        nanstd(sgl2_4)/sqrt(length(sgl2_4)),...
+        nanstd(sgl1_4)/sqrt(length(sgl1_4)), nanstd(sgl2_4)/sqrt(length(sgl2_4)),...
         nanstd(sgl1_5)/sqrt(length(sgl1_5)),...
         nanstd(sgl2_5)/sqrt(length(sgl2_5))];
 
@@ -224,7 +189,7 @@ for iLay = 1:length(layers)
     bar(xboxPA)
     hold on
     errorbar(xboxPA,semPA,'LineStyle','none')
-    ylabel('Peak Amplitude [mV/mm²]')
+    ylabel('Peak Latency [ms]')
     xlabel('Group / Calls')
     xticklabels({[Groups{1} ' ' num2str(call_list(1))] [Groups{2} ' ' num2str(call_list(1))]...
         [Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
@@ -233,40 +198,6 @@ for iLay = 1:length(layers)
         [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
     title('Single Trial Peaks')
 
-    % here we're going to calculate the ratios and store them for stats
-    sgl1r2 = sgl1_2./sgl1onpeak;
-    sgl1r3 = sgl1_3./sgl1onpeak;
-    sgl1r4 = sgl1_4./sgl1onpeak;
-    sgl1r5 = sgl1_5./sgl1onpeak;
-
-    sgl2r2 = sgl2_2./sgl2onpeak;
-    sgl2r3 = sgl2_3./sgl2onpeak;
-    sgl2r4 = sgl2_4./sgl2onpeak;
-    sgl2r5 = sgl2_5./sgl2onpeak;
-
-    xboxPAratio = [nanmean(sgl1r2), nanmean(sgl2r2), nanmean(sgl1r3),...
-        nanmean(sgl2r3), nanmean(sgl1r4), nanmean(sgl2r4),...
-        nanmean(sgl1r5), nanmean(sgl2r5)];
-
-    semPAratio = [nanstd(sgl1r2)/sqrt(length(sgl1r2)), ...
-        nanstd(sgl2r2)/sqrt(length(sgl2r2)), nanstd(sgl1r3)/sqrt(length(sgl1r3)),...
-        nanstd(sgl2r3)/sqrt(length(sgl2r3)), nanstd(sgl1r4)/sqrt(length(sgl1r4)),...
-        nanstd(sgl2r4)/sqrt(length(sgl2r4)), nanstd(sgl1r5)/sqrt(length(sgl1r5)),...
-        nanstd(sgl2r5)/sqrt(length(sgl2r5))];
-
-    nexttile
-    bar(xboxPAratio)
-    hold on
-    errorbar(xboxPAratio,semPAratio,'LineStyle','none')
-    ylabel('Ratio Peak Amplitude [mV/mm²]')
-    xlabel('Group / Call')
-    xticklabels({[Groups{1} ' ' num2str(call_list(2))] [Groups{2} ' ' num2str(call_list(2))] ...
-        [Groups{1} ' ' num2str(call_list(3))] [Groups{2} ' ' num2str(call_list(3))] ...
-        [Groups{1} ' ' num2str(call_list(4))] [Groups{2} ' ' num2str(call_list(4))] ...
-        [Groups{1} ' ' num2str(call_list(5))] [Groups{2} ' ' num2str(call_list(5))]})
-    title('Single Trial Peaks')
-
-
     % save figure
     cd(homedir); cd figures; 
     if ~exist('PeakPlots','dir')
@@ -274,8 +205,8 @@ for iLay = 1:length(layers)
     end
     cd PeakPlots
     h = gcf;
-    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall']);
-    exportgraphics(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall.pdf'])
+    savefig(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall_Latency']);
+    exportgraphics(h,[Groups{1} 'v' Groups{2} '_' layers{iLay} '_PupCall_Latency.pdf'])
     close(h)
 
     %% no more stalling, it's stats time
@@ -301,19 +232,6 @@ for iLay = 1:length(layers)
     [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1_5,sgl2_5,1,'both');
     PeakStats.S5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
 
-    % Peak Ratio to onset
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r2,sgl2r2,1,'both'); 
-    PeakStats.Srat2(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r3,sgl2r3,1,'both'); 
-    PeakStats.Srat3(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r4,sgl2r4,1,'both'); 
-    PeakStats.Srat4(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(sgl1r5,sgl2r5,1,'both'); 
-    PeakStats.Srat5(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
     % Averaged
     % Peak Onset
     [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1onpeak,avg2onpeak,1,'both'); % right tail: group 1 bigger
@@ -331,21 +249,9 @@ for iLay = 1:length(layers)
     [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,5),avg2stk(:,5),1,'both');
     PeakStats.A5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
 
-    % Peak Ratio to onset
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r2,avg2r2,1,'both'); 
-    PeakStats.Arat2(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r3,avg2r3,1,'both'); 
-    PeakStats.Arat3(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r4,avg2r4,1,'both'); 
-    PeakStats.Arat4(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
-
-    [P,DF,CD,mean1,mean2,sd1,sd2]   = myttest2(avg1r5,avg2r5,1,'both'); 
-    PeakStats.Arat5(count:countto) = [P;DF;CD;mean1;mean2;sd1;sd2];
     
 end
 
 cd(homedir); cd output; cd TracePeaks
-writetable(PeakStats,[Groups{1} 'v' Groups{2} '_PupCall_Stats.csv']);
+writetable(PeakStats,[Groups{1} 'v' Groups{2} '_PupCall_Stats_Latency.csv']);
 cd(homedir)

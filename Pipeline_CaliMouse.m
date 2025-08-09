@@ -94,11 +94,10 @@ PCal_NB_HighLowStats(homedir,Groups,20,50)
 PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
-% careful re-running the stats, all peak amps taken rather than just 5
-% targets
-PCal_PupcallStats(homedir,Groups,[1,18,29,44,60]) % was [1,4,9,13,18]
+PCal_PupcallStats(homedir,Groups,[1,18,30,44,60]) % was [1,4,9,13,18]
 PCal_HighLowStats(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57]) % determined by findPupCallRMS.m
 
+PCal_PupcallStats_Latency(homedir,Groups,[1,18,30,44,60])
 %% mTF analysis
 
 % Input:    group metadata file in /groups and curate converted files in
