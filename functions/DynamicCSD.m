@@ -61,6 +61,8 @@ for iGro = 1:length(Groups)
                     disp(['Analyzing animal: ' file])
                     tic
                     
+                    % pull out the actual LFP and stimulus data, a
+                    % continuous file of the channels in recording
                     if matches(file,'PMP09_05_LFP')
                         [StimIn, DataIn] = FileReaderLFPresamp(file,str2num(channels{iA}),type);
                     else
@@ -95,6 +97,9 @@ for iGro = 1:length(Groups)
                     [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
                     
+                    % sngtrlCSD = LineNoiseNotch(homedir,sngtrlCSD)
+
+
                     %In case needed to delete empty columns to have the 
                     %correct amount of stimuli present: 
                     %AvgCSD = AvgCSD(~cellfun('isempty', AvgCSD')); AvgCSD=AvgCSD(1:length(frqz));
