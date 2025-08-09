@@ -131,6 +131,7 @@ for iStim = 1:length(thisstim)
         set(gcf,'Position',[100 100 600 700])
 
         exportgraphics(targetfig,[Groups{1} 'v' Groups{2} '_Traces_' Condition '_' thisstim{iStim} '.pdf'])
+        exportgraphics(targetfig,[Groups{1} 'v' Groups{2} '_Traces_' Condition '_' thisstim{iStim} '.png'])
     end
     close;
 
