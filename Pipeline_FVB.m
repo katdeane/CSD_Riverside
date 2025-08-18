@@ -189,30 +189,30 @@ end
 % keep in mind, the comp pairs need to match what they were when
 % PermutationTest_Area.m was run, it will hard call the order of where the
 % panels are based on the pair, e.g. {'OLD' 'YNG'}
-for iCo = 1:length(Comps)
+for iCo = 8:9 %1:length(Comps)
     thisComp = [Comps{iCo}{1} 'v' Comps{iCo}{2}];
-    % if iCo < 6
-    %     CWTorderedfigs(homedir, thisComp, 'ClickTrain70', '40',  [0 0.6], [-0.2 0.2],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '3',      [0 0.4], [-0.15 0.15],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '5',      [0 0.4], [-0.15 0.15],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '7',      [0 0.4], [-0.15 0.15],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
-    %     CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
-    %     if iCo == 1 || iCo == 2 || iCo == 4 % pairs containing old groups
-    %         CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '3',     [0 0.4], [-0.15 0.15],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '5',     [0 0.4], [-0.15 0.15],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '7',     [0 0.4], [-0.15 0.15],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'gapASSR80', '9',     [0 0.4], [-0.15 0.15],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'Chirp80', '0',       [0 0.4], [-0.15 0.15],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'NoiseBurst80', '0',  [0 0.7], [-0.25 0.25],'FVB')
-    %         CWTorderedfigs(homedir, thisComp, 'TreatgapASSR80', '9',[0 0.7], [-0.25 0.25],'FVB')
-    %     end
-    % else
-        CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
-        CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
-    % end
+    if iCo < 11
+        % CWTorderedfigs(homedir, thisComp, 'ClickTrain70', '40',  [0 0.6], [-0.2 0.2],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'gapASSR70', '3',      [0 0.4], [-0.15 0.15],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'gapASSR70', '5',      [0 0.4], [-0.15 0.15],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'gapASSR70', '7',      [0 0.4], [-0.15 0.15],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'gapASSR70', '9',      [0 0.4], [-0.15 0.15],'FVB')
+        CWTorderedfigs(homedir, thisComp, 'Chirp70', '0',        [0 0.4], [-0.15 0.15],'FVB')
+        CWTorderedfigs(homedir, thisComp, 'NoiseBurst70', '0',   [0 0.7], [-0.25 0.25],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
+        if iCo == 1 || iCo == 2 || iCo == 4 || iCo == 6 || iCo == 7 || iCo == 8 || iCo == 9 || iCo == 10 || iCo == 11 % pairs containing old groups
+            % CWTorderedfigs(homedir, thisComp, 'ClickTrain80', '40', [0 0.6], [-0.2 0.2],'FVB')
+            % CWTorderedfigs(homedir, thisComp, 'gapASSR80', '3',     [0 0.4], [-0.15 0.15],'FVB')
+            % CWTorderedfigs(homedir, thisComp, 'gapASSR80', '5',     [0 0.4], [-0.15 0.15],'FVB')
+            % CWTorderedfigs(homedir, thisComp, 'gapASSR80', '7',     [0 0.4], [-0.15 0.15],'FVB')
+            % CWTorderedfigs(homedir, thisComp, 'gapASSR80', '9',     [0 0.4], [-0.15 0.15],'FVB')
+            CWTorderedfigs(homedir, thisComp, 'Chirp80', '0',       [0 0.4], [-0.15 0.15],'FVB')
+            CWTorderedfigs(homedir, thisComp, 'NoiseBurst80', '0',  [0 0.7], [-0.25 0.25],'FVB')
+            % CWTorderedfigs(homedir, thisComp, 'TreatgapASSR80', '9',[0 0.7], [-0.25 0.25],'FVB')
+        end
+    else
+        % CWTorderedfigs(homedir, thisComp, 'TreatNoiseBurst2','0',[0 0.7], [-0.25 0.25],'FVB')
+        % CWTorderedfigs(homedir, thisComp, 'TreatgapASSR70', '9', [0 0.7], [-0.25 0.25],'FVB')
+    end
 end

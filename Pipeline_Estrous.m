@@ -19,9 +19,11 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'DIE' 'PRO'};
+Groups = {'DIE' 'PRO' 'FYM'}; % FVB young male
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'}; 
 
+Groups = {'FYM'}; % FVB young male
+Condition = {'ClickTrain'}; 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
@@ -63,7 +65,7 @@ end
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
-    for iST = 1:length(Condition)
+    for iST = 3:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
         Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
@@ -83,11 +85,12 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset 'NoiseBurst','ClickTrain','Chirp',
-params.groups = {'DIE','PRO'}; % for permutation test
+params.groups = {'DIE','PRO','FYM'};
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'DIE',params,'Awake');
 runCwtCsd(homedir,'PRO',params,'Awake');
+runCwtCsd(homedir,'FYM',params,'Awake');
 
 % specifying Power: trials are averaged and then power is taken from
 % the complex WT output of runCwtCsd function above. Student's t test
@@ -99,15 +102,12 @@ runCwtCsd(homedir,'PRO',params,'Awake');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
-params.condList = {'NoiseBurst'}; 
-PermutationTest_Area(homedir,'Power',params,params.groups,yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'DIE','PRO'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'DIE','FYM'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'PRO','FYM'},yespermute,'Awake')
 
-% old way
-% PermutationTest(homedir,'Power',params,yespermute)
-% PermutationTest(homedir,'Phase',params,yespermute)
-% this collects all of the stats and puts them into csv in \output\CWTPermStats
-% collectPermStats(homedir,params)
+params.condList = {'NoiseBurst'}; 
+PermutationTest_Area(homedir,'Power',params,{'DIE','PRO'},yespermute,'Awake')
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
@@ -119,9 +119,11 @@ plotFFT(homedir,params,'Spontaneous','RE')
 ncolum = 4;
 Group_single_CSD(homedir, 'DIE','DIE', 'NoiseBurst',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'PRO','PRO', 'NoiseBurst',  [-0.2 0.2], ncolum)
+Group_single_CSD(homedir, 'FYM','FYM', 'NoiseBurst',  [-0.2 0.2], ncolum)
 
-Group_single_LFP(homedir, 'DIE','DIE', 'NoiseBurst',  [-50 50], ncolum)
-Group_single_LFP(homedir, 'PRO','PRO', 'NoiseBurst',  [-50 50], ncolum)
+% Group_single_LFP(homedir, 'DIE','DIE', 'NoiseBurst',  [-50 50], ncolum)
+% Group_single_LFP(homedir, 'PRO','PRO', 'NoiseBurst',  [-50 50], ncolum)
+
 
 for iGro = 1:length(Groups)
     for iCond = 1:length(Condition)
@@ -129,8 +131,9 @@ for iGro = 1:length(Groups)
     end
 end
 
+Condition = {'NoiseBurst' 'ClickTrain' 'Chirp' 'gapASSR'}; 
 for iCond = 1:length(Condition)
-    Tracesorderedfig(homedir, Groups, Condition{iCond},'EST')
+    TracesEstrousfig(homedir, Condition{iCond})
 end
 
 % run a permutation test and save the output results (no figures)
@@ -142,5 +145,21 @@ CWTorderedfigs(homedir, 'DIEvPRO', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'E
 CWTorderedfigs(homedir, 'DIEvPRO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'EST')
 CWTorderedfigs(homedir, 'DIEvPRO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'EST')
 CWTorderedfigs(homedir, 'DIEvPRO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'EST')
+
+CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'DIEvFYM', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'EST')
+
+CWTorderedfigs(homedir, 'PROvFYM', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, 'PROvFYM', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'EST')
 
 

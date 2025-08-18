@@ -1,4 +1,4 @@
-function CWTorderedfigs(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp, whichstudy)
+function CWTorderedfigs_3groups(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp, whichstudy)
 
 % figure order matters here
 close all
@@ -17,7 +17,7 @@ if matches(whichstudy,'FVB')
         grp1 = [grp1 ' 80'];
         grp2 = [grp2 ' 70'];
     end
-elseif matches(whichstudy,'FMR1') || matches(whichstudy,'EST')
+elseif matches(whichstudy,'FMR1')
     grp1 = Groups(1:3);
     grp2 = Groups(5:7);
     diftitle = [grp2 ' - ' grp1];
@@ -135,7 +135,7 @@ for iLay = 1:length(layers)
         if sum(h.Parent.Children(2).Children(iline).Color) == 0 % black
             plot(thisx,thisy,':','color','k')
         elseif sum(h.Parent.Children(2).Children(iline).Color) == 3 % white
-            plot(thisx,thisy,'-','color','w')
+            plot(thisx,thisy,'-','color','k')
         end
     end
     % y tick labels on far left
@@ -168,5 +168,4 @@ clim(k,c_axisind);
 set(gcf,'Position',[100 100 700 800])
 
 exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.png'])
-exportgraphics(targetfig,[Groups '_Observed Phase ' Condition tidbit 'all.pdf'])
 close; cd(homedir)
