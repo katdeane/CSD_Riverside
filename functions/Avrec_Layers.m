@@ -168,7 +168,7 @@ for iSub = 1:subjects
             % take certain pre-selected windows at determined call times
             if matches(Condition, 'Pupcall30')
                 [peakout,latencyout,rmsout] = pupcall_peaks(traceCSD, ...
-                    1:60); % pup call order ; was [1, 4, 9, 13, 18] then [1,18,29,44,60]
+                    1:60, BL); % pup call order ; was [1, 4, 9, 13, 18] then [1,18,29,44,60]
             elseif (contains(Group,'VM') || contains(Group,'PM')) && ...
                     matches(Condition, 'NoiseBurst')
                 [peakout,latencyout,rmsout] = consec_peaks_longNB(traceCSD, BL);
