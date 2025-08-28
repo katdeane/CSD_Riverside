@@ -93,12 +93,15 @@ for iGro = 1:length(Groups)
 
                     clear DataIn StimIn % these are too big to keep around
                     
+                    % line noise notch applied to LFP data before processing 
+                    if matches(Groups{iGro},'VMA') || matches(Groups{iGro},'PMA')
+                        sngtrlLFP = LineNoiseNotch(homedir,sngtrlLFP);
+                    end
+
                     %% All the data from the LFP now (sngtrl = single trial)
                     [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
                     
-                    % sngtrlCSD = LineNoiseNotch(homedir,sngtrlCSD)
-
 
                     %In case needed to delete empty columns to have the 
                     %correct amount of stimuli present: 

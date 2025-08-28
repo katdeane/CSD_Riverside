@@ -20,8 +20,8 @@ set(0, 'DefaultFigureRenderer', 'painters');
 c_axis = ([-0.2 0.2]); % this sets the default scale for all csds
 
 % set consistently needed variables
-Groups = {'VMA' 'PMA'};  %'VMA' 'PMA' 
-Condition = {'NoiseBurst' 'MaskCall' 'ShortCall'}; %  'MaskCall' 'ShortCall'
+Groups = {'VMA' 'PMA' };  %'VMA' 'PMA' 
+Condition = {'NoiseBurst' 'ShortCall'}; %  'MaskCall' 'ShortCall'
 
 
 %% Data generation per subject ⊂◉‿◉つ
