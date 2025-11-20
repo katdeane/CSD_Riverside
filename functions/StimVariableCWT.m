@@ -100,16 +100,28 @@ if matches(type, 'Anesthetized')
 
     end
 elseif matches(type,'Awake')
+
     if contains(Condition,'NoiseBurst') 
-        stimList = 70;
-        thisUnit = 'dB';
-        stimDur  = 100*sr_mult; % ms
-        stimITI  = 1000*sr_mult; % actual 2 s
-        thisTag  = 'single';
-        % post processing
-        compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
-        % for ITPCmean
-        ITPCwin = {1:400};
+        if contains(Condition,'NoiseBurst2pt5Hz')
+            stimList = [20, 30, 40, 50, 60, 70];
+            thisUnit = 'dB';
+            stimDur  = 1000*sr_mult; % ms
+            stimITI  = 1000*sr_mult; % actually 2 s
+            thisTag  = 'noise';
+            compDur2 = 0; % DIDN'T CALCULATE
+            % for ITPCmean
+            ITPCwin = 0; % DIDN'T CALCULATE
+        else
+            stimList = 70;
+            thisUnit = 'dB';
+            stimDur  = 100*sr_mult; % ms
+            stimITI  = 1000*sr_mult; % actual 2 s
+            thisTag  = 'single';
+            % post processing
+            compDur2 = {100:300; 100:300; 100:300; 100:300; 100:300; 100:300; 100:300};
+            % for ITPCmean
+            ITPCwin = {1:400};
+        end
 
     elseif contains(Condition,'Tonotopy')
         stimList = [2, 4, 8, 16, 24, 32];
@@ -171,6 +183,26 @@ elseif matches(type,'Awake')
             1750:2000; 1750:2000; 1750:2000; 1750:2000};
         % for ITPCmean
         ITPCwin = {1250:3000}; % from 3rd gap-noise block to last (no final noise block)
+
+    elseif contains(Condition,'MaskCall')
+        stimList = [0, 1, 2, 3];
+        thisUnit = 'level';
+        stimDur  = 3878*sr_mult; % ms
+        stimITI  = 500*sr_mult;
+        thisTag  = 'Mask';
+        compDur2 = 0; % DIDN'T CALCULATE
+        % for ITPCmean
+        ITPCwin = 0; % DIDN'T CALCULATE
+
+    elseif contains(Condition,'ShortCall')
+        stimList = 1;
+        thisUnit = [];
+        stimDur  = 3878*sr_mult; % ms
+        stimITI  = 500*sr_mult;
+        thisTag  = 'single';
+        compDur2 = 0; % DIDN'T CALCULATE
+        % for ITPCmean
+        ITPCwin = 0; % DIDN'T CALCULATE
 
     elseif contains(Condition,'Pupcall')
         stimList = 1;

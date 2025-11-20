@@ -32,6 +32,14 @@ else % or
     data = signalStruct.signals(str2double(channels{1}):str2double(channels{2}),:);
 end
 
+% interpolate channels that were flat in the signal
+if contains(file,'VMA07')
+    data = chaninterp(data, 'linextra', 8, 1:length(channels));
+end
+if contains(file,'PMA01')
+    data = chaninterp(data, 'linextra', 9, 1:length(channels));
+end
+
 % tiledlayout('flow')
 % nexttile
 % imagesc(data)

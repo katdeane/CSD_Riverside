@@ -72,7 +72,7 @@ if matches(type,'Anesthetized')
 
     end
 elseif matches(type,'Awake1')
-    if contains(Condition,'NoiseBurst') 
+    if contains(Condition,'NoiseBurst')
         stimList = 70;
         thisUnit = 'dB';
         stimDur  = 100*sr_mult; % ms
@@ -120,13 +120,20 @@ elseif matches(type,'Awake1')
         thisTag  = 'gapASSRRate';
     end
 elseif matches(type,'Awake')
-    if contains(Condition,'NoiseBurst') 
-        stimList = 70;
-        thisUnit = 'dB';
-        stimDur  = 100*sr_mult; % ms
-        stimITI  = 1000*sr_mult; % actually 2 s
-        thisTag  = 'single';
-
+    if contains(Condition,'NoiseBurst')
+        if contains(Condition,'NoiseBurst2pt5Hz')
+            stimList = [20, 30, 40, 50, 60, 70];
+            thisUnit = 'dB';
+            stimDur  = 1000*sr_mult; % ms
+            stimITI  = 1000*sr_mult; % actually 2 s
+            thisTag  = 'noise';
+        else
+            stimList = 70;
+            thisUnit = 'dB';
+            stimDur  = 100*sr_mult; % ms
+            stimITI  = 1000*sr_mult; % actually 2 s
+            thisTag  = 'single';
+        end
     elseif contains(Condition,'MaskCall')
         stimList = [0, 1, 2, 3];
         thisUnit = 'level';
@@ -169,7 +176,7 @@ elseif matches(type,'Awake')
         stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
         thisTag  = 'single';
 
-    elseif contains(Condition,'gapASSR') 
+    elseif contains(Condition,'gapASSR')
         % 10 gaps every 25 ms from onset to onset (40 hz)
         % 250 ms noise, 250 ms gap-noise, etc. , 250 noise
         % 10 presentations of gap-noise
@@ -181,6 +188,46 @@ elseif matches(type,'Awake')
         stimITI  = 500*sr_mult;
         thisTag  = 'gapASSRRate';
     end
+elseif matches(type,'Bat')
+    if contains(Condition,'NoiseBurst')
+        stimList = 70; % accurate
+        thisUnit = 'dB';
+        stimDur  = 100*sr_mult; % ms
+        stimITI  = 1000*sr_mult; % actually 2 s
+        thisTag  = 'single';
+        
+    elseif matches(Condition,'TonotopyNSR')
+        stimList = [5, 10, 15, 20, 25, 30, 35];
+        thisUnit = 'kHz';
+        stimDur  = 200*sr_mult; % ms
+        stimITI  = 1000*sr_mult;
+        thisTag  = 'Tonotopy';
+        % 70 dB SPL
+
+    elseif matches(Condition,'Spontaneous')
+        stimList = 1;
+        thisUnit = [];
+        stimDur  = 1000*sr_mult; % ms
+        stimITI  = 1000*sr_mult;
+        thisTag  = 'spont';
+
+    elseif contains(Condition,'ClickTrain')
+        stimList = [5, 10, 40, 80, 120];
+        thisUnit = 'Hz';
+        stimDur  = 2000*sr_mult; % ms
+        stimITI  = 1000*sr_mult; % processing 1 s but ITI actually 2s
+        thisTag  = 'ClickRate';
+
+    elseif matches(Condition,'CF')
+        % running each frequency on each sound pressure level
+        tones = [5, 10, 15, 20, 25, 30, 35];
+        levels = [30, 40, 50, 60]; % 60 to 30 dB SPL
+        stimList = [repmat(tones',4,1), [repmat(levels(1),7,1); repmat(levels(2),7,1); repmat(levels(3),7,1); repmat(levels(4),7,1)]];
+        thisUnit = ' kHz/dB';
+        stimDur  = 50*sr_mult; % ms
+        stimITI  = 950*sr_mult;
+        thisTag  = 'CF';
+    end
 else
-    error('add input type: Anesthetized of Awake')
+    error('add input type: Anesthetized, Awake, Bat')
 end

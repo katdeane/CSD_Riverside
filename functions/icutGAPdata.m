@@ -64,7 +64,13 @@ stimITI = stimdur+ITI; % ms
 %% stack or source the pseudorandom list
 
 % pre-psuedorandomized tone list for this subject
-stimList = readmatrix([file(1:6) thistype '.txt'])';
+if contains(file, 'VMA') || contains(file,'PMA')
+    stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
+else
+    % pre-psuedorandomized tone list for this subject
+    stimList = readmatrix([file(1:6) thistype '.txt'])'; % per subject
+end
+
 shortlist = unique(stimList(2:end)); % first row is unread
 
 % this should match or something is wrong

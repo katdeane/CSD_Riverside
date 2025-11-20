@@ -23,6 +23,12 @@ if matches(Comparison, 'Pupcall')
     color11 = [255/255 175/255 105/255]; % light orange
     color12 = [224/255 115/255 0/255]; % dark orange
 
+elseif matches(Comparison, 'ShortCall')
+    % Load in Pupcall FFT
+    loadname2 = [params.groups{1} 'v' params.groups{2} '_ShortCall_' type '_FFT.mat'];
+    color11 = [255/255 175/255 105/255]; % light orange
+    color12 = [224/255 115/255 0/255]; % dark orange
+
 elseif matches(Comparison,'ClickTrain')
     % Load in ClickTrain FFT
     loadname2 = [params.groups{1} 'v' params.groups{2} '_ClickTrain_' type '_FFT.mat'];

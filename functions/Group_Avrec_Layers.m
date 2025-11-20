@@ -138,13 +138,19 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
                 % peak detection
                 if contains(Condition, 'ClickTrain')
                     reprate = stimList(iStim);
+                elseif contains(Condition, 'NoiseBurst2pt5Hz')
+                    reprate = 2.5;
                 else
                     reprate = 1;
                 end
+
                 for iSub = 1:size(stackgroup,1)
                     if matches(Condition, 'Pupcall30')
                         [peakout,latencyout,rmsout] = pupcall_peaks(stackgroup(iSub,:), ...
-                            1:60); % pup call order
+                            1:60, BL); % pup call order
+                    elseif matches(Condition,'ShortCall') || matches(Condition,'MaskCall')
+                        [peakout,latencyout,rmsout] = shortpupcall_peaks(stackgroup(iSub,:), ...
+                            1:10, BL);
                     elseif (contains(Group,'VM') || contains(Group,'PM')) && ...
                             matches(Condition, 'NoiseBurst')
                         [peakout,latencyout,rmsout] = consec_peaks_longNB(stackgroup(iSub,:), BL);

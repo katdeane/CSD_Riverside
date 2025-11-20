@@ -32,8 +32,13 @@ stimITI = stimdur+ITI; % ms
 
 if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
         || matches(thistype, 'gapASSRRate')
-    % pre-psuedorandomized tone list for this subject
-    stimList = readmatrix([file(1:6) thistype '.txt'])';
+
+    if contains(file, 'VMA') || contains(file,'PMA')
+        stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
+    else
+        % pre-psuedorandomized tone list for this subject
+        stimList = readmatrix([file(1:6) thistype '.txt'])'; % per subject
+    end
     shortlist = unique(stimList(2:end)); % first row is unread
 
     % click list is of duration between clicks so 8.33 = 120 Hz
@@ -52,10 +57,11 @@ elseif matches(thistype, 'Mask')
 
 elseif matches(thistype, 'noise') % noise bursts
     
-    stimList = zeros(1,length(checkStimList) * ...
-        (ceil((length(onsets)+1)/length(checkStimList))));
-    for iextend = 1:ceil((length(stimList)+1)/length(checkStimList))
-        stimList(8*iextend-7:8*iextend) = checkStimList;
+    listlength = length(checkStimList);
+    stimList = zeros(1,listlength * ...
+        (ceil((length(onsets)+1)/listlength)));
+    for iextend = 1:ceil((length(stimList)+1)/listlength)
+        stimList(listlength*iextend-(listlength-1):listlength*iextend) = checkStimList;
     end
     shortlist = checkStimList;
     

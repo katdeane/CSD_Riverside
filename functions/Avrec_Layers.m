@@ -160,6 +160,8 @@ for iSub = 1:subjects
             % peak detection over single trials
             if contains(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
+            elseif contains(Condition, 'NoiseBurst2pt5Hz')
+                reprate = 2.5;
             else
                 reprate = 1;
             end
@@ -169,6 +171,9 @@ for iSub = 1:subjects
             if matches(Condition, 'Pupcall30')
                 [peakout,latencyout,rmsout] = pupcall_peaks(traceCSD, ...
                     1:60, BL); % pup call order ; was [1, 4, 9, 13, 18] then [1,18,29,44,60]
+            elseif matches(Condition,'ShortCall') || matches(Condition,'MaskCall')
+                [peakout,latencyout,rmsout] = shortpupcall_peaks(traceCSD, ...
+                    1:10, BL);
             elseif (contains(Group,'VM') || contains(Group,'PM')) && ...
                     matches(Condition, 'NoiseBurst')
                 [peakout,latencyout,rmsout] = consec_peaks_longNB(traceCSD, BL);

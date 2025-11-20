@@ -59,9 +59,6 @@ for iCond = 1:length(params.condList)
             group1WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
             % start on 2 and add further input to full tables
             for iIn = 2:length(input)
-                if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
-                    continue
-                end
                 load(input(iIn).name, 'wtTable')
                 WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
                 group1WT = [group1WT; WT]; %#ok<AGROW>
@@ -76,9 +73,6 @@ for iCond = 1:length(params.condList)
             group2WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
             % start on 2 and add further input to full tables
             for iIn = 2:length(input)
-                if contains(input(iIn).name,'MWT16b_NoiseBurst') % special case
-                    continue
-                end
                 load(input(iIn).name, 'wtTable')
                 WT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
                 group2WT = [group2WT; WT]; %#ok<AGROW>

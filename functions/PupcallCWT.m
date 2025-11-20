@@ -4,7 +4,7 @@ cd(homedir);
 BL = 399;
 
 %% Load in subject data
-load([subject '_Pupcall_1_WT.mat'],'wtTable');
+load([subject '_ShortCall_1_WT.mat'],'wtTable');
 
 cd(homedir); cd figures
 if ~exist('PupcallCWT','dir')
@@ -19,7 +19,7 @@ for iLay = 1:length(params.layers)
     wtLay = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
 
     % set up wave image
-    [y,~] = audioread('PupCall25s.wav');
+    [y,~] = audioread('PupCall5s.wav');
     % audio file has fs of 192000. However, the software is slightly
     % slowing the stimulus down as it plays it. Therefore, the following fs
     % is based on the RPvdsEx playing (this is at max fs in the software)
@@ -48,8 +48,8 @@ for iLay = 1:length(params.layers)
     % c axis
     colorbar
     % x axis
-    xticks([400 5000 10000 15000 20000 25000 25427])
-    xticklabels({'On','5','10','15','20','','Off'})
+    xticks([400 800 1200 1600 2000 2400 2800 3200 3600 4000 4278])
+    xticklabels({'On','0.4','0.8','1.2','1.6','2.0','2.4','2.8','3.2','3.6','Off'})
     % title
     title(['Power to Pup Call for subject ' subject ' ' params.layers{iLay}])
 
@@ -65,8 +65,8 @@ for iLay = 1:length(params.layers)
     colorbar
     clim([0 1])
     % x axis
-    xticks([400 5000 10000 15000 20000 25000 25427])
-    xticklabels({'On','5','10','15','20','','Off'})
+    xticks([400 800 1200 1600 2000 2400 2800 3200 3600 4000 4278])
+    xticklabels({'On','0.4','0.8','1.2','1.6','2.0','2.4','2.8','3.2','3.6','Off'})
     % title
     title(['Phase Co to Pup Call for subject ' subject ' ' params.layers{iLay}])
 
@@ -80,10 +80,10 @@ for iLay = 1:length(params.layers)
     close
 
     % Time to get choppy my friend 
-    load('PupTimes.mat','PupTimes')
-    PupTimes    = PupTimes .* 0.9856; % 192000/194800 (fixing fs)
-    PupTimes    = PupTimes + 0.400; % add the prestimulus time
-    PupTimesCWT = PupTimes .* 1000; % match axes
+    load('ShortPupTimes.mat','ShortPupTimes')
+    ShortPupTimes    = ShortPupTimes .* 0.9856; % 192000/194800 (fixing fs)
+    ShortPupTimes    = ShortPupTimes + 0.400; % add the prestimulus time
+    PupTimesCWT      = ShortPupTimes .* 1000; % match axes
 
     % sanity checks 
     % plot(t,ymod,'k'); xlabel('Seconds'); ylabel('PupCall');
@@ -95,12 +95,12 @@ for iLay = 1:length(params.layers)
     % xline(PupTimes(:,1).*1000,'b')
     % xline(PupTimes(:,2).*1000,'r')
     
-    callList = [1 3 18 21 26 49];
+    callList = 1:10;
 
     for iCall = callList
 
         callCSD = PupTimesCWT(iCall,1);
-        callWAV = PupTimes(iCall,1);
+        callWAV = ShortPupTimes(iCall,1);
 
         figure;
         tiledlayout('vertical')

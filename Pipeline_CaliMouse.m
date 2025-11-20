@@ -25,8 +25,6 @@ cbar = [-0.3 0.3]; % species specific based on experience, color axis
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-% something was off with PMP09's pup call measurement and it needed to be
-% resampled just a tiny bit. Concerning...
 DynamicCSD(homedir, Condition, Groups, cbar, 'Anesthetized')
 
 % special cases if you rerun the DynamicCSD, run this too
