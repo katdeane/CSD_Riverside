@@ -96,8 +96,8 @@ for iGro = 1:length(Groups)
                     clear DataIn StimIn % these are too big to keep around
                     
                     % line noise notch applied to LFP data before processing 
-                    if matches(Groups{iGro},'VMA') || matches(Groups{iGro},'PMA')
-                        % sngtrlLFP = LineNoiseNotch(homedir,sngtrlLFP);
+                    if matches(type,'Awake') 
+                        sngtrlLFP = LineNoiseNotch(sngtrlLFP);
                     end
 
                     %% All the data from the LFP now (sngtrl = single trial)
