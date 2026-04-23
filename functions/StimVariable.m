@@ -196,7 +196,7 @@ elseif matches(type,'Bat')
         stimITI  = 1000*sr_mult; % actually 2 s
         thisTag  = 'single';
         
-    elseif matches(Condition,'TonotopyNSR')
+    elseif contains(Condition,'TonotopyNSR')
         stimList = [5, 10, 15, 20, 25, 30, 35];
         thisUnit = 'kHz';
         stimDur  = 200*sr_mult; % ms
@@ -227,7 +227,14 @@ elseif matches(type,'Bat')
         stimDur  = 50*sr_mult; % ms
         stimITI  = 950*sr_mult;
         thisTag  = 'CF';
+    elseif contains(Condition,'BBN')
+        stimList = 60; % accurate
+        thisUnit = 'dB';
+        stimDur  = 50*sr_mult; % ms
+        stimITI  = 350*sr_mult; % actually 4 s
+        thisTag  = 'single';
     end
+
 else
     error('add input type: Anesthetized, Awake, Bat')
 end
