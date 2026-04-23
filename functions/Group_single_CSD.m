@@ -3,6 +3,8 @@ function Group_single_CSD(homedir, Group, folder, Condition, c_axis, ncolumn)
 % set some parameters 
 if contains(Condition,'NoiseBurst')
     thisxlim = [300 900];
+elseif matches(Condition, 'Spontaneous')
+    thisxlim = [1 2000];
 elseif matches(Condition,'ShortCall')
     thisxlim = [300 4400];
 else
