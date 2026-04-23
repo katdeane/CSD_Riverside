@@ -47,6 +47,10 @@ elseif contains(Condition,'NoiseBurst')
     numreps = 3; % 0 - 50, 50 - 100, 100 - 300 
     det_on  = [1, 51, 101] + BL; % 
     det_off = [51, 101,301] + BL; % last window is longer
+elseif contains(Condition,'BBN')
+    numreps = 1; % 0 - 50, 50 - 100, 100 - 300 
+    det_on  = 400; % 
+    det_off = 500; % last window is longer
 elseif contains(Condition, 'gapASSR')
     numreps = 6; % 6 gap in noise blocks, every 500 ms
     det_on  = [1, 501, 1001, 1501, 2001, 2501]+BL+250; % 250 ms noise block
