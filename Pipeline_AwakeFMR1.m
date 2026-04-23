@@ -16,8 +16,8 @@ clear; clc;
 % set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-elseif exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside'); 
+elseif exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 else
     error('add your local repository as shown above')
 end
@@ -26,7 +26,7 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'AWT' 'AKO'};  %'AWT' 
+Groups = {'AWT' 'AKO' 'CKH'};  
 % Condition = {'NoiseBurst'};
 % Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
@@ -80,18 +80,14 @@ end
 
 %% Peak and RMS statistics
 
-NoiseBurstStats(homedir,Groups,60)
-NoiseBurstStats(homedir,Groups,70)
-NoiseBurstStats(homedir,Groups,80)
-ClickTrainStats(homedir,Groups)
-gapASSRStats(homedir,Groups)
+NoiseBurstStats_3grp(homedir,Groups,70)
+ClickTrainStats_3grp(homedir,Groups)
+% gapASSRStats_3grp(homedir,Groups)
 
 % t tests between subject-wise coefficients of variance
-NoiseBurstStats_CV(homedir,Groups,60)
-NoiseBurstStats_CV(homedir,Groups,70)
-NoiseBurstStats_CV(homedir,Groups,80)
-ClickTrainStats_CV(homedir,Groups)
-gapASSRStats_CV(homedir,Groups)
+% NoiseBurstStats_CV(homedir,Groups,70)
+% ClickTrainStats_CV(homedir,Groups)
+% gapASSRStats_CV(homedir,Groups)
 
 %% Determine strength of response over EACH trial 
 
@@ -119,11 +115,12 @@ params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
 params.condList = {'NoiseBurst' 'ClickTrain','gapASSR' 'Chirp'}; % subset 
-params.groups = {'AWT','AKO'}; % for permutation test
+params.groups = {'AWT','AKO','CKH'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'AWT',params,'Awake');
 runCwtCsd(homedir,'AKO',params,'Awake');
+runCwtCsd(homedir,'CKH',params,'Awake');
 
 % single subject ITPC figures
 % CWTFigs(homedir,'Phase',params,'AWT','Awake')
@@ -139,16 +136,26 @@ runCwtCsd(homedir,'AKO',params,'Awake');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'AWT','AKO'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'AWT','CKH'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'CKH','AKO'},yespermute,'Awake')
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
-% plotFFT(homedir,params,'Spontaneous','AB')
-plotFFT(homedir,params,'Spontaneous','RE')  
+plotFFT_3grp(homedir,params,'Spontaneous','RE')
+params.groups = {'AWT','AKO'}; % for permutation test
+runFftCsd(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous','RE')
+params.groups = {'AWT','CKH'}; % for permutation test
+runFftCsd(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous','RE')
+params.groups = {'CKH','AKO'}; % for permutation test
+runFftCsd(homedir,params,'Spontaneous')
+plotFFT(homedir,params,'Spontaneous','RE')
 
 % for the LFP side
-runFftLfp(homedir,params,'Spontaneous')
-plotFFTLfp(homedir,params,'Spontaneous','RE')
+% runFftLfp(homedir,params,'Spontaneous')
+% plotFFTLfp(homedir,params,'Spontaneous','RE')
 
 % now of the spontaneous windows between noisebursts at 70, 80, and 90 dB
 % runFftCsd(homedir,params,'NoiseBurstSpont')
@@ -161,6 +168,9 @@ interlamPhaseFig(homedir,'AKO',params)
 
 LaminarPhaseLocking(homedir,'AWT',params)
 interlamPhaseFig(homedir,'AWT',params)
+
+LaminarPhaseLocking(homedir,'CKH',params)
+interlamPhaseFig(homedir,'CKH',params)
 
 %% Phase amplitude coupling
 
@@ -195,10 +205,12 @@ interlamPhaseFig(homedir,'AWT',params)
 ncolum = 4;
 Group_single_CSD(homedir, 'AWT', 'AWT', 'NoiseBurst',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'AKO', 'AKO', 'NoiseBurst',  [-0.2 0.2], ncolum)
+Group_single_CSD(homedir, 'CKH', 'CKH', 'NoiseBurst',  [-0.2 0.2], ncolum)
 
 ncolum = 4;
 Group_single_CSD(homedir, 'AWT', 'AWT', 'Spontaneous',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'AKO', 'AKO', 'Spontaneous',  [-0.2 0.2], ncolum)
+% Group_single_CSD(homedir, 'CKH', 'CKH', 'Spontaneous',  [-0.2 0.2], ncolum)
 
 for iGro = 1:length(Groups)
     for iCond = 1:length(Condition)
@@ -207,7 +219,7 @@ for iGro = 1:length(Groups)
 end
 
 for iCond = 1:length(Condition)
-    Tracesorderedfig(homedir, Groups, Condition{iCond},'FMR1')
+    Tracesorderedfig_3grp(homedir, Groups, Condition{iCond},'FMR1')
 end
 
 % run a permutation test and save the output results (no figures)
@@ -220,3 +232,21 @@ CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR
 CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
 CWTorderedfigs(homedir, 'AWTvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
 CWTorderedfigs(homedir, 'AWTvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
+
+CWTorderedfigs(homedir, 'AWTvCKH', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
+CWTorderedfigs(homedir, 'AWTvCKH', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
+
+CWTorderedfigs(homedir, 'CKHvAKO', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
+CWTorderedfigs(homedir, 'CKHvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')

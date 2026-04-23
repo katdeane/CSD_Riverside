@@ -26,10 +26,10 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'CWH' 'CKH' 'CWW'};  %'CKO' 
-Condition = {'NoiseBurst'};
-% Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    % 'gapASSR' 'postNoiseBurst'};
+Groups = {'CWH' 'CWW' 'CKH' 'CKO'}; % wt cnr1 het, wt, fmr1 ko cnr1 het, ko
+% Condition = {'NoiseBurst'};
+Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
+    'gapASSR' 'postNoiseBurst'};
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -83,11 +83,11 @@ ncolum = 4;
 Group_single_CSD(homedir, 'CKH', 'CKH', 'NoiseBurst',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'CWH', 'CWH', 'NoiseBurst',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'CWW', 'CWW', 'NoiseBurst',  [-0.2 0.2], ncolum)
+Group_single_CSD(homedir, 'CKO', 'CKO', 'NoiseBurst',  [-0.2 0.2], ncolum)
 
-ncolum = 4;
-Group_single_CSD(homedir, 'CKH', 'CKH', 'Spontaneous',  [-0.2 0.2], ncolum)
-Group_single_CSD(homedir, 'CWH', 'CWH', 'Spontaneous',  [-0.2 0.2], ncolum)
-Group_single_CSD(homedir, 'CWW', 'CWW', 'Spontaneous',  [-0.2 0.2], ncolum)
+% Group_single_CSD(homedir, 'CKH', 'CKH', 'Spontaneous',  [-0.2 0.2], ncolum)
+% Group_single_CSD(homedir, 'CWH', 'CWH', 'Spontaneous',  [-0.2 0.2], ncolum)
+% Group_single_CSD(homedir, 'CWW', 'CWW', 'Spontaneous',  [-0.2 0.2], ncolum)
 
 % for iGro = 1:length(Groups)
 %     for iCond = 1:length(Condition)
@@ -101,14 +101,14 @@ Group_single_CSD(homedir, 'CWW', 'CWW', 'Spontaneous',  [-0.2 0.2], ncolum)
 
 %% Peak and RMS statistics
 
-NoiseBurstStats(homedir,Groups,70)
-ClickTrainStats(homedir,Groups)
-gapASSRStats(homedir,Groups)
-
-% t tests between subject-wise coefficients of variance
-NoiseBurstStats_CV(homedir,Groups,70)
-ClickTrainStats_CV(homedir,Groups)
-gapASSRStats_CV(homedir,Groups)
+% NoiseBurstStats(homedir,Groups,70)
+% ClickTrainStats(homedir,Groups)
+% gapASSRStats(homedir,Groups)
+% 
+% % t tests between subject-wise coefficients of variance
+% NoiseBurstStats_CV(homedir,Groups,70)
+% ClickTrainStats_CV(homedir,Groups)
+% gapASSRStats_CV(homedir,Groups)
 
 %% Determine strength of response over EACH trial 
 
@@ -134,14 +134,15 @@ params.sampleRate = 1000; % Hz
 params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
-params.layers = {'II','IV','Va','Vb','VI'}; 
+params.layers = {'II','IV','Va','Vb','VI'};
 params.condList = {'NoiseBurst' 'ClickTrain','gapASSR' 'Chirp'}; % subset 
-params.groups = {'CWH','CKH','CWW'}; % for permutation test
+params.groups = {'CWW','CWH','CKH','CKO'}; % for permutation test
 
 % Only run when data regeneration is needed:
 runCwtCsd(homedir,'CWH',params,'Awake');
 runCwtCsd(homedir,'CKH',params,'Awake');
 runCwtCsd(homedir,'CWW',params,'Awake');
+runCwtCsd(homedir,'CKO',params,'Awake');
 
 % single subject ITPC figures
 % CWTFigs(homedir,'Phase',params,'AWT','Awake')
@@ -157,12 +158,13 @@ runCwtCsd(homedir,'CWW',params,'Awake');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',params,params.groups,yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'CWH','CKH'},yespermute,'Awake')
+PermutationTest_Area(homedir,'Phase',params,{'CWW','CKO'},yespermute,'Awake')
 
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
 % plotFFT(homedir,params,'Spontaneous','AB')
-plotFFT(homedir,params,'Spontaneous','RE')  
+plotFFT_4grp(homedir,params,'Spontaneous','RE')  
 
 % for the LFP side
 runFftLfp(homedir,params,'Spontaneous')
@@ -174,49 +176,23 @@ plotFFTLfp(homedir,params,'Spontaneous','RE')
 % plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
-LaminarPhaseLocking(homedir,'AKO',params)
-interlamPhaseFig(homedir,'AKO',params)
-
-LaminarPhaseLocking(homedir,'AWT',params)
-interlamPhaseFig(homedir,'AWT',params)
-
-%% Phase amplitude coupling
-
-% % it's been a while
-% Groups = {'AWT' 'KKO'};  
-% Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'};
+% LaminarPhaseLocking(homedir,'CKH',params)
+% interlamPhaseFig(homedir,'CKH',params)
 % 
-% % based on code from Francisco Garcia-Rosales from https://doi.org/10.1111/ejn.14986
-% disp('CSD Phase Amplitude Coupling Analysis')
-% for iGro = 1:length(Groups)
-%     for iST = 1:length(Condition)
-%         disp(['Phase Amp coupling for ' Groups{iGro} ' ' Condition{iST}])
-%         tic 
-%         runPAC(homedir, Groups{iGro}, Condition{iST}, 'CSD')
-%         toc
-%     end
-% end
+% LaminarPhaseLocking(homedir,'CWH',params)
+% interlamPhaseFig(homedir,'CWH',params)
 % 
-% % save all of the visual data output and some data files
-% for iST = 1:length(Condition)
-%     disp(['Phase Amp coupling figures for ' Condition{iST}])
-%     tic
-%     visualize_PAC(homedir,Groups, Condition{iST}, 'CSD')
-%     toc
-% end
-% 
-% % run a permutation test and save the output results (no figures)
-% % permtest_PAC(homedir,'CSD')
+% LaminarPhaseLocking(homedir,'CWW',params)
+% interlamPhaseFig(homedir,'CWW',params)
+
 
 %% Pretty up some figures
 
-% run a permutation test and save the output results (no figures)
-% permtest_PAC(homedir,'CSD')
-CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
-CWTorderedfigs(homedir, 'AWTvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
+% CWTorderedfigs(homedir, 'AWTvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
