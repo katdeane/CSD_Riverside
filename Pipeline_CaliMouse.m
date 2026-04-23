@@ -5,8 +5,8 @@ clear; clc;
 % set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-elseif exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside'); 
+elseif exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 elseif exist('D:\GitHub\CSD_Riverside', 'dir')
     cd('D:\GitHub\CSD_Riverside');
 else
@@ -18,7 +18,7 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
 Groups = {'VMP' 'PMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
-% Condition = {'Pupcall30'};
+% Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
 cbar = [-0.3 0.3]; % species specific based on experience, color axis
 
@@ -90,12 +90,15 @@ PCal_NoiseBurstStats(homedir,Groups,50)
 PCal_NoiseBurstStats(homedir,Groups,70)
 PCal_NB_HighLowStats(homedir,Groups,20,50)
 
+PCal_NP_HighLowANOVA(homedir,Groups,20,50)
 
 PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
 PCal_PupcallStats(homedir,Groups,[1,18,30,44,60]) % was [1,4,9,13,18]
 PCal_HighLowStats(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57]) % determined by findPupCallRMS.m
+
+PCal_HighLowANOVA(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57])
 
 PCal_PupcallStats_Latency(homedir,Groups,[1,18,30,44,60])
 %% mTF analysis
@@ -209,3 +212,8 @@ cutPupcallFig(homedir,[1, 18, 30, 44, 60], [1 5 10])
 cutPupcall(homedir,[1, 18, 30, 44, 60])
 % get the high and low figs
 cutPupcallFig(homedir,[18,48,45,49,53,7,30,16,31,57],[])
+
+%% Prep statistics for Michael
+
+% this is going to be project specific
+prepDataforStatsPMPVMP(homedir)

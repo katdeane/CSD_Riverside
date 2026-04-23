@@ -12,6 +12,15 @@ function PCal_NB_HighLowStats(homedir,Groups,high,low)
 %           clicks and boxplots of peak amplitudes across clicks.
 %           Data in ..\output\TracePeaks as *v*_ClickTrain_5_Stats.csv
 
+%% NOTE: stats are now done on the log-transformed data. If new data is
+%           run, the normalized figures do NOT reflect what should be
+%           shown. They are currently only the log transformed data and not
+%           exponentiated back for visualizeion. This is because with the
+%           normalization step, I have to exponentiate the raw data again
+%           to visualize the actual direction of change. Therefore, I'm
+%           using previous figures run without taking the log at the
+%           moment. This will have to be rectified for new data.
+
 cd(homedir); 
 
 % single trial data
@@ -22,7 +31,7 @@ grp2avg = readtable([Groups{2} '_NoiseBurst_AVG_AVRECPeak.csv']);
 
 % set some stuff up
 layers = {'All','II','IV','Va','Vb','VI'};
-statfill = {'p' 'df' 'CD' 'mean1' 'mean2' 'sd1' 'sd2'};
+statfill = {'p' 'df' 'CD' 'mean1' 'mean2' 'sd1' 'sd2' 't'};
 
 % initiate a huge stats table for the lawls (for the stats)
 PeakStats = table('Size',[length(layers)*length(statfill) 7],'VariableTypes',...
@@ -83,6 +92,13 @@ for iLay = 1:length(layers)
     %         end
     %     end
     % end
+
+    % take the natural log of the raw data
+    % sgl1high.PeakAmp = log(sgl1high.PeakAmp);
+    % sgl2high.PeakAmp = log(sgl2high.PeakAmp);
+    % 
+    % sgl1low.PeakAmp = log(sgl1low.PeakAmp);
+    % sgl2low.PeakAmp = log(sgl2low.PeakAmp);
     
     %% let's make a nice figure
     Peakfig = tiledlayout('flow');
@@ -125,8 +141,10 @@ for iLay = 1:length(layers)
     % loudest calls    
     xboxPA = [nanmean(sgl1high.PeakAmp), nanmean(sgl2high.PeakAmp)];
 
-    semPA = [nanstd(sgl1high.PeakAmp)/sqrt(grp1size), ...
-        nanstd(sgl2high.PeakAmp)/sqrt(grp2size)];
+    semPA = [exp(nanstd(sgl1high.PeakAmp))/sqrt(grp1size), ...
+        exp(nanstd(sgl2high.PeakAmp))/sqrt(grp2size)];
+
+    xboxPA = exp(xboxPA);
 
     nexttile
     bar(xboxPA)
@@ -140,8 +158,10 @@ for iLay = 1:length(layers)
     % quietest calls
     xboxPA = [nanmean(sgl1low.PeakAmp), nanmean(sgl2low.PeakAmp)];
 
-    semPA = [nanstd(sgl1low.PeakAmp)/sqrt(grp1size), ...
-        nanstd(sgl2low.PeakAmp)/sqrt(grp2size)];
+    semPA = [exp(nanstd(sgl1low.PeakAmp))/sqrt(grp1size), ...
+        exp(nanstd(sgl2low.PeakAmp))/sqrt(grp2size)];
+
+    xboxPA = exp(xboxPA);
 
     nexttile
     bar(xboxPA)
@@ -211,25 +231,25 @@ for iLay = 1:length(layers)
     PeakStats.stat(count:countto)  = statfill';
 
     % S High
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1high.PeakAmp,sgl2high.PeakAmp,1,'both'); % right tail: group 1 bigger
-    PeakStats.SH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1high.PeakAmp,sgl2high.PeakAmp,1,'both'); % right tail: group 1 bigger
+    PeakStats.SH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % S Low
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1low.PeakAmp,sgl2low.PeakAmp,1,'both'); % right tail: group 1 bigger
-    PeakStats.SL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1low.PeakAmp,sgl2low.PeakAmp,1,'both'); % right tail: group 1 bigger
+    PeakStats.SL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Normalized High vs Low Parent group
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl2high_norm,sgl2low_norm,1,'both'); % right tail: group 1 bigger
-    PeakStats.SHL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl2high_norm,sgl2low_norm,1,'both'); % right tail: group 1 bigger
+    PeakStats.SHL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Averaged
     % High
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1high.PeakAmp,avg2high.PeakAmp,1,'both'); % right tail: group 1 bigger
-    PeakStats.AH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1high.PeakAmp,avg2high.PeakAmp,1,'both'); % right tail: group 1 bigger
+    PeakStats.AH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Low
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1low.PeakAmp,avg2low.PeakAmp,1,'both'); % right tail: group 1 bigger
-    PeakStats.AL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1low.PeakAmp,avg2low.PeakAmp,1,'both'); % right tail: group 1 bigger
+    PeakStats.AL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     
 end
 

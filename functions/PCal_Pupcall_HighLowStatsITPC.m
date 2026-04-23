@@ -7,14 +7,14 @@ bands  = {'Theta' 'Alpha' 'Beta' 'GammaLow' 'GammaHigh'};
 DataT = readtable('VMPandPMP_Pupcall_1_ITPCmean.csv');
 
 % initiate a huge stats table for the lawls (for the stats) - 3 comparisons
-ITPCstat = table('Size',[(length(layers) * length(bands) * 3) 10],...
+ITPCstat = table('Size',[(length(layers) * length(bands) * 3) 11],...
     'VariableTypes',...
             {'string','string','string','double','double','double','double',...
-            'double','double','double'});
+            'double','double','double','double'});
 
 % S = single, A = average, TH = thalamic, CO = cortical, CN = continue
 ITPCstat.Properties.VariableNames = ["Layer", "Osc", "Comp",...
-    "P", "df", "CD","mean1","sd1","mean2","sd2"];
+    "P", "df", "CD","mean1","sd1","mean2","sd2","t"];
 
 cnt = 1;
 
@@ -50,6 +50,10 @@ for iLay = 1:length(layers)
             g2errorhigh = [g2errorhigh nanstd(grp2means)/sqrt(length(grp2means))];
 
         end
+
+        % g1meanshighnorm = g1meanshigh / nanmean(g1meanshigh);
+        g2meanshighnorm = g2meanshigh / nanmean(g1meanshigh);
+
         nexttile
         errorbar(g1meanshigh,g1errorhigh,'o-','CapSize',1)
         hold on
@@ -90,6 +94,9 @@ for iLay = 1:length(layers)
 
         end
 
+        % g1meanslownorm = g1meanslow / nanmean(g1meanslow);
+        g2meanslownorm = g2meanslow / nanmean(g1meanslow);
+
         nexttile
         errorbar(g1meanslow,g1errorlow,'o-','CapSize',1)
         hold on
@@ -112,7 +119,8 @@ for iLay = 1:length(layers)
         
         % now actually get the stats needed:
         [ITPCstat.P(cnt),ITPCstat.df(cnt),ITPCstat.CD(cnt),ITPCstat.mean1(cnt),...
-            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt)] = ...
+            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt),...
+            ITPCstat.t(cnt)] = ...
             myttest2(g1meanshigh',g2meanshigh',1,'both');
         ITPCstat.Layer(cnt)     = layers{iLay};
         ITPCstat.Osc(cnt)       = bands{iOsc};
@@ -120,7 +128,8 @@ for iLay = 1:length(layers)
         cnt = cnt + 1;
 
         [ITPCstat.P(cnt),ITPCstat.df(cnt),ITPCstat.CD(cnt),ITPCstat.mean1(cnt),...
-            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt)] = ...
+            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt),...
+            ITPCstat.t(cnt)] = ...
             myttest2(g1meanslow',g2meanslow',1,'both');
         ITPCstat.Layer(cnt)     = layers{iLay};
         ITPCstat.Osc(cnt)       = bands{iOsc};
@@ -128,8 +137,9 @@ for iLay = 1:length(layers)
         cnt = cnt + 1;
 
         [ITPCstat.P(cnt),ITPCstat.df(cnt),ITPCstat.CD(cnt),ITPCstat.mean1(cnt),...
-            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt)] = ...
-            myttest2(g2meanslow',g2meanshigh',1,'both');
+            ITPCstat.sd1(cnt),ITPCstat.mean2(cnt),ITPCstat.sd2(cnt),...
+            ITPCstat.t(cnt)] = ...
+            myttest2(g2meanslownorm',g2meanshighnorm',1,'both');
         ITPCstat.Layer(cnt)     = layers{iLay};
         ITPCstat.Osc(cnt)       = bands{iOsc};
         ITPCstat.Comp(cnt)      = 'HighLowParents';
@@ -148,6 +158,6 @@ for iLay = 1:length(layers)
     close(h)
 end % layers
 
-writetable(ITPCstat,['VMPvPMP_Pupcall_L' layers{iLay} '_HighLowstats.csv']);
+writetable(ITPCstat,['VMPvPMP_Pupcall_L' layers{iLay} '_HighLowstats_Norm.csv']);
 
 cd(homedir)

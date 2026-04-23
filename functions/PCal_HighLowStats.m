@@ -22,7 +22,7 @@ grp2avg = readtable([Groups{2} '_Pupcall30_AVG_AVRECPeak.csv']);
 
 % set some stuff up
 layers = {'All','II','IV','Va','Vb','VI'};
-statfill = {'p' 'df' 'CD' 'mean1' 'mean2' 'sd1' 'sd2'};
+statfill = {'p' 'df' 'CD' 'mean1' 'mean2' 'sd1' 'sd2','t'};
 color11 = [15/255 63/255 111/255]; %indigo blue
 color12 = [24/255 102/255 180/255]; 
 color21 = [115/255 46/255 61/255]; % wine
@@ -81,6 +81,10 @@ for iLay = 1:length(layers)
         end
     end
     
+    % take the natural log of the raw data
+    % sgl1stk = log(sgl1stk);
+    % sgl2stk = log(sgl2stk);
+
     %% let's make a nice figure
     Peakfig = tiledlayout('flow');
     title(Peakfig,[layers{iLay} ' Channels'])
@@ -203,19 +207,31 @@ for iLay = 1:length(layers)
         nanmean(sgl2h_2), nanmean(sgl1h_3), nanmean(sgl2h_3), nanmean(sgl1h_4),...
         nanmean(sgl2h_4), nanmean(sgl1h_5), nanmean(sgl2h_5)];
 
+    % maxPA = [nanmax(sgl1h_1), nanmax(sgl2h_1), nanmax(sgl1h_2),...
+    %     nanmax(sgl2h_2), nanmax(sgl1h_3), nanmax(sgl2h_3), nanmax(sgl1h_4),...
+    %     nanmax(sgl2h_4), nanmax(sgl1h_5), nanmax(sgl2h_5)];
+    % 
+    % minPA = [nanmin(sgl1h_1), nanmin(sgl2h_1), nanmin(sgl1h_2),...
+    %     nanmin(sgl2h_2), nanmin(sgl1h_3), nanmin(sgl2h_3), nanmin(sgl1h_4),...
+    %     nanmin(sgl2h_4), nanmin(sgl1h_5), nanmin(sgl2h_5)];
 
-    semPA = [nanstd(sgl1h_1)/sqrt(length(sgl1h_1)), ...
-        nanstd(sgl2h_1)/sqrt(length(sgl2h_1)), nanstd(sgl1h_2)/sqrt(length(sgl1h_2)),...
-        nanstd(sgl2h_2)/sqrt(length(sgl2h_2)), nanstd(sgl1h_3)/sqrt(length(sgl1h_3)),...
-        nanstd(sgl2h_3)/sqrt(length(sgl2h_3)),...
-        nanstd(sgl1h_4)/sqrt(length(sgl1h_4)), nanstd(sgl2h_4)/sqrt(length(sgl2h_4)),...
-        nanstd(sgl1h_5)/sqrt(length(sgl1h_5)),...
-        nanstd(sgl2h_5)/sqrt(length(sgl2h_5))];
+    semPA = [exp(nanstd(sgl1h_1))/sqrt(length(sgl1h_1)), ...
+        exp(nanstd(sgl2h_1))/sqrt(length(sgl2h_1)), exp(nanstd(sgl1h_2))/sqrt(length(sgl1h_2)),...
+        exp(nanstd(sgl2h_2))/sqrt(length(sgl2h_2)), exp(nanstd(sgl1h_3))/sqrt(length(sgl1h_3)),...
+        exp(nanstd(sgl2h_3))/sqrt(length(sgl2h_3)),...
+        exp(nanstd(sgl1h_4))/sqrt(length(sgl1h_4)), exp(nanstd(sgl2h_4))/sqrt(length(sgl2h_4)),...
+        exp(nanstd(sgl1h_5))/sqrt(length(sgl1h_5)),...
+        exp(nanstd(sgl2h_5))/sqrt(length(sgl2h_5))];
+
+    xboxPA = exp(xboxPA);
+    % maxPA = exp(maxPA);
+    % minPA = exp(minPA);
 
     nexttile
     bar(xboxPA)
     hold on
     errorbar(xboxPA,semPA,'LineStyle','none')
+    % errorbar(1:length(xboxPA),xboxPA,minPA,maxPA)
     ylabel('Peak Amplitude [mV/mm²]')
     xlabel('Group / Loud Calls')
     xticklabels({[Groups{1} ' ' num2str(call_high(1))] [Groups{2} ' ' num2str(call_high(1))]...
@@ -259,14 +275,15 @@ for iLay = 1:length(layers)
         nanmean(sgl2l_2), nanmean(sgl1l_3), nanmean(sgl2l_3), nanmean(sgl1l_4),...
         nanmean(sgl2l_4), nanmean(sgl1l_5), nanmean(sgl2l_5)];
 
+    semPA = [exp(nanstd(sgl1l_1))/sqrt(length(sgl1l_1)), ...
+        exp(nanstd(sgl2l_1))/sqrt(length(sgl2l_1)), exp(nanstd(sgl1l_2))/sqrt(length(sgl1l_2)),...
+        exp(nanstd(sgl2l_2))/sqrt(length(sgl2l_2)), exp(nanstd(sgl1l_3))/sqrt(length(sgl1l_3)),...
+        exp(nanstd(sgl2l_3))/sqrt(length(sgl2l_3)),...
+        exp(nanstd(sgl1l_4))/sqrt(length(sgl1l_4)), exp(nanstd(sgl2l_4))/sqrt(length(sgl2l_4)),...
+        exp(nanstd(sgl1l_5))/sqrt(length(sgl1l_5)),...
+        exp(nanstd(sgl2l_5))/sqrt(length(sgl2l_5))];
 
-    semPA = [nanstd(sgl1l_1)/sqrt(length(sgl1l_1)), ...
-        nanstd(sgl2l_1)/sqrt(length(sgl2l_1)), nanstd(sgl1l_2)/sqrt(length(sgl1l_2)),...
-        nanstd(sgl2l_2)/sqrt(length(sgl2l_2)), nanstd(sgl1l_3)/sqrt(length(sgl1l_3)),...
-        nanstd(sgl2l_3)/sqrt(length(sgl2l_3)),...
-        nanstd(sgl1l_4)/sqrt(length(sgl1l_4)), nanstd(sgl2l_4)/sqrt(length(sgl2l_4)),...
-        nanstd(sgl1l_5)/sqrt(length(sgl1l_5)),...
-        nanstd(sgl2l_5)/sqrt(length(sgl2l_5))];
+    xboxPA = exp(xboxPA);
 
     nexttile
     bar(xboxPA)
@@ -425,81 +442,81 @@ for iLay = 1:length(layers)
     PeakStats.stat(count:countto)  = statfill';
 
     % S High
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1h_1,sgl2h_1,1,'both'); % right tail: group 1 bigger
-    PeakStats.SH1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1h_1,sgl2h_1,1,'both'); % right tail: group 1 bigger
+    PeakStats.SH1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 2
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1h_2,sgl2h_2,1,'both'); % left, group 2 is bigger
-    PeakStats.SH2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1h_2,sgl2h_2,1,'both'); % left, group 2 is bigger
+    PeakStats.SH2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 3
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1h_3,sgl2h_3,1,'both');
-    PeakStats.SH3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1h_3,sgl2h_3,1,'both');
+    PeakStats.SH3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 4 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1h_4,sgl2h_4,1,'both');
-    PeakStats.SH4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1h_4,sgl2h_4,1,'both');
+    PeakStats.SH4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 5 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1h_5,sgl2h_5,1,'both');
-    PeakStats.SH5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1h_5,sgl2h_5,1,'both');
+    PeakStats.SH5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % S Low
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1l_1,sgl2l_1,1,'both'); % right tail: group 1 bigger
-    PeakStats.SL1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1l_1,sgl2l_1,1,'both'); % right tail: group 1 bigger
+    PeakStats.SL1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 2
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1l_2,sgl2l_2,1,'both'); % left, group 2 is bigger
-    PeakStats.SL2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1l_2,sgl2l_2,1,'both'); % left, group 2 is bigger
+    PeakStats.SL2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 3
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1l_3,sgl2l_3,1,'both');
-    PeakStats.SL3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1l_3,sgl2l_3,1,'both');
+    PeakStats.SL3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 4 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1l_4,sgl2l_4,1,'both');
-    PeakStats.SL4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1l_4,sgl2l_4,1,'both');
+    PeakStats.SL4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 5 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1l_5,sgl2l_5,1,'both');
-    PeakStats.SL5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1l_5,sgl2l_5,1,'both');
+    PeakStats.SL5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % S High normalized to average virgin group and then pooled
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1hr,sgl2hr,1,'both'); % right tail: group 1 bigger
-    PeakStats.SPH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1hr,sgl2hr,1,'both'); % right tail: group 1 bigger
+    PeakStats.SPH(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % S Low normalized to average virgin group and then pooled
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl1lr,sgl2lr,1,'both'); % right tail: group 1 bigger
-    PeakStats.SPL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl1lr,sgl2lr,1,'both'); % right tail: group 1 bigger
+    PeakStats.SPL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Normalized High vs Low Parent group
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(sgl2hr,sgl2lr,1,'both'); % right tail: group 1 bigger
-    PeakStats.PHL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(sgl2hr,sgl2lr,1,'both'); % right tail: group 1 bigger
+    PeakStats.PHL(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Averaged
     % High
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_high(1)),avg2stk(:,call_high(1)),1,'both'); % right tail: group 1 bigger
-    PeakStats.AH1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_high(1)),avg2stk(:,call_high(1)),1,'both'); % right tail: group 1 bigger
+    PeakStats.AH1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 2
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_high(2)),avg2stk(:,call_high(2)),1,'both'); % left, group 2 is bigger
-    PeakStats.AH2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_high(2)),avg2stk(:,call_high(2)),1,'both'); % left, group 2 is bigger
+    PeakStats.AH2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 3
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_high(3)),avg2stk(:,call_high(3)),1,'both');
-    PeakStats.AH3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_high(3)),avg2stk(:,call_high(3)),1,'both');
+    PeakStats.AH3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 4 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_high(4)),avg2stk(:,call_high(4)),1,'both');
-    PeakStats.AH4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_high(4)),avg2stk(:,call_high(4)),1,'both');
+    PeakStats.AH4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 5
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_high(5)),avg2stk(:,call_high(5)),1,'both');
-    PeakStats.AH5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_high(5)),avg2stk(:,call_high(5)),1,'both');
+    PeakStats.AH5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
 
     % Low
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_low(1)),avg2stk(:,call_low(1)),1,'both'); % right tail: group 1 bigger
-    PeakStats.AL1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_low(1)),avg2stk(:,call_low(1)),1,'both'); % right tail: group 1 bigger
+    PeakStats.AL1(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 2
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_low(2)),avg2stk(:,call_low(2)),1,'both'); % left, group 2 is bigger
-    PeakStats.AL2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_low(2)),avg2stk(:,call_low(2)),1,'both'); % left, group 2 is bigger
+    PeakStats.AL2(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 3
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_low(3)),avg2stk(:,call_low(3)),1,'both');
-    PeakStats.AL3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_low(3)),avg2stk(:,call_low(3)),1,'both');
+    PeakStats.AL3(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 4 
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_low(4)),avg2stk(:,call_low(4)),1,'both');
-    PeakStats.AL4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_low(4)),avg2stk(:,call_low(4)),1,'both');
+    PeakStats.AL4(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     % 5
-    [P,DF,CD,mean1,mean2,sd1,sd2] = myttest2(avg1stk(:,call_low(5)),avg2stk(:,call_low(5)),1,'both');
-    PeakStats.AL5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2];
+    [P,DF,CD,mean1,mean2,sd1,sd2,t] = myttest2(avg1stk(:,call_low(5)),avg2stk(:,call_low(5)),1,'both');
+    PeakStats.AL5(count:countto)  = [P;DF;CD;mean1;mean2;sd1;sd2;t];
     
 end
 

@@ -1,5 +1,5 @@
 % it's a t test 2 but with cohen's d, means, stds :3
-function [P,DF,CD,mean1,sd1,mean2,sd2] = myttest2(grp1,grp2,dim,tail,vartype)
+function [P,DF,CD,mean1,sd1,mean2,sd2,t] = myttest2(grp1,grp2,dim,tail,vartype)
 
 if ~exist('dim','var')
     dim = 1;
@@ -14,6 +14,7 @@ end
 % the stuff matlab gives us for free
 [~,P,~,Stats] = ttest2(grp1,grp2,'dim',dim,'tail',tail,'vartype',vartype);
 DF = Stats.df;
+t = Stats.tstat;
 % 
 grp1size = length(grp1);
 grp2size = length(grp2);

@@ -145,6 +145,13 @@ FFTStats.Properties.VariableNames = ["Condition", "Layer", ... % 2
     "stdps2_gammaH","dfps_gammaH","Cohensdps_gammaH",... % 7 - 42 - 168
     ];
 
+FFTData = table('Size',[20000 10], 'VariableTypes', {'string',...
+    'string','string','double','double','double','double','double',...
+    'double','double'});
+FFTData.Properties.VariableNames = ["Group","Condition","Layer",...
+    "trial","delta","theta","alpha","beta","lowgam","highgam"];
+count = 1;
+
 for iLay = 1:length(params.layers)
 
     FFTfig = tiledlayout('flow');
@@ -312,6 +319,33 @@ for iLay = 1:length(params.layers)
     DS2 = mean(grp2S(delta_range,:),1);
     [dss_P,dss_DF,dss_Cohd,dssmean1,dssstd1,dssmean2,dssstd2] = ...
         myttest2(DS1',DS2',1,'both');
+
+    % fill the data table
+    g1size = length(GHS1); g2size = length(GHS2);
+    % group 1
+    FFTData.Group(count:count+g1size-1)     = repmat(params.groups{1},[g1size,1]);
+    FFTData.Condition(count:count+g1size-1) = repmat("Spontaneous",[g1size,1]);
+    FFTData.Layer(count:count+g1size-1)     = repmat(params.layers{iLay},[g1size,1]);
+    FFTData.trial(count:count+g1size-1)     = repmat((1:60)',[g1size/60,1]);
+    FFTData.delta(count:count+g1size-1)     = DS1';
+    FFTData.theta(count:count+g1size-1)     = TS1';
+    FFTData.alpha(count:count+g1size-1)     = AS1';
+    FFTData.beta(count:count+g1size-1)      = BS1';
+    FFTData.lowgam(count:count+g1size-1)    = GLS1';
+    FFTData.highgam(count:count+g1size-1)   = GHS1';
+    count = count+g1size;
+    % group 1
+    FFTData.Group(count:count+g2size-1)     = repmat(params.groups{2},[g2size,1]);
+    FFTData.Condition(count:count+g2size-1) = repmat("Spontaneous",[g2size,1]);
+    FFTData.Layer(count:count+g2size-1)     = repmat(params.layers{iLay},[g2size,1]);
+    FFTData.trial(count:count+g2size-1)     = repmat((1:60)',[g2size/60,1]);
+    FFTData.delta(count:count+g2size-1)     = DS2';
+    FFTData.theta(count:count+g2size-1)     = TS2';
+    FFTData.alpha(count:count+g2size-1)     = AS2';
+    FFTData.beta(count:count+g2size-1)      = BS2';
+    FFTData.lowgam(count:count+g2size-1)    = GLS2';
+    FFTData.highgam(count:count+g2size-1)   = GHS2';
+    count = count+g2size;
         
     S_Means = [dssmean1 dssmean2 tssmean1 tssmean2 assmean1 assmean2 ...
         bssmean1 bssmean2 glssmean1 glssmean2 ghssmean1 ghssmean2];
@@ -329,7 +363,7 @@ for iLay = 1:length(params.layers)
         {'B'} {num2str(bss_P)} {'GL'} {num2str(glss_P)} {'GH'} {num2str(ghss_P)}])
     title(['L ' params.layers{iLay} ' ' params.groups{2} ' vs ' params.groups{1} ' Resting'])
     
-    % fill the table
+    % fill the stats table
     FFTStats.Layer(iLay)     = params.layers{iLay};
     % delta
     FFTStats.pss_delta(iLay) = dss_P; FFTStats.Cohensdss_delta(iLay) = dss_Cohd;
@@ -524,6 +558,33 @@ for iLay = 1:length(params.layers)
     FFTStats.dfps2_gammaH(iLay) = ghps2_DF;
 
     % Finally, difference between groups at pupcall / spont
+    % fill the data table
+    g1size = length(GHP1); g2size = length(GHP2);
+    % group 1
+    FFTData.Group(count:count+g1size-1)     = repmat(params.groups{1},[g1size,1]);
+    FFTData.Condition(count:count+g1size-1) = repmat(Comparison,[g1size,1]);
+    FFTData.Layer(count:count+g1size-1)     = repmat(params.layers{iLay},[g1size,1]);
+    FFTData.trial(count:count+g1size-1)     = vertcat((1:20)', repmat((1:50)',[(g1size-20)/50,1])); %repmat((1:50)',[(g1size-20)/50,1]); % altered for VMP02 having 20
+    FFTData.delta(count:count+g1size-1)     = DP1';
+    FFTData.theta(count:count+g1size-1)     = TP1';
+    FFTData.alpha(count:count+g1size-1)     = AP1';
+    FFTData.beta(count:count+g1size-1)      = BP1';
+    FFTData.lowgam(count:count+g1size-1)    = GLP1';
+    FFTData.highgam(count:count+g1size-1)   = GHP1';
+    count = count+g1size;
+    % group 2
+    FFTData.Group(count:count+g2size-1)     = repmat(params.groups{2},[g2size,1]);
+    FFTData.Condition(count:count+g2size-1) = repmat(Comparison,[g2size,1]);
+    FFTData.Layer(count:count+g2size-1)     = repmat(params.layers{iLay},[g2size,1]);
+    FFTData.trial(count:count+g2size-1)     = vertcat((1:50)',(1:50)',(1:50)',(1:24)',(1:50)',(1:50)',(1:50)',(1:50)'); % repmat((1:50)',[g2size/50,1]);
+    FFTData.delta(count:count+g2size-1)     = DP2';
+    FFTData.theta(count:count+g2size-1)     = TP2';
+    FFTData.alpha(count:count+g2size-1)     = AP2';
+    FFTData.beta(count:count+g2size-1)      = BP2';
+    FFTData.lowgam(count:count+g2size-1)    = GLP2';
+    FFTData.highgam(count:count+g2size-1)   = GHP2';
+    count = count+g2size;
+
     [dps_P,dps_DF,dps_Cohd,dpsmean1,dpsstd1,dpsmean2,dpsstd2] = ...
         myttest2(DP1',DP2',1,'both');
     [tps_P,tps_DF,tps_Cohd,tpsmean1,tpsstd1,tpsmean2,tpsstd2] = ...
@@ -593,5 +654,8 @@ end
 
 % save table 
 writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' type '_' Comparison  '_FFTStats.csv'])
+toDelete = FFTData.trial == 0;
+FFTData(toDelete,:) = [];
+writetable(FFTData,[params.groups{1} 'v' params.groups{2} '_' type '_' Comparison  '_FFTData.csv'])
 
 cd(homedir)
