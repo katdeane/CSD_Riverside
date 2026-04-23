@@ -39,6 +39,9 @@ end
 if contains(file,'PMA01')
     data = chaninterp(data, 'linextra', 9, 1:length(channels));
 end
+if contains(file,'CKH02')
+    data = chaninterp(data, 'linextra', 15, 1:length(channels));
+end
 
 % tiledlayout('flow')
 % nexttile
