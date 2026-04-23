@@ -1,4 +1,4 @@
-function DataOut = icutbatCFdata(file, StimIn, Data, BL, stimdur, ITI)
+function DataOut = icutbatCFdata(StimIn, Data, BL, stimdur, ITI)
 % this function takes any type of data input and returns truncated epochs
 % sorted by stimulus
 
@@ -27,7 +27,7 @@ stimITI = stimdur+ITI; % ms
 %% stack or source the pseudorandom list
 
 tones = readmatrix('CFtones2025-11-06_Bat.txt')';
-level = readmatrix('CFlevel2025-11-06_Bat.txt')';
+level = readmatrix('CFlevel2025-11-06_Bat.txt')'; %NOTE that from BAT14, dB was shifted down by 20
 
 % this is an issue for gapASSR where I have to manually stop the stimuli
 % and I sometimes miss that it's finished until a few stim later.

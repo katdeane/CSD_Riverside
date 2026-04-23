@@ -27,7 +27,6 @@ function DynamicCSD(homedir, Condition, Groups, cbar, type)
 cd(homedir)
 
 for iGro = 1:length(Groups)    
-    
     run([Groups{iGro} '.m']); % brings in animals, channels, Layer, and Cond
     
     %% Display conditions to verify correct list
@@ -87,7 +86,7 @@ for iGro = 1:length(Groups)
                         sngtrlLFP = icutGAPdata(file, StimIn, DataIn, stimList, ...
                             BL, stimDur, stimITI, thisTag);
                     elseif matches(thisTag,'CF')
-                        sngtrlLFP = icutbatCFdata(file, StimIn, DataIn, ...
+                        sngtrlLFP = icutbatCFdata(StimIn, DataIn, ...
                             BL, stimDur, stimITI);
                     else
                         sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
