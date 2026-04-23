@@ -33,8 +33,15 @@ stimITI = stimdur+ITI; % ms
 if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
         || matches(thistype, 'gapASSRRate')
 
-    if contains(file, 'VMA') || contains(file,'PMA')
+    if contains(file, 'VMA') || contains(file,'PMA') || contains(file,'CWH') ...
+        || contains(file,'CKH') || contains(file,'CWW') || contains(file,'CKO')
         stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
+    elseif contains(file,'BAT') 
+        if matches(thistype, 'Tonotopy')
+            stimList = readmatrix('tonotopy_BatNSR.txt');
+        else
+            stimList = readmatrix(['2025_' thistype '.txt']);
+        end
     else
         % pre-psuedorandomized tone list for this subject
         stimList = readmatrix([file(1:6) thistype '.txt'])'; % per subject

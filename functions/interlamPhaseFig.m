@@ -1,4 +1,4 @@
-function interlamPhaseFig(homedir,params)
+function interlamPhaseFig(homedir,group,params)
 
 % write the stuff here
 
@@ -9,7 +9,7 @@ BL = 399;
 for iCond = 1:length(params.condList) 
 
     [stimList, ~, ~, ~, ~] = ...
-        StimVariable(params.condList{iCond},1);
+        StimVariable(params.condList{iCond},1,'Awake');
 
     if matches(params.condList{iCond},'gapASSR')
         delay = 250; % ms of noise before first gaps
@@ -35,7 +35,7 @@ for iCond = 1:length(params.condList)
     for iStim = 1:length(stimList) 
 
         cd (homedir); cd output; cd InterLam_PhaseCo
-        input = dir(['InterLam_' params.condList{iCond}...
+        input = dir(['InterLam_' group '_' params.condList{iCond}...
             '_' num2str(stimList(iStim)) '.mat']);
         % should always just be one
         load(input.name,'dTab')

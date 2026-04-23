@@ -64,7 +64,8 @@ stimITI = stimdur+ITI; % ms
 %% stack or source the pseudorandom list
 
 % pre-psuedorandomized tone list for this subject
-if contains(file, 'VMA') || contains(file,'PMA')
+if contains(file, 'VMA') || contains(file,'PMA') || contains(file,'CWH') ...
+        || contains(file,'CKH') || contains(file,'CWW') || contains(file,'CKO')
     stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
 else
     % pre-psuedorandomized tone list for this subject
