@@ -20,7 +20,7 @@ if ~exist('n_SamplesPreevent','var')
 end
 
 % preallocate your outputs
-sngtrlCSD       = cell(1,length(sngtrlLFP));
+sngtrlCSD       = cell(size(sngtrlLFP,1),size(sngtrlLFP,2));
 AvrecCSD        = sngtrlCSD;
 sngtrlAvrecCSD  = sngtrlCSD;
 AvgRelResCSD    = sngtrlCSD;
@@ -28,37 +28,39 @@ singtrlRelResCSD= sngtrlCSD;
 
 %% Generate output
 % variable to look through list of LFPs
-for iLFP = 1:length(sngtrlLFP)
+for irow = 1:size(sngtrlLFP,1)
+    for icol = 1:length(sngtrlLFP)
 
-    % channel x time (ms) x trial
-    curLFP = sngtrlLFP{iLFP};
+        % channel x time (ms) x trial
+        curLFP = sngtrlLFP{irow,icol};
 
-    for itrial = 1:size(curLFP,3)
+        for itrial = 1:size(curLFP,3)
 
-        curtrial = curLFP(:,:,itrial);
-        % correct the baseline based on the baseline
-        basecorrtrial = base_corr(curtrial,BL,2);
+            curtrial = curLFP(:,:,itrial);
+            % correct the baseline based on the baseline
+            basecorrtrial = base_corr(curtrial,BL,2);
 
-        % CSD
+            % CSD
 
-        paddit = padd_linex(basecorrtrial,paddsiz,1);      % create padding
-        hammit = filt_Hamm(paddit,hammsiz,1);       % apply hamming filter
-        curCSDtrial = (get_csd(hammit,1,chan_dist,1))*10^3; % make csd
-        sngtrlCSD{iLFP}(:,:,itrial) = curCSDtrial;
-        % AvgRecCSD and RelResCSD
-        Outputs = get_Harding(curCSDtrial,1);
-        % outputs var1 = absolute residual, var2 = average absolute
-        % residuals, var3 = relative residuals, var4 = average rectified,
-        % var5 = channel-wise relative residuals, var6 = contribution of
-        % channels to relative residuals (it's an old script...)
+            paddit = padd_linex(basecorrtrial,paddsiz,1);      % create padding
+            hammit = filt_Hamm(paddit,hammsiz,1);       % apply hamming filter
+            curCSDtrial = (get_csd(hammit,1,chan_dist,1))*10^3; % make csd
+            sngtrlCSD{irow,icol}(:,:,itrial) = curCSDtrial;
+            % AvgRecCSD and RelResCSD
+            Outputs = get_Harding(curCSDtrial,1);
+            % outputs var1 = absolute residual, var2 = average absolute
+            % residuals, var3 = relative residuals, var4 = average rectified,
+            % var5 = channel-wise relative residuals, var6 = contribution of
+            % channels to relative residuals (it's an old script...)
 
-        sngtrlAvrecCSD{iLFP}(:,itrial)   = Outputs.var4';
-        singtrlRelResCSD{iLFP}(:,itrial) = Outputs.var3';
+            sngtrlAvrecCSD{irow,icol}(:,itrial)   = Outputs.var4';
+            singtrlRelResCSD{irow,icol}(:,itrial) = Outputs.var3';
+
+        end
+
+        AvrecCSD{irow,icol}(:)     = mean(sngtrlAvrecCSD{irow,icol},2);
+        AvgRelResCSD{irow,icol}(:) =  mean(singtrlRelResCSD{irow,icol},2);
 
     end
-
-    AvrecCSD{iLFP}(:)     = mean(sngtrlAvrecCSD{iLFP},2);
-    AvgRelResCSD{iLFP}(:) =  mean(singtrlRelResCSD{iLFP},2);
-
 end
 
