@@ -26,7 +26,7 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'AWT' 'AKO' 'CKH'};  
+Groups = {'FirstPass'};  %'AWT' 'AKO' 'CKH'
 % Condition = {'NoiseBurst'};
 % Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
