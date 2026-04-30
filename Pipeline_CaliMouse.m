@@ -164,6 +164,9 @@ PCal_PupcallStatsITPC(homedir,'NoiseBurst_50',1)
 PCal_PupcallStatsITPC(homedir,'NoiseBurst_70',1)
 PCal_NoiseBurst_HighLowStatsITPC(homedir,'20','50')
 
+PCal_Pupcall_HighLowStatsITPC_ANOVA(homedir,[18,48,45,49,53],[7,30,16,31,57])
+PCal_NoiseBurst_HighLowStatsITPC_ANOVA(homedir,'20','50')
+
 % correlate gap ASSR results with loud and quiet calls and noise
 gapASSRcorr_ITPCmean(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57])
 

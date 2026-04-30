@@ -38,6 +38,6 @@ Freq = vertcat(repmat("theta",70,1), repmat("alpha",70,1),...
 
 
 % Set up anova. Factors: group, layer, click-freq
-[p, tbl] = anovan(y,{Group Condition Layer Freq},'model','interaction','varnames',{'Group','Condition','Layer','Freq'});
+[p, tbl] = anovan(y,{Group Condition Layer Freq},'model','full','varnames',{'Group','Condition','Layer','Freq'});
 
 save('ANOVA_NB_HighLow_ITPC.mat','p')

@@ -1,4 +1,4 @@
-function ANOVA_PCal_Pupcall_HighLowStatsITPC(homedir,call_high,call_low)
+function PCal_Pupcall_HighLowStatsITPC_ANOVA(homedir,call_high,call_low)
 
 cd(homedir)
 
@@ -53,6 +53,6 @@ Freq = vertcat(repmat("theta",350,1), repmat("alpha",350,1),...
 
 
 % Set up anova. Factors: group, layer, click-freq
-[p, tbl] = anovan(y,{Group Condition Layer Freq},'model','interaction','varnames',{'Group','Condition','Layer','Freq'});
+[p, tbl] = anovan(y,{Group Condition Layer Freq},'model','full','varnames',{'Group','Condition','Layer','Freq'});
 
 save('ANOVA_PC_HighLow_ITPC.mat','p')

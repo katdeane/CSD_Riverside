@@ -86,6 +86,6 @@ Layer = vertcat(II1high.Layer,IV1high.Layer,Va1high.Layer,Vb1high.Layer,VI1high.
     II2low.Layer,IV2low.Layer,Va2low.Layer,Vb2low.Layer,VI2low.Layer);
 
 % Set up anova. Factors: group, layer, click-freq
-p = anovan(y,{Group Condition Layer},'model','interaction','varnames',{'Group','Condition','Layer'});
+p = anovan(y,{Group Condition Layer},'model','full','varnames',{'Group','Condition','Layer'});
 
 save('ANOVA_NB_HighLow_Sgl_log.mat','p')
