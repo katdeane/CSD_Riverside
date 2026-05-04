@@ -65,7 +65,9 @@ stimITI = stimdur+ITI; % ms
 
 % pre-psuedorandomized tone list for this subject
 if contains(file, 'VMA') || contains(file,'PMA') || contains(file,'CWH') ...
-        || contains(file,'CKH') || contains(file,'CWW') || contains(file,'CKO')
+        || contains(file,'CKH') || contains(file,'CWW') || contains(file,'CKO')...
+        || contains(file,'AWT18') || contains(file,'AWT20') || contains(file,'AWT25')...
+        || contains(file,'AWT26') || contains(file,'AWT27') || contains(file,'AWT28')
     stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
 else
     % pre-psuedorandomized tone list for this subject

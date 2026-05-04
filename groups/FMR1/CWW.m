@@ -1,5 +1,5 @@
 %%% Group CWW = Male Wild Type Het (FMR1 CNR1 C57 B6/J)
-animals = {'CWW01','CWW04','CWW05','CWW08'};
+animals = {'CWW01','CWW04','CWW05','CWW08'}; %'CWW10','CWW12','CWW13','CWW14','CWW16'
 
 % ruled out:
 % CWW02, 03, 06, 07 - no sound response 

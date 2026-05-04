@@ -26,9 +26,9 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
 % set consistently needed variables
-Groups = {'FirstPass'};  %'AWT' 'AKO' 'CKH'
+Groups = {'AWT' 'AKO' 'CKH'};  %'AWT' 'AKO' 'CKH'
 % Condition = {'NoiseBurst'};
-% Condition = {'NoiseBurst' 'ClickTrain' 'gapASSR'};
+% Condition = {'NoiseBurst' 'ClickTrain'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoiseBurst'};
 
@@ -143,15 +143,15 @@ PermutationTest_Area(homedir,'Phase',params,{'CKH','AKO'},yespermute,'Awake')
 %% Fast fourier transform of the spontaneous data 
 runFftCsd(homedir,params,'Spontaneous')
 plotFFT_3grp(homedir,params,'Spontaneous','RE')
-params.groups = {'AWT','AKO'}; % for permutation test
-runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','RE')
-params.groups = {'AWT','CKH'}; % for permutation test
-runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','RE')
-params.groups = {'CKH','AKO'}; % for permutation test
-runFftCsd(homedir,params,'Spontaneous')
-plotFFT(homedir,params,'Spontaneous','RE')
+% params.groups = {'AWT','AKO'}; % for permutation test
+% runFftCsd(homedir,params,'Spontaneous')
+% plotFFT(homedir,params,'Spontaneous','RE')
+% params.groups = {'AWT','CKH'}; % for permutation test
+% runFftCsd(homedir,params,'Spontaneous')
+% plotFFT(homedir,params,'Spontaneous','RE')
+% params.groups = {'CKH','AKO'}; % for permutation test
+% runFftCsd(homedir,params,'Spontaneous')
+% plotFFT(homedir,params,'Spontaneous','RE')
 
 % for the LFP side
 % runFftLfp(homedir,params,'Spontaneous')
@@ -163,14 +163,14 @@ plotFFT(homedir,params,'Spontaneous','RE')
 % plotFFT(homedir,params,'NoiseBurstSpont','RE')
 
 %% Interlaminar Phase Coherence
-LaminarPhaseLocking(homedir,'AKO',params)
-interlamPhaseFig(homedir,'AKO',params)
-
-LaminarPhaseLocking(homedir,'AWT',params)
-interlamPhaseFig(homedir,'AWT',params)
-
-LaminarPhaseLocking(homedir,'CKH',params)
-interlamPhaseFig(homedir,'CKH',params)
+% LaminarPhaseLocking(homedir,'AKO',params)
+% interlamPhaseFig(homedir,'AKO',params)
+% 
+% LaminarPhaseLocking(homedir,'AWT',params)
+% interlamPhaseFig(homedir,'AWT',params)
+% 
+% LaminarPhaseLocking(homedir,'CKH',params)
+% interlamPhaseFig(homedir,'CKH',params)
 
 %% Phase amplitude coupling
 
@@ -222,6 +222,8 @@ for iCond = 1:length(Condition)
     Tracesorderedfig_3grp(homedir, Groups, Condition{iCond},'FMR1')
 end
 
+Tracesorderedfig_3grp_zoomed(homedir,Groups,'FMR1')
+
 % run a permutation test and save the output results (no figures)
 % permtest_PAC(homedir,'CSD')
 CWTorderedfigs(homedir, 'AWTvAKO', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'FMR1')
@@ -250,3 +252,6 @@ CWTorderedfigs(homedir, 'CKHvAKO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'FMR
 CWTorderedfigs(homedir, 'CKHvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR1')
 CWTorderedfigs(homedir, 'CKHvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
 CWTorderedfigs(homedir, 'CKHvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
+
+%% StatsoutforR - project specific
+prepDataforStatsAwakeFmr1(homedir)
