@@ -1,1 +1,1 @@
-helloworld
+helloworld = 1;
