@@ -80,7 +80,7 @@ for iSub = 1:length(animals)
                 else
                     xlim([300 stimDur+500])
                 end
-                clim([0 1])
+                clim([0 0.6])
                 title(name)
                 colorbar
 
@@ -90,7 +90,7 @@ for iSub = 1:length(animals)
                 set(h, 'PaperOrientation', 'landscape');
                 set(h, 'PaperUnits', 'centimeters');
                 savefig(name)
-                saveas(gcf, ['Observed ' whichtest ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) thisUnit ' ' params.layers{iLay} '.pdf'])
+                % saveas(gcf, [name '.pdf'])
                 close(h)
 
 

@@ -212,6 +212,17 @@ Group_single_CSD(homedir, 'AWT', 'AWT', 'Spontaneous',  [-0.2 0.2], ncolum)
 Group_single_CSD(homedir, 'AKO', 'AKO', 'Spontaneous',  [-0.2 0.2], ncolum)
 % Group_single_CSD(homedir, 'CKH', 'CKH', 'Spontaneous',  [-0.2 0.2], ncolum)
 
+CWTFigs(homedir,'Phase',params,'AWT','Awake')
+CWTFigs(homedir,'Phase',params,'AKO','Awake')
+CWTFigs(homedir,'Phase',params,'CKH','Awake')
+
+Group_single_CWT(homedir, 'AWT', 'NoiseBurst',  [0 0.7])
+Group_single_CWT(homedir, 'AWT', 'ClickTrain',  [0 0.7])
+Group_single_CWT(homedir, 'AKO', 'NoiseBurst',  [0 0.7])
+Group_single_CWT(homedir, 'AKO', 'ClickTrain',  [0 0.7])
+Group_single_CWT(homedir, 'CKH', 'NoiseBurst',  [0 0.7])
+Group_single_CWT(homedir, 'CKH', 'ClickTrain',  [0 0.7])
+
 for iGro = 1:length(Groups)
     for iCond = 1:length(Condition)
         CSDorderedfigs(homedir,Groups{iGro},Condition{iCond},[1 21],'FMR1')
