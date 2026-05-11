@@ -1,9 +1,9 @@
-function StrengthxTime(homedir, Group, Condition)
+function StrengthxTime(homedir, Group, Condition, type)
 
 %% pull relevant data 
 
 [stimList, thisUnit, ~, ~, ~] = ...
-    StimVariable(Condition,1);
+    StimVariable(Condition,1,type);
 
 % load current table, includes all group data for this condition
 cd(homedir);cd output; cd TracePeaks

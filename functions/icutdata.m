@@ -8,7 +8,7 @@ end
 
 %% get the stimulus onsets
 
-threshold = 0.09; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
+threshold = 0.05; %microvolts, constant input of at least 0.1 through analog channel from RZ6 to XDAC 
 location = threshold <= StimIn; % 1 is above, 0 is below 
 
 % do we need to throw out the first trial in this case? 
@@ -32,10 +32,23 @@ stimITI = stimdur+ITI; % ms
 
 if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
         || matches(thistype, 'gapASSRRate')
-    % pre-psuedorandomized tone list for this subject
-    stimList = readmatrix([file(1:6) thistype '.txt'])';
-    shortlist = unique(stimList);
-    shortlist = shortlist(shortlist ~= 0);
+
+    if contains(file, 'VMA') || contains(file,'PMA') || contains(file,'CWH') ...
+        || contains(file,'CKH') || contains(file,'CWW') || contains(file,'CKO') ...
+        || contains(file,'AWT18') || contains(file,'AWT20') || contains(file,'AWT25')...
+        || contains(file,'AWT26') || contains(file,'AWT27') || contains(file,'AWT28')
+        stimList = readmatrix(['2025_' thistype '.txt'])'; % universal list
+    elseif contains(file,'BAT') 
+        if matches(thistype, 'Tonotopy')
+            stimList = readmatrix('tonotopy_BatNSR.txt');
+        else
+            stimList = readmatrix(['2025_' thistype '.txt']);
+        end
+    else
+        % pre-psuedorandomized tone list for this subject
+        stimList = readmatrix([file(1:6) thistype '.txt'])'; % per subject
+    end
+    shortlist = unique(stimList(2:end)); % first row is unread
 
     % click list is of duration between clicks so 8.33 = 120 Hz
     % we want 1 hz (1000) first:
@@ -46,12 +59,18 @@ if matches(thistype, 'Tonotopy') || matches(thistype, 'ClickRate') ...
     % this should match or something is wrong
     if length(shortlist) ~= length(checkStimList); error('stimlist doesnt match'); end
 
+elseif matches(thistype, 'Mask')
+
+    stimList = readmatrix('Masks4.txt')';
+    shortlist = unique(stimList(2:end)); % first row is unread
+
 elseif matches(thistype, 'noise') % noise bursts
     
-    stimList = zeros(1,length(checkStimList) * ...
-        (ceil((length(onsets)+1)/length(checkStimList))));
-    for iextend = 1:ceil((length(stimList)+1)/length(checkStimList))
-        stimList(8*iextend-7:8*iextend) = checkStimList;
+    listlength = length(checkStimList);
+    stimList = zeros(1,listlength * ...
+        (ceil((length(onsets)+1)/listlength)));
+    for iextend = 1:ceil((length(stimList)+1)/listlength)
+        stimList(listlength*iextend-(listlength-1):listlength*iextend) = checkStimList;
     end
     shortlist = checkStimList;
     
@@ -67,7 +86,11 @@ end
 % RPvdsEx always skips producing the first stim, which in this case is set to 0
 % and do we also need to remove that first stim?
 if throwoutfirst == 1
-    stimList = stimList(3:length(onsets)+2);
+    if (length(onsets)+2) > length(stimList)
+        stimList = stimList(3:length(onsets)+1);
+    else
+        stimList = stimList(3:length(onsets)+2);
+    end
 elseif throwoutfirst == 0
     if (length(onsets)+1) > length(stimList)
         stimList = stimList(2:length(onsets));

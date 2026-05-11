@@ -183,6 +183,12 @@ for iAn = 1:length(animals)
                 Layrep{centVb} = 'centerVb';
                 Layrep{centVI} = 'centerVI';
 
+                for icheck = 1:length(Layrep)
+                    if isempty(Layrep{icheck})
+                        Layrep{icheck} = 'NaN';
+                    end
+                end
+
                 PAC.Group(count:countto,1)       = grouplist;
                 PAC.Animal(count:countto,1)      = animallist;
                 PAC.StimFreq(count:countto,1)    = tabfrqlist;

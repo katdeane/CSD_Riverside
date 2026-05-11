@@ -1,4 +1,4 @@
-function GroupPupcallCSD(homedir,Group,cbar)
+function GroupPupcallCSD(homedir,Group,cbar,type)
 
 cd(homedir);
 
@@ -17,7 +17,7 @@ subjects = length(animals);
 
 % The next part depends on the stimulus, pull the relevant details
 [~, ~, stimDur, stimITI, ~] = ...
-    StimVariable('Pupcall30',1);
+    StimVariable('Pupcall30',1,type);
 
 % put the time axis together with the above info
 timeaxis = BL + stimDur + stimITI;

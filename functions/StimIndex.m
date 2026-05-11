@@ -12,7 +12,10 @@ function index = StimIndex(dataList,Cond,Subject,Condition)
 
 
 if matches(Condition,'NoiseBurst')
-    index =  length(Cond.(Condition){Subject});
+    % check that noiseburst measurement taken (MKO14b)
+    if ~isempty(Cond.(Condition){Subject}{1,1}) 
+        index =  length(Cond.(Condition){Subject});
+    end
 else
     for idirtytrick = 1:length(dataList)
         if exist('index','var')

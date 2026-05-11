@@ -1,4 +1,4 @@
-function DynamicCSD(homedir, Condition, cbar)
+function DynamicCSD(homedir, Condition, Groups, cbar, type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -22,16 +22,12 @@ function DynamicCSD(homedir, Condition, cbar)
 %   calls homebrew functions: imakeIndexer, FileReaderLFP, StimVariable, 
 %   icutdata, icutsinglestimdata, SingleTrialCSD, sink_dura
 
-cd(homedir); cd groups;
 
 %% Load in
-input = dir('*.m');
-entries = length(input);
 cd(homedir)
 
-for i1 = 1:entries    
-    
-    run(input(i1).name); % brings in animals, channels, Layer, and Cond
+for iGro = 1:length(Groups)    
+    run([Groups{iGro} '.m']); % brings in animals, channels, Layer, and Cond
     
     %% Display conditions to verify correct list
     disp(Condition)
@@ -59,32 +55,56 @@ for i1 = 1:entries
                 % all of the above is to indicate which animal and
                 % condition is being analyzed
                 
-                if exist([name '_' measurement '_LFP.xdat.json'],'file')
-                    file = [name '_' measurement '_LFP'];
+                if exist([name(1:5) '_' measurement '_LFP.xdat.json'],'file')
+                    file = [name(1:5) '_' measurement '_LFP'];
                     disp(['Analyzing animal: ' file])
                     tic
-                    [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}));
+                    
+                    % pull out the actual LFP and stimulus data, a
+                    % continuous file of the channels in recording
+                    if matches(file,'PMP09_05_LFP')
+                        [StimIn, DataIn] = FileReaderLFPresamp(file,str2num(channels{iA}),type);
+                    else
+                        [StimIn, DataIn] = FileReaderLFP(file,str2num(channels{iA}),type);
+                    end
 
                     % The next part depends on the stimulus; pull the
                     % relevant variables
-                    [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
-                        StimVariable(Condition{iStimType},1);
+                    if matches(animals(iA),'FOS01')
+                        [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                            StimVariable(Condition{iStimType},1,'Awake1');
+                    else
+                        [stimList, thisUnit, stimDur, stimITI, thisTag] = ...
+                            StimVariable(Condition{iStimType},1,type);
+                    end
 
                     % and slice the data
                     if matches(thisTag,'single') || matches(thisTag,'spont')
                         sngtrlLFP = icutsinglestimdata(StimIn, DataIn, BL, ...
                             stimDur, stimITI, thisTag);
+                    elseif matches(thisTag,'gapASSRRate') 
+                        sngtrlLFP = icutGAPdata(file, StimIn, DataIn, stimList, ...
+                            BL, stimDur, stimITI, thisTag);
+                    elseif matches(thisTag,'CF')
+                        sngtrlLFP = icutbatCFdata(StimIn, DataIn, ...
+                            BL, stimDur, stimITI);
                     else
                         sngtrlLFP = icutdata(file, StimIn, DataIn, stimList, ...
-                        BL, stimDur, stimITI, thisTag);
+                            BL, stimDur, stimITI, thisTag);
                     end
 
                     clear DataIn StimIn % these are too big to keep around
                     
+                    % line noise notch applied to LFP data before processing 
+                    if matches(type,'Awake') 
+                        sngtrlLFP = LineNoiseNotch(sngtrlLFP);
+                    end
+
                     %% All the data from the LFP now (sngtrl = single trial)
                     [sngtrlCSD, AvrecCSD, sngtrlAvrecCSD, AvgRelResCSD,...
                         singtrlRelResCSD] = SingleTrialCSD(sngtrlLFP,BL);
                     
+
                     %In case needed to delete empty columns to have the 
                     %correct amount of stimuli present: 
                     %AvgCSD = AvgCSD(~cellfun('isempty', AvgCSD')); AvgCSD=AvgCSD(1:length(frqz));
@@ -98,49 +118,55 @@ for i1 = 1:entries
                     Layers = fieldnames(L); 
                     
                     %Generate Sink Boxes
-                    [~,~,~,RMS,~,~,~,~,~] =...
+                    [DUR,ONSET,OFFSET,RMS,SINGLE_RMS,PAMP,SINGLE_SinkPeak,PLAT,SINGLE_PeakLat] =...
                         sink_dura(L,sngtrlCSD,BL);                        
                     
                     %% Plots 
                     disp('Plotting CSD with sink detections')
                     
                     cd (homedir); cd figures;
-                    if ~exist(['Single_' input(i1).name(1:end-2)],'dir')
-                        mkdir(['Single_' input(i1).name(1:end-2)]);
+                    if ~exist(['Single_' Groups{iGro}],'dir')
+                        mkdir(['Single_' Groups{iGro}]);
                     end
-                    cd (['Single_' input(i1).name(1:end-2)])
+                    cd (['Single_' Groups{iGro}])
     
                     CSDfig = tiledlayout('flow');
-                    title(CSDfig,[file(1:5) ' ' Condition{iStimType}...
+                    title(CSDfig,[name ' ' Condition{iStimType}...
                         ' ' num2str(iStimCount) ' CSD'])
                     xlabel(CSDfig, 'time [ms]')
                     ylabel(CSDfig, 'depth [channels]')
                     
                     for istim = 1:length(stimList)
                         nexttile
-                        imagesc(mean(sngtrlCSD{istim},3))
+                        imagesc(nanmean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
                         caxis(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
+                        yline(L.II(end)); yline(L.IV(end)); 
+                        yline(L.Va(end)); yline(L.Vb(end));
+                        if L.VI(end) > size(sngtrlCSD,1)
+                            yline(L.VI(end));
+                        end
                     end
                     
                     colorbar
                     h = gcf;
                     savefig(h,[name '_' measurement '_CSD' ],'compact')
+                    % saveas(h,[name '_' measurement '_CSD.png' ])
                     close (h)
 
                     % determine BF of each layer from 1st sink's rms
                     clear BF_II BF_IV BF_Va BF_Vb BF_VI
                     for ilay = 1:length(Layers)
                         
-                        RMSlist = nan(1,length(RMS));
-                        for istim = 1:length(RMS)
-                            RMSlist(istim) = nanmax(RMS(istim).(Layers{ilay}));
+                        PAMPlist = nan(1,length(PAMP));
+                        for istim = 1:length(PAMP)
+                            PAMPlist(istim) = nanmax(PAMP(istim).(Layers{ilay}));
                         end
                         
-                        BF = find(RMSlist == nanmax(RMSlist));
+                        BF = find(PAMPlist == nanmax(PAMPlist));
 
                         if contains(Layers{ilay},'II')
                             BF_II = stimList(BF);
@@ -163,23 +189,163 @@ for i1 = 1:entries
                     Data(CondIDX).BL            = BL;
                     Data(CondIDX).stimDur       = stimDur;
                     Data(CondIDX).StimList      = stimList;
-                    % sink data removed 08/07/23
-
-                    % BFs
+                    % % sink data
+                    Data(CondIDX).sinkdur       = DUR;
+                    Data(CondIDX).sinkonset     = ONSET;
+                    Data(CondIDX).sinkoffset    = OFFSET;
+                    Data(CondIDX).sinkRMS       = RMS;
+                    Data(CondIDX).sinkSGLRMS    = SINGLE_RMS;
+                    Data(CondIDX).sinkPeakAmp   = PAMP;
+                    Data(CondIDX).sinkSGLPAMP   = SINGLE_SinkPeak;
+                    Data(CondIDX).sinkPeakLat   = PLAT;
+                    Data(CondIDX).sinkSGLPLAT   = SINGLE_PeakLat;
+                    % % BFs
                     Data(CondIDX).BF_II         = BF_II;
                     Data(CondIDX).BF_IV         = BF_IV;
                     Data(CondIDX).BF_Va         = BF_Va;
                     Data(CondIDX).BF_Vb         = BF_Vb;
                     Data(CondIDX).BF_VI         = BF_VI;
-
-                    % CSD data
+                    % 
+                    % % CSD data
                     Data(CondIDX).sngtrlLFP     = sngtrlLFP;
                     Data(CondIDX).sngtrlCSD     = sngtrlCSD;
                     Data(CondIDX).AVREC         = AvrecCSD;
                     Data(CondIDX).sngtrlAvrec   = sngtrlAvrecCSD;
                     Data(CondIDX).RELRES        = AvgRelResCSD;
                     Data(CondIDX).singtrlRelRes = singtrlRelResCSD;
-                                        
+                           
+                    %% Visualize early tuning (onset between 0:65 ms)
+                    if contains(Condition{iStimType}, 'Tonotopy')
+                        IIcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        IVcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        Vacurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        Vbcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        VIcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+
+                        for istim = 1:length(Data(CondIDX).sinkPeakAmp)
+                            if (BL < Data(CondIDX).sinkonset(istim).II(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).II(1) < BL+60)
+                                IIcurve(istim) = Data(CondIDX).sinkPeakAmp(istim).II(1);
+                            else
+                                IIcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).IV(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).IV(1) < BL+60)
+                                IVcurve(istim) = Data(CondIDX).sinkPeakAmp(istim).IV(1);
+                            else
+                                IVcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).Va(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).Va(1) < BL+60)
+                                Vacurve(istim) = Data(CondIDX).sinkPeakAmp(istim).Va(1);
+                            else
+                                Vacurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).Vb(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).Vb(1) < BL+60)
+                                Vbcurve(istim) = Data(CondIDX).sinkPeakAmp(istim).Vb(1);
+                            else
+                                Vbcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).VI(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).VI(1) < BL+60)
+                                VIcurve(istim) = Data(CondIDX).sinkPeakAmp(istim).VI(1);
+                            else
+                                VIcurve(istim) = NaN;
+                            end
+                        end
+
+                        figure('Name',[name ' ' measurement ': ' Condition{iStimType} ' ' num2str(iStimCount)]);
+                        subplot(1,2,1)
+                        plot(IIcurve,'LineWidth',2,'Marker','o'),...
+                            hold on,...
+                            plot(IVcurve,'LineWidth',2,'Marker','o'),...
+                            plot(Vacurve,'LineWidth',2,'Marker','o'),...
+                            plot(Vbcurve,'LineWidth',2,'Marker','o'),...
+                            plot(VIcurve,'LineWidth',2,'Marker','o'),...
+                            legend('II', 'IV', 'Va', 'Vb', 'VI')
+                        xlim([1 length(stimList)])
+                        xticks(1:1:9)
+                        xticklabels(stimList)
+                        xlabel('Tone [kHz]')
+                        ylabel('Peak Amp [mV/mm2]')
+                        % title([name ' Layer Tuning'])
+                        % hold off
+                        % h = gcf;
+                        % set(h, 'PaperType', 'A4');
+                        % set(h, 'PaperOrientation', 'landscape');
+                        % set(h, 'PaperUnits', 'centimeters');
+                        % savefig(h,[name '_' measurement '_PAMP Sink tuning' ],'compact')
+                        % close (h)
+
+                        IIcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        IVcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        Vacurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        Vbcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+                        VIcurve = nan(1,length(Data(CondIDX).sinkPeakAmp));
+
+                        for istim = 1:length(Data(CondIDX).sinkonset)
+                            if (BL < Data(CondIDX).sinkonset(istim).II(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).II(1) < BL+60)
+                                IIcurve(istim) = Data(CondIDX).sinkPeakLat(istim).II(1);
+                            else
+                                IIcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).IV(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).IV(1) < BL+60)
+                                IVcurve(istim) = Data(CondIDX).sinkPeakLat(istim).IV(1);
+                            else
+                                IVcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).Va(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).Va(1) < BL+60)
+                                Vacurve(istim) = Data(CondIDX).sinkPeakLat(istim).Va(1);
+                            else
+                                Vacurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).Vb(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).Vb(1) < BL+60)
+                                Vbcurve(istim) = Data(CondIDX).sinkPeakLat(istim).Vb(1);
+                            else
+                                Vbcurve(istim) = NaN;
+                            end
+
+                            if (BL < Data(CondIDX).sinkonset(istim).VI(1)) && ...
+                                (Data(CondIDX).sinkonset(istim).VI(1) < BL+60)
+                                VIcurve(istim) = Data(CondIDX).sinkPeakLat(istim).VI(1);
+                            else
+                                VIcurve(istim) = NaN;
+                            end
+                        end
+
+                        subplot(1,2,2)
+                        plot(IIcurve,'LineWidth',2,'Marker','o'),...
+                            hold on,...
+                            plot(IVcurve,'LineWidth',2,'Marker','o'),...
+                            plot(Vacurve,'LineWidth',2,'Marker','o'),...
+                            plot(Vbcurve,'LineWidth',2,'Marker','o'),...
+                            plot(VIcurve,'LineWidth',2,'Marker','o'),...
+                            legend('II', 'IV', 'Va', 'Vb', 'VI')
+                        xlim([1 length(stimList)])
+                        xticks(1:1:9)
+                        xticklabels(stimList)
+                        xlabel('Tone [kHz]')
+                        ylabel('Peak Lat [ms]')
+                        hold off
+                        h = gcf;
+                        set(h, 'PaperType', 'A4');
+                        set(h, 'PaperOrientation', 'landscape');
+                        set(h, 'PaperUnits', 'centimeters');
+                        savefig(h,[name '_' measurement '_Sink tuning' ],'compact')
+                        close (h)
+                    end
                     toc
                 end
             end

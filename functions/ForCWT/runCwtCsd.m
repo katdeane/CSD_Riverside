@@ -1,4 +1,4 @@
-function runCwtCsd(homedir,Group,params)
+function runCwtCsd(homedir,Group,params,type)
 
 % Input:    group name to match *Data.mat in \datastructs, parameters
 %           set for CWT analysis
@@ -23,6 +23,7 @@ end
 
 % and go
 for iAn = 1:subjects
+
     tic
     % load the animal data in
     load([animals{iAn} '_Data.mat'],'Data');
@@ -40,8 +41,12 @@ for iAn = 1:subjects
         
         % pull the variables and index for this condition
         [stimList, thisUnit, stimDur, stimITI, ~] = ...
-            StimVariable(params.condList{iCond},1);
-        timeAxis = BL + stimDur + stimITI; 
+            StimVariable(params.condList{iCond},1,type);
+        if contains(params.condList{iCond},'Spont')
+            timeAxis = stimDur + stimITI; 
+        else
+            timeAxis = BL + stimDur + stimITI;
+        end
         index = StimIndex({Data.Condition},Cond,iAn,params.condList{iCond});
         
         if isempty(index)
@@ -83,9 +88,12 @@ for iAn = 1:subjects
                    % current working data 
                    csdChan = squeeze(curCSD(centerChan,1:timeAxis,iTrial));
 
-                   if isnan(sum(csdChan))
-                       continue
-                   end
+                   % nan chunks are very small, we're going to allow them
+                   % through as zeros instead of rejecting the trial
+                   csdChan(isnan(csdChan)) = 0;
+                   % if isnan(sum(csdChan))
+                   %     continue
+                   % end
                    % Set the cwt frequency limits
                    params.frequencyLimits(1) = max(params.frequencyLimits(1),...
                        cwtfreqbounds(numel(csdChan),params.sampleRate,...
@@ -115,6 +123,7 @@ for iAn = 1:subjects
 
                end % trial
            end % layer
+
            wtTable = struct2table(wtStruct);
            save([Aname '_' params.condList{iCond} '_' num2str(stimList(iStim)) '_WT.mat'],'wtTable');
         end % stimulus

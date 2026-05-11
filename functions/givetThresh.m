@@ -1,4 +1,4 @@
-function [t_two_tailed, t_one_tailed] = givetThresh(group_size1, group_size2)
+function [t_one_tailed, t_two_tailed] = givetThresh(group_size1, group_size2)
 % written by chatGPT, credit where it's due. Thanks bud
     % Calculate the degrees of freedom
     df = group_size1 + group_size2 - 2;

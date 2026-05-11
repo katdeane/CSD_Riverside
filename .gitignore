@@ -1,6 +1,4 @@
 /data
-/metadata
-/figures
 
 *.asv
 *.json
@@ -11,5 +9,13 @@
 *.png
 *.csv
 *.xlsx
+*.txt
+*.wav
+*.jpeg
+*.jpg
+*.pbm
 
+.tmp.driveupload
+.DS_Store
 .Rhistory
+FirstPass.m
