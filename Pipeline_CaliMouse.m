@@ -3,8 +3,8 @@
 clear; clc;
 
 % set working directory; change for your station
-if exist('F:\CSD_Riverside','dir')
-    cd('F:\CSD_Riverside'); 
+if exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 elseif exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside'); 
 else
