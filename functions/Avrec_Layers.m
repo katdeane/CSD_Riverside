@@ -90,59 +90,42 @@ for iSub = 1:subjects
 
             % take an average of all channels (already averaged across trials)
             if contains(layers{iLay}, 'All')
-                % "All" channels takes the AVREC
-                % pull out and average rectify each measurement
-                recCSD  = abs(curCSD);
-                traceCSD  = nanmean(recCSD,1); % this is the avrec
+                % "All" channels takes the average nan-sourced sink
+                % activity of the full CSD
+                curLaycsd = curCSD;
+                curLaylfp = curLFP;
 
-                % plot them with shaded error bar
-                figure(1); nexttile
-                shadedErrorBar(1:size(traceCSD,2),nanmean(traceCSD,3),nanstd(traceCSD,0,3),'lineprops','b');
-                xline(BL+1,'LineWidth',2) % onset
-                xline(BL+stimDur+1,'LineWidth',2) % offset
-                title([num2str(stimList(iStim)) ' ' thisUnit])
-
-                recLFP    = abs(curLFP);
-                traceLFP  = nanmean(recLFP,1); % this is the avrec
-
-                % plot them with shaded error bar
-                figure(2); nexttile
-                shadedErrorBar(1:size(traceLFP,2),nanmean(traceLFP,3),nanstd(traceLFP,0,3),'lineprops','b');
-                xline(BL+1,'LineWidth',2) % onset
-                xline(BL+stimDur+1,'LineWidth',2) % offset
-                title([num2str(stimList(iStim)) ' ' thisUnit])
             else
                 % Layers take the nan-sourced CSD (also flipped)
                 thislay = str2num(Layer.(layers{iLay}){iSub});
-                curLay  = curCSD(thislay,:,:);
+                curLaycsd  = curCSD(thislay,:,:);
+                curLaylfp  = curLFP(thislay,:,:);
 
-                traceCSD = curLay * -1;         % flip it
-                traceCSD(traceCSD < 0) = NaN;   % nan-source it
-                traceCSD = nanmean(traceCSD,1); % average it (with nans)
-                traceCSD(isnan(traceCSD)) = 0;  % replace nans with 0s for consecutive line
-
-                % plot them with shaded error bar
-                figure(1); nexttile
-                shadedErrorBar(1:size(traceCSD,2),nanmean(traceCSD,3),nanstd(traceCSD,0,3),'lineprops','b');
-                xline(BL+1,'LineWidth',2) % onset
-                xline(BL+stimDur+1,'LineWidth',2) % offset
-                title([num2str(stimList(iStim)) ' ' thisUnit])
-
-                % Layers take the nan-sourced LFP (also flipped)
-                curLay  = curLFP(thislay,:,:);
-
-                traceLFP = curLay * -1;         % flip it
-                traceLFP(traceLFP < 0) = NaN;   % nan-source it
-                traceLFP = nanmean(traceLFP,1); % average it (with nans)
-                traceLFP(isnan(traceLFP)) = 0;  % replace nans with 0s for consecutive line
-
-                % plot them with shaded error bar
-                figure(2); nexttile
-                shadedErrorBar(1:size(traceLFP,2),nanmean(traceLFP,3),nanstd(traceLFP,0,3),'lineprops','b');
-                xline(BL+1,'LineWidth',2) % onset
-                xline(BL+stimDur+1,'LineWidth',2) % offset
-                title([num2str(stimList(iStim)) ' ' thisUnit])
             end
+
+            traceCSD = curLaycsd * -1;         % flip it
+            traceCSD(traceCSD < 0) = NaN;   % nan-source it
+            traceCSD = nanmean(traceCSD,1); % average it (with nans)
+            traceCSD(isnan(traceCSD)) = 0;  % replace nans with 0s for consecutive line
+
+            % plot them with shaded error bar
+            figure(1); nexttile
+            shadedErrorBar(1:size(traceCSD,2),nanmean(traceCSD,3),nanstd(traceCSD,0,3),'lineprops','b');
+            xline(BL+1,'LineWidth',2) % onset
+            xline(BL+stimDur+1,'LineWidth',2) % offset
+            title([num2str(stimList(iStim)) ' ' thisUnit])
+
+            traceLFP = curLaylfp * -1;         % flip it
+            traceLFP(traceLFP < 0) = NaN;   % nan-source it
+            traceLFP = nanmean(traceLFP,1); % average it (with nans)
+            traceLFP(isnan(traceLFP)) = 0;  % replace nans with 0s for consecutive line
+
+            % plot them with shaded error bar
+            figure(2); nexttile
+            shadedErrorBar(1:size(traceLFP,2),nanmean(traceLFP,3),nanstd(traceLFP,0,3),'lineprops','b');
+            xline(BL+1,'LineWidth',2) % onset
+            xline(BL+stimDur+1,'LineWidth',2) % offset
+            title([num2str(stimList(iStim)) ' ' thisUnit])
 
             if contains('All',layers{iLay}) && iStim==6 && contains('NoiseBurst',Condition)
                 % only for the avrec 70 dB noiseburst;
@@ -152,7 +135,7 @@ for iSub = 1:subjects
                 PeakofAvgCSD(iSub) = {max(max(traceCSD,[],2))};
                 PeakofAvgLFP(iSub) = {max(max(traceLFP,[],2))};
             elseif contains('All',layers{iLay}) && iStim == 1
-                % in every other case, just take the first stim 
+                % in every other case, just take the first stim
                 PeakofAvgCSD(iSub) = {max(max(traceCSD,[],2))};
                 PeakofAvgLFP(iSub) = {max(max(traceLFP,[],2))};
             end
@@ -182,7 +165,7 @@ for iSub = 1:subjects
                     reprate, stimDur, BL, Condition);
             end
 
-            parfor iTrial = 1:size(peakout,2) 
+            parfor iTrial = 1:size(peakout,2)
                 for itab = 1:size(peakout,1)
 
                     CurPeakData = table({Group}, {AnName}, {layers{iLay}}, ...
@@ -202,13 +185,13 @@ for iSub = 1:subjects
 
         figure(1); linkaxes
         h = gcf;
-        savefig(h,[Condition '_CSDTrace_' layers{iLay} '_' AnName],'compact')
+        savefig(h,[Condition '_CSDTrace_' layers{iLay} '_' AnName])
         % saveas(h,[Condition '_CSDTrace_' layers{iLay} '_' AnName '.png'])
         close (h)
 
         figure(2); linkaxes
         h = gcf;
-        savefig(h,[Condition '_LFPTrace_' layers{iLay} '_' AnName],'compact')
+        savefig(h,[Condition '_LFPTrace_' layers{iLay} '_' AnName])
         close (h)
     end
 
@@ -216,7 +199,7 @@ for iSub = 1:subjects
 end
 
 % save it out
-cd(figfolder); 
+cd(figfolder);
 if exist('Group_Avrec','dir')
     cd Group_Avrec;
 else
