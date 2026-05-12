@@ -1,4 +1,4 @@
-function Tracesorderedfig_3grp(homedir, Groups, Condition,whichstudy)
+function Tracesorderedfig_3grp(homedir, figfolder, Groups, Condition,whichstudy)
 
 % figure order matters here
 close all
@@ -57,7 +57,7 @@ elseif contains(Condition,'Spontaneous')
     thischild = 1;
     thisstim  = {'1'};
 end
-cd(homedir); cd figures; cd Group_Avrec
+cd(figfolder); cd Group_Avrec
 
 for iStim = 1:length(thisstim)
     figure(1)

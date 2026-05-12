@@ -1,4 +1,4 @@
-function PermutationTest_Area(homedir,whichtest,params,Groups,yespermute,type)
+function PermutationTest_Area(homedir,figfolder,whichtest,params,Groups,yespermute,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -170,7 +170,7 @@ for iCond = 1:length(params.condList)
             % posclust(obs_clusters(19:54,:)<0) = 0;
             % [B,~] = bwboundaries(posclust);
 
-            cd(homedir); cd figures;
+            cd(figfolder); 
             if exist('CWT','dir') == 7
                 cd CWT
             else

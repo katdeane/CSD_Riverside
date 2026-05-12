@@ -1,4 +1,4 @@
-function DynamicCSD(homedir, Condition, Groups, cbar, type)
+function DynamicCSD(homedir, figfolder, Condition, Groups, cbar, type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -124,7 +124,7 @@ for iGro = 1:length(Groups)
                     %% Plots 
                     disp('Plotting CSD with sink detections')
                     
-                    cd (homedir); cd figures;
+                    cd (figfolder)
                     if ~exist(['Single_' Groups{iGro}],'dir')
                         mkdir(['Single_' Groups{iGro}]);
                     end

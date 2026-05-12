@@ -1,4 +1,4 @@
-function CWTFigs(homedir,whichtest,params,Group,type)
+function CWTFigs(homedir,figfolder,whichtest,params,Group,type)
 % Input:    Layer to analyze, (possible input: relative to BF)
 %           Needs scalogramsfull.mat from Andrew Curran's wavelet analysis
 % specifying Power: trials are averaged and then power is taken from
@@ -23,14 +23,14 @@ cd (homedir);
 run([Group '.m']); % just need variable animals
 clear channels Condition Cond Layer
 
-for iSub = 1:length(animals)
+for iSub = 1:length(animals) %#ok<USENS>
 
     for iCond = 1:length(params.condList)
         tic
         disp(['For condition: ' params.condList{iCond}])
 
         % condition specific info
-        [stimList, thisUnit, stimDur, ~, ~,~,~] = ...
+        [stimList, ~, stimDur, ~, ~,~,~] = ...
             StimVariableCWT(params.condList{iCond},1,type);
 
         for iStim = 1:length(stimList)
@@ -58,7 +58,7 @@ for iSub = 1:length(animals)
                 % relevant spectral bands: theta - high gamma
                 OutTab = squeeze(OutTab(:,19:54,:));
 
-                cd(homedir); cd figures;
+                cd(figfolder);
                 if exist('Single_CWT','dir') == 7
                     cd Single_CWT
                 else

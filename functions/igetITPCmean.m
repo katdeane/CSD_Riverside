@@ -1,11 +1,11 @@
-function igetITPCmean(homedir,Groups,Condition,whichtest,type)
+function igetITPCmean(homedir,outfolder,Groups,Condition,whichtest,type)
 
 % each WT table is saved as *subject*_*condition*_*stimPresentation*_WT.mat
 % meaning we can call them in whatever order we want to save. Therefore
 % we'll work backwards, loop through stim presentation, subject.
 
 % get subject list and variables
-if length(Groups) == 1
+if length(Groups) == 1 %#ok<*ISCL>
     run([Groups{1} '.m'])
     subList = animals;
     clear animals
@@ -121,7 +121,7 @@ for iStim = 1:length(stimList)
     end % subject
 end % stimulus presentation
 
-cd(homedir); cd output;
+cd(outfolder); 
 if exist('ITPCmean','dir')
     cd ITPCmean;
 else

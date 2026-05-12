@@ -1,4 +1,4 @@
-function AvgCSDfig(homedir, Group, Condition, cbar_csd, cbar_lfp, type)
+function AvgCSDfig(homedir, figfolder, Group, Condition, cbar_csd, cbar_lfp, type)
 %% Averaged CSD and LFP
 
 % The purpose of this script is to provide an averaged group CSD for visual
@@ -89,7 +89,7 @@ for iStim = 1:length(stimList)
     colorbar
 end
 
-cd(homedir); cd figures;
+cd(figfolder);
 if exist('Average_CSD','dir')
     cd Average_CSD;
 else
@@ -100,7 +100,7 @@ h = gcf;
 set(h, 'PaperType', 'A4');
 set(h, 'PaperOrientation', 'landscape');
 set(h, 'PaperUnits', 'centimeters');
-savefig(h,[Group ' Avg CSD to ' Condition],'compact')
+savefig(h,[Group ' Avg CSD to ' Condition])
 close (h)
 
 %LFP 
@@ -119,7 +119,7 @@ for iStim = 1:length(stimList)
     colorbar
 end
 
-cd(homedir); cd figures;
+cd(figfolder); 
 if exist('Average_LFP','dir')
     cd Average_LFP;
 else
@@ -130,7 +130,7 @@ h = gcf;
 set(h, 'PaperType', 'A4');
 set(h, 'PaperOrientation', 'landscape');
 set(h, 'PaperUnits', 'centimeters');
-savefig(h,[Group ' Avg LFP to ' Condition],'compact')
+savefig(h,[Group ' Avg LFP to ' Condition])
 close (h)
 
 cd(homedir)

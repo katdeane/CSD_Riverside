@@ -1,4 +1,4 @@
-function CWTorderedfigs(homedir, Groups, Condition, whichstim, c_axisind, c_axiscomp, whichstudy)
+function CWTorderedfigs(homedir, figfolder, Groups, Condition, whichstim, c_axisind, c_axiscomp, whichstudy)
 
 % figure order matters here
 close all
@@ -58,7 +58,7 @@ elseif contains(Condition,'NoiseBurst')
     thisxtlab = 0:200:700;
 end
 count = 1;
-cd(homedir); cd figures; cd CWT
+cd(figfolder); cd CWT
 
 figure(1)
 targetfig = tiledlayout(5,3); % 5 layers x YNG OLD Y-O

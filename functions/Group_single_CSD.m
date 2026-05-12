@@ -1,4 +1,4 @@
-function Group_single_CSD(homedir, Group, folder, Condition, c_axis, ncolumn)
+function Group_single_CSD(homedir, figfolder, Group, folder, Condition, c_axis, ncolumn)
 
 % set some parameters 
 if contains(Condition,'NoiseBurst')
@@ -18,7 +18,7 @@ run([Group '.m'])
 subjects = length(animals);
 nrows = ceil(subjects/ncolumn); % four columns
 
-cd(homedir); cd figures; cd(['Single_' folder])
+cd(figfolder); cd(['Single_' folder])
 
 figure(1)
 targetfig = tiledlayout(nrows,ncolumn);

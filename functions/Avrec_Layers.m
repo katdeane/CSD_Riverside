@@ -1,4 +1,4 @@
-function Avrec_Layers(homedir, Group, Condition, type)
+function Avrec_Layers(homedir, figfolder, outfolder, Group, Condition, type)
 
 % This script takes *.mat files out of the datastructs/ folder.It then plots the
 % Avrecs for each animal over the specified stimulus Condition
@@ -60,7 +60,7 @@ for iSub = 1:subjects
         continue
     end
 
-    cd(homedir); cd figures;
+    cd(figfolder);
     if exist('Single_Avrec','dir')
         cd Single_Avrec;
     else
@@ -216,7 +216,7 @@ for iSub = 1:subjects
 end
 
 % save it out
-cd(homedir); cd figures;
+cd(figfolder); 
 if exist('Group_Avrec','dir')
     cd Group_Avrec;
 else
@@ -233,7 +233,7 @@ if exist('AvrecCSDAll','var')
 
     % save the table in the main folder - needs to be moved to the Julia folder
     % for stats
-    cd(homedir); cd output;
+    cd(outfolder);
     if exist('TracePeaks','dir')
         cd TracePeaks;
     else

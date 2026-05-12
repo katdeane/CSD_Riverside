@@ -1,4 +1,4 @@
-function CSDorderedfigs(homedir, Group, Condition,thisylim,whichstudy)
+function CSDorderedfigs(homedir, figfolder, Group, Condition,thisylim,whichstudy)
 
 % figure order matters here
 close all
@@ -53,7 +53,7 @@ elseif contains(Condition,'Spontaneous')
     thisxtlab = 0:500:2000;
 end
 
-cd(homedir); cd figures; cd Average_CSD
+cd(figfolder); cd Average_CSD
 
 % open the figure and scoop the contents
 openfig([Group ' Avg CSD to ' Condition '.fig']);

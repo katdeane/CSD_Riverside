@@ -1,4 +1,4 @@
-function plotFFT_3grp(homedir,params,Condition,type)
+function plotFFT_3grp(homedir,figfolder,outfolder,params,Condition,type)
 % normalizes to the first group listed
 
 if ~exist('type','var')
@@ -13,7 +13,7 @@ if matches(type,'AB')
 elseif matches(type,'RE')
     fftTab = struct2table(fftStructRE);
 end
-clear fftStructAB fftStructRE % kat, just save it as a table in the other script
+clear fftStructAB fftStructRE % kat, just save it as a table in the other script ... (make me)
 
 % for plotting
 Fs = 1000; % Sampling frequency
@@ -28,7 +28,7 @@ if matches(Condition, 'Pupcall')
     fftTab(toDelete,:) = [];
 end
 
-cd (homedir); cd figures;
+cd (figfolder); 
 if ~exist('FFTfig','dir')
     mkdir('FFTfig');
 end
@@ -366,11 +366,11 @@ close
 % save tables
 writetable(FFTStats,[params.groups{1} 'v' params.groups{2} 'v' params.groups{3} '_' Condition '_' type  '_FFTStats.csv'])
 
-cd(homedir);cd output 
-if ~exist('DataforStatsAwakeFmr1','dir')
-    mkdir('DataforStatsAwakeFmr1')
+cd(outfolder);
+if ~exist('DataforStatsR','dir')
+    mkdir('DataforStatsR')
 end
-cd DataforStatsAwakeFmr1
+cd DataforStatsR
 toDelete = FFTData.trial == 0;
 FFTData(toDelete,:) = [];
 writetable(FFTData,[params.groups{1} 'v' params.groups{2} 'v' params.groups{3} '_' Condition '_' type  '_FFTData.csv'])

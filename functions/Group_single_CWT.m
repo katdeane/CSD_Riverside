@@ -1,4 +1,4 @@
-function Group_single_CWT(homedir, Group, Condition, c_axis)
+function Group_single_CWT(homedir, figfolder, Group, Condition, c_axis)
 
 % set some parameters 
 if contains(Condition,'NoiseBurst')
@@ -26,7 +26,7 @@ subjects = length(animals);
 ncolumn = subjects;
 nrows = 5; 
 
-cd(homedir); cd figures; cd Single_CWT
+cd(figfolder); cd Single_CWT
 
 figure(1)
 targetfig = tiledlayout(nrows,ncolumn);

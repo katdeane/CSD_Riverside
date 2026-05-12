@@ -1,4 +1,4 @@
-function singleLFPfig(homedir, Groups, Condition,cbar,type)
+function singleLFPfig(homedir, figfolder, Groups, Condition,cbar,type)
 
 %% Dynamic CSD for sinks I_II through VI; incl. single
 
@@ -46,7 +46,7 @@ for iGro = 1:length(Groups)
 
             %% Plot
 
-            cd (homedir); cd figures;
+            cd (figfolder);
             if ~exist(['Single_' name(1:3)],'dir')
                 mkdir(['Single_' name(1:3)]);
             end
@@ -72,7 +72,7 @@ for iGro = 1:length(Groups)
 
             colorbar
             h = gcf;
-            savefig(h,[name '_' Condition{iCond} '_LFP' ],'compact')
+            savefig(h,[name '_' Condition{iCond} '_LFP' ])
             close (h)
             toc
         end

@@ -1,4 +1,4 @@
-function Tracesorderedfig_3grp_zoomed(homedir,Groups,whichstudy)
+function Tracesorderedfig_3grp_zoomed(homedir,figfolder,Groups,whichstudy)
 
 % figure order matters here
 close all
@@ -28,7 +28,7 @@ thisxtlab = 0:400:2000;
 thischild = [3 4];
 thisstim  = {'40 Hz' '10 Hz'};
 
-cd(homedir); cd figures; cd Group_Avrec
+cd(figfolder); cd Group_Avrec
 
 for iStim = 1:length(thisstim)
     figure(1)
