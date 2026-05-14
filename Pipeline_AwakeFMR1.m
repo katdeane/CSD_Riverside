@@ -145,12 +145,12 @@ PermutationTest_Area(homedir,figfold,'Phase',params,{'CKH','AKO'},yespermute,'Aw
 % create .csv with all of the ITPC means per stim presentation/subject/layer
 for iGro = 1:length(Groups)
     for iCon = 1:length(params.condList)
-        igetITPCmean(homedir,outfold,Groups{iGro},params.condList{iCon},'Phase','Awake')
+        igetITPCmean(homedir,outfold,Groups(iGro),params.condList{iCon},'Phase','Awake')
     end
 end 
 
 %% Fast fourier transform of the spontaneous data 
-runFftCsd(homedir,params,'Spontaneous')
+runFftCsd(homedir,outfold,params,'Spontaneous')
 plotFFT_3grp(homedir,figfold,outfold,params,'Spontaneous','RE')
 
 % for the LFP side
@@ -177,7 +177,7 @@ Group_single_CSD(homedir,figfold, 'CKH', 'CKH', 'NoiseBurst',  c_axis, ncolum)
 ncolum = 4;
 Group_single_CSD(homedir,figfold, 'AWT', 'AWT', 'Spontaneous',  c_axis, ncolum)
 Group_single_CSD(homedir,figfold, 'AKO', 'AKO', 'Spontaneous',  c_axis, ncolum)
-Group_single_CSD(homedir,figfold, 'CKH', 'CKH', 'Spontaneous',  c_axis, ncolum)
+% Group_single_CSD(homedir,figfold, 'CKH', 'CKH', 'Spontaneous',  c_axis, ncolum)
 
 CWTFigs(homedir,figfold,'Phase',params,'AWT','Awake')
 CWTFigs(homedir,figfold,'Phase',params,'AKO','Awake')
@@ -231,34 +231,29 @@ CWTorderedfigs(homedir, 'CKHvAKO', 'ClickTrain', '5',   [0 0.6], [-0.2 0.2],'FMR
 CWTorderedfigs(homedir, 'CKHvAKO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'FMR1')
 CWTorderedfigs(homedir, 'CKHvAKO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'FMR1')
 
-%% StatsoutforR - project specific
-prepDataforStatsAwakeFmr1(homedir,outfold)
-
 
 %% %% %% ADDITIONALLY %% %% %%
 % I'd like to get some quantification on the urethane anesthetized vs awake
 % data for the Fmr1 groups, KO and WT. 
 
-Groups = {'AWT' 'AKO' 'MWT' 'MKO'}; % a for awake, m for anesthetized
 M_Groups = {'MWT' 'MKO'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain'};
 
 % get all the data for just these anesthetized groups
-DynamicCSD(homedir, figfold, Condition, M_Groups, c_axis,'Awake')
+DynamicCSD(homedir, figfold, Condition, M_Groups, c_axis,'Anesthetized')
 for iGro = 1:length(M_Groups)
     for iST = 1:length(Condition)
-        AvgCSDfig(homedir, figfold, M_Groups{iGro}, Condition{iST},c_axis,[-50 50],'Awake')
-        Avrec_Layers(homedir, figfold, outfold, M_Groups{iGro}, Condition{iST},'Awake')
-        Group_Avrec_Layers(homedir, figfold, outfold, M_Groups{iGro}, Condition{iST},'Awake')
+        AvgCSDfig(homedir, figfold, M_Groups{iGro}, Condition{iST},c_axis,[-50 50],'Anesthetized')
+        Avrec_Layers(homedir, figfold, outfold, M_Groups{iGro}, Condition{iST},'Anesthetized')
+        Group_Avrec_Layers(homedir, figfold, outfold, M_Groups{iGro}, Condition{iST},'Anesthetized')
     end
 end
-
+  
 params.condList = {'NoiseBurst' 'ClickTrain'}; % subset 
 params.groups = {'AWT' 'AKO' 'MWT' 'MKO'}; % for permutation test
 
-runCwtCsd(homedir,'MWT',params,'Awake');
-runCwtCsd(homedir,'MKO',params,'Awake');
-runFftCsd(homedir,params,'Spontaneous')
+runCwtCsd(homedir,'MWT',params,'Anesthetized');
+runCwtCsd(homedir,'MKO',params,'Anesthetized');
 
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
 PermutationTest_Area(homedir,figfold,'Phase',params,{'AWT','MWT'},yespermute,'Awake')
@@ -267,8 +262,6 @@ PermutationTest_Area(homedir,figfold,'Phase',params,{'AKO','MKO'},yespermute,'Aw
 % create .csv with all of the ITPC means per stim presentation/subject/layer
 for iGro = 1:length(M_Groups)
     for iCon = 1:length(params.condList)
-        igetITPCmean(homedir,outfold,M_Groups{iGro},params.condList{iCon},'Phase','Awake')
+        igetITPCmean(homedir,outfold,M_Groups(iGro),params.condList{iCon},'Phase','Awake')
     end
 end 
-
-plotFFT_4grp(homedir,params,'Spontaneous','RE')

@@ -1,11 +1,10 @@
-function plotFFT_4grp(homedir,params,Condition,type)
+function plotFFT_4grp(homedir,figfolder,params,Condition,type)
 % normalizes to the first group listed
 
 if ~exist('type','var')
     type = 'AB'; % absolute or RE relative
 end
 
-cd(homedir); cd output;
 loadname = [params.groups{1} 'v' params.groups{2} '_' Condition '_' type '_FFT.mat'];
 load(loadname,['fftStruct' type])
 if matches(type,'AB')
@@ -29,7 +28,7 @@ if matches(Condition, 'Pupcall')
     fftTab(toDelete,:) = [];
 end
 
-cd (homedir); cd figures;
+cd (figfolder)
 if ~exist('FFTfig','dir')
     mkdir('FFTfig');
 end

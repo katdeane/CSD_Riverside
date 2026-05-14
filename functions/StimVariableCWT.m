@@ -14,7 +14,7 @@ if ~exist('sr_mult','var')
 end
 
 % compare at the onset
-compDur1 = 1:100; 
+compDur1 = 1:100;
 
 if matches(type, 'Anesthetized')
     if matches(Condition,'NoiseBurst') || ...
@@ -101,7 +101,7 @@ if matches(type, 'Anesthetized')
     end
 elseif matches(type,'Awake')
 
-    if contains(Condition,'NoiseBurst') 
+    if contains(Condition,'NoiseBurst')
         if contains(Condition,'NoiseBurst2pt5Hz')
             stimList = [20, 30, 40, 50, 60, 70];
             thisUnit = 'dB';
@@ -134,7 +134,7 @@ elseif matches(type,'Awake')
         % for ITPCmean
         ITPCwin = {1:600};
 
-    elseif contains(Condition,'Spontaneous') 
+    elseif contains(Condition,'Spontaneous')
         stimList = 1;
         thisUnit = [];
         stimDur  = 1000*sr_mult; % ms
@@ -165,15 +165,15 @@ elseif matches(type,'Awake')
         compDur2 = {1100:3000; []; []; 1100:1450; 1250:1750; ...
             1500:2350; 1900:3000}; % post processing
         % for ITPCmean
-        ITPCwin = {1000:3000};        
+        ITPCwin = {1000:3000};
 
-    elseif contains(Condition,'gapASSR') 
+    elseif contains(Condition,'gapASSR')
         % 10 gaps every 25 ms from onset to onset (40 hz)
         % 250 ms noise, 250 ms gap-noise, etc. , 250 noise
         % 10 presentations of gap-noise
         % noiseonset = [0, 500, 1000, 1500, 2000, 2500, 3000];
         % gaponset =      [250, 750, 1250, 1750, 2250, 2750];
-        stimList = [3, 5, 7, 9];  
+        stimList = [3, 5, 7, 9];
         thisUnit = ' [ms] gap width';
         stimDur  = 3250*sr_mult; % ms
         stimITI  = 500*sr_mult;
@@ -212,7 +212,7 @@ elseif matches(type,'Awake')
         thisTag  = 'single';
         compDur2 = 0; % DIDN'T CALCULATE
         % for ITPCmean
-        ITPCwin = 0; % DIDN'T CALCULATE       
+        ITPCwin = 0; % DIDN'T CALCULATE
 
     end
 end

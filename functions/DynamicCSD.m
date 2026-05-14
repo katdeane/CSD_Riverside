@@ -141,7 +141,7 @@ for iGro = 1:length(Groups)
                         imagesc(nanmean(sngtrlCSD{istim},3))
                         title([num2str(stimList(istim)) thisUnit])
                         colormap jet                       
-                        caxis(cbar)
+                        clim(cbar)
                         xline(BL+1,'LineWidth',2) % onset
                         xline(BL+stimDur+1,'LineWidth',2) % offset
                         yline(L.II(end)); yline(L.IV(end)); 
@@ -153,7 +153,7 @@ for iGro = 1:length(Groups)
                     
                     colorbar
                     h = gcf;
-                    savefig(h,[name '_' measurement '_CSD' ],'compact')
+                    savefig(h,[name '_' measurement '_CSD' ])
                     % saveas(h,[name '_' measurement '_CSD.png' ])
                     close (h)
 
@@ -343,7 +343,7 @@ for iGro = 1:length(Groups)
                         set(h, 'PaperType', 'A4');
                         set(h, 'PaperOrientation', 'landscape');
                         set(h, 'PaperUnits', 'centimeters');
-                        savefig(h,[name '_' measurement '_Sink tuning' ],'compact')
+                        savefig(h,[name '_' measurement '_Sink tuning' ])
                         close (h)
                     end
                     toc

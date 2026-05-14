@@ -197,7 +197,7 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
         % save the table in the main folder - needs to be moved to the Julia folder
         % for stats
         cd(outfolder)
-        if exist('TracePeaks','dir')
+        if exist([outfolder '\TracePeaks\'], 'dir')
             cd TracePeaks;
         else
             mkdir TracePeaks, cd TracePeaks;
@@ -207,6 +207,7 @@ if exist([FileName '_' Condition '_AvrecCSDAll.mat'],'file')
     end
 end
 cd(homedir)
+addpath(genpath(homedir))
 
 %% Normalized Avrec peak detection
 % Normalization is happening on the trace before peak detection. The trace

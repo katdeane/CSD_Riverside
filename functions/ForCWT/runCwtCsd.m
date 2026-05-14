@@ -64,7 +64,6 @@ for iAn = 1:subjects
             
            for iLay = 1:length(params.layers)
                
-               disp(['Layer ' params.layers{iLay}])
                % For constructing position of recording relative to layer, use ceil() to
                % assign the next number and base all other numbers on that. This
                % means that odd numbers (e.g. 7) will use exact middle (e.g. 4), while

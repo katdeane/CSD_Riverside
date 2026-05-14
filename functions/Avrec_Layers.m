@@ -47,6 +47,8 @@ for iSub = 1:subjects
             && matches(animals{iSub},'MWT16b')
         continue % special case, two noiseburst from same subject due to
         % probe movement - don't count both for group
+    elseif ~exist([animals{iSub} '_Data.mat'],'file')
+        continue % special case, MWT14b isn't generated when only NB, CT, Spont are run
     end
 
     % load the animal data in
@@ -225,3 +227,4 @@ if exist('AvrecCSDAll','var')
     writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
 end
 cd(homedir)
+addpath(genpath(homedir));

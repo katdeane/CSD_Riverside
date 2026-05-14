@@ -68,7 +68,7 @@ for iSub = 1:length(animals) %#ok<USENS>
                 %% dif fig
                 name = [whichtest ' ' animals{iSub} ' ' params.condList{iCond} ' ' num2str(stimList(iStim)) ' ' params.layers{iLay}];
                 tiledlayout('flow')
-                nexttile
+                ineinnexttile
                 imagesc(flipud(OutTab)) % the cwt function gives us back a yaxis flipped result
                 set(gca,'Ydir','normal')
                 yticks([0 8 16 21 24 26 29 32 35]) % 42 47 54 (for 200 300 500)

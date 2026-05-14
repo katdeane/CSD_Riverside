@@ -5,7 +5,6 @@ if ~exist('type','var')
     type = 'AB'; % absolute or RE relative
 end
 
-cd(homedir); cd output;
 loadname = [params.groups{1} 'v' params.groups{2} '_' Condition '_' type '_FFT.mat'];
 load(loadname,['fftStruct' type])
 if matches(type,'AB')
@@ -367,12 +366,13 @@ close
 writetable(FFTStats,[params.groups{1} 'v' params.groups{2} 'v' params.groups{3} '_' Condition '_' type  '_FFTStats.csv'])
 
 cd(outfolder);
-if ~exist('DataforStatsR','dir')
-    mkdir('DataforStatsR')
+if ~exist('FFT','dir')
+    mkdir('FFT')
 end
-cd DataforStatsR
+cd FFT
 toDelete = FFTData.trial == 0;
 FFTData(toDelete,:) = [];
 writetable(FFTData,[params.groups{1} 'v' params.groups{2} 'v' params.groups{3} '_' Condition '_' type  '_FFTData.csv'])
 
 cd(homedir)
+addpath(genpath(homedir))

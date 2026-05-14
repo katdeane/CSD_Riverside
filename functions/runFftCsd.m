@@ -1,4 +1,4 @@
-function runFftCsd(homedir,params,Condition)
+function runFftCsd(homedir,outfolder,params,Condition)
 
 % Input:    group name to match *Data.mat in \datastructs, parameters
 %           set for CWT analysis, ONLY Spontaneous data used here
@@ -127,7 +127,7 @@ for iGr = 1:length(params.groups)
     end % animal
 end % group
 
-cd(homedir);cd output
+cd(outfolder)
 if exist('FFT','dir')
     cd FFT
 else
@@ -138,3 +138,6 @@ savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_AB_FFT.mat'];
 save(savename,'fftStructAB')
 savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_RE_FFT.mat'];
 save(savename,'fftStructRE')
+
+cd(homedir)
+addpath(genpath(homedir))

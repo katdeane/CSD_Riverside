@@ -1,5 +1,6 @@
 function igetITPCmean(homedir,outfolder,Groups,Condition,whichtest,type)
 
+disp(['Condition ' Condition])
 % each WT table is saved as *subject*_*condition*_*stimPresentation*_WT.mat
 % meaning we can call them in whatever order we want to save. Therefore
 % we'll work backwards, loop through stim presentation, subject.
@@ -16,6 +17,16 @@ elseif length(Groups) == 2
     run([Groups{2} '.m'])
     subList = [grp1sub animals];
     clear animals grp1sub
+elseif length(Groups) == 3
+    run([Groups{1} '.m'])
+    grp1sub = animals;
+    clear animals
+    run([Groups{2} '.m'])
+    grp2sub = animals;
+    clear animals
+    run([Groups{2} '.m'])
+    subList = [grp1sub grp2sub animals];
+    clear animals grp1sub grp2sub
 end
 
 
@@ -57,8 +68,6 @@ for iStim = 1:length(stimList)
         end
 
         for iLay = 1:length(layers)
-
-            disp(['Layer ' layers{iLay}])
 
             WTLay = wtTable(matches(wtTable.layer, layers{iLay}),:);
 
@@ -133,3 +142,4 @@ elseif length(Groups) == 2
     writetable(DataT,[Groups{1} 'and' Groups{2} '_' Condition '_ITPCmean.csv'])
 end
 cd(homedir)
+addpath(genpath(homedir))
