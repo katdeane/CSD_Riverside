@@ -1,4 +1,5 @@
 /data
+/.Rproj.user
 
 *.asv
 *.json
@@ -19,3 +20,5 @@
 .DS_Store
 .Rhistory
 FirstPass.m
+.Rproj.user
+.positai

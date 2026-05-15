@@ -1,18 +1,18 @@
 # adapted from Michael A Erickson
 
 library(tidyverse)
-library(lme4)
 library(Matrix)
+library(lme4)
 library(lmerTest)
 library(emmeans)
 
 # Load Data
 
-spont_fft <- read_csv("E:/CSD_Riverside/output/DataforStatsAwakeFmr1/AWTvAKOvCKH_Spontaneous_RE_FFTData.csv")
+spont_fft <- read_csv("E:/CSD_Riverside/output/Fmr1Awake/FFT/AWTvAKOvCKH_Spontaneous_RE_FFTData.csv")
 
 # assign frequency columns an umbrella tag
 
-spont_fft_l <- spont_fft %>%
+spont_fft_1 <- spont_fft %>%
   pivot_longer(delta:highgam, names_to="Freq", values_to="Power") %>%
   mutate(Freq = factor(Freq,
                        levels=c("delta", "theta", "alpha",
@@ -41,7 +41,7 @@ l_all_spont <-
   lmer(Power ~ Layer * Freq * Group + (1 | Subject), spont_fft_l,
        subset=(Condition == "Spontaneous"),
        REML=TRUE)
-write.csv(anova(l_all_spont),"AwakeFmr1_SpontFFT_ANOVA.csv")
+write.csv(anova(l_all_spont),"E:/CSD_Riverside/output/Fmr1Awake/FFT/AwakeFmr1_SpontFFT_ANOVA.csv")
 
 # post hoc contrasts 
 l_spont_emm <- emmeans(l_all_spont, pairwise ~ Group | Freq:Layer, p.adjust="hochberg")
@@ -54,4 +54,17 @@ write_csv(left_join(as_tibble(l_spont_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Freq, Layer),
                     suffix=c(".contr", ".eff_size")),
-          "AwakeFmr1_SpontFFT_emmeans.csv")
+          "E:/CSD_Riverside/output/Fmr1Awake/FFT/AwakeFmr1_SpontFFT_emmeans.csv")
+
+# bar plots 
+emm_4plot <- emmeans(l_all_spont, specs=c("Layer", "Freq", "Group"))
+emm_4plot %>%
+  as_tibble() %>%
+  mutate(Group = fct_relevel(Group, 
+                            "AWT", "AKO", "CKH")) %>%
+  ggplot(aes(x=Freq, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL), width=0.9, position="dodge") +
+  facet_wrap("Layer")
+
+ggsave("E:/CSD_Riverside/output/Fmr1Awake/FFT/AwakeFmr1_SpontFFT.pdf")
