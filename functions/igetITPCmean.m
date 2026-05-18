@@ -62,7 +62,7 @@ for iStim = 1:length(stimList)
         load(input,'wtTable')
 
         if length(Groups) == 1
-            group = 'Groups';
+            group = Groups{1};
         else
             group = wtTable.group{1};
         end
