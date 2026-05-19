@@ -88,6 +88,8 @@ end
 
 %% Peak and RMS statistics - this will be deleted when the figure output from R is good to go
 
+ClickTrainRatio_3grp(homedir,outfold,Groups)
+
 % NoiseBurstStats_3grp(homedir,Groups,70)
 % ClickTrainStats_3grp(homedir,Groups)
 % gapASSRStats_3grp(homedir,Groups)
