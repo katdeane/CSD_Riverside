@@ -56,19 +56,19 @@ end
 % ylabel('Phase (degrees)');
 % title('Notch Filter Frequency Response — Phase');
 % grid on;
-%
+% 
 % nexttile
 % imagesc(nanmean(sngtrlLFP{:},3))
 % colormap jet
 % nexttile
-% imagesc((nanmean(filteredLfp,3)))
+% imagesc((nanmean(filteredLfp{:},3)))
 % colormap jet
 % 
 % %% run a fast fourier transform to verify
 % 
 % % if the data looks basically the same before and after the notch filter
 % % (which it should), then we should verify with an fft and by plotting the
-% % power spectrum density. 
+% % power spectrum density.
 % 
 % % original FFT
 % meanOrigSig = nanmean(sngtrlLFP{:},3);
@@ -79,15 +79,15 @@ end
 % L = length(fftlfp);
 % fftaxis = (fs/L)*(0:L-1);
 % 
-% nexttile 
+% nexttile
 % semilogy(fftaxis,fftcsdAB)
-% xlim([0 100]) 
+% xlim([0 100])
 % xticks(0:10:100)
 % ax = gca;
 % ax.XScale = 'log';
 % 
 % % filtered FFT
-% meanFiltSig = nanmean(filteredLfp,3);
+% meanFiltSig = nanmean(filteredLfp{:},3);
 % fftlfp = fft(meanFiltSig(10,:)); %one channel of the filtered csd data (every channel should show the notch)
 % fftlfp = squeeze(abs(fftlfp) .^2);% take power
 % fftcsdAB = fftlfp ./ (size(sngtrlLFP,2)/2); % normalize by half sampling points
@@ -95,9 +95,9 @@ end
 % L = length(fftlfp);
 % fftaxis = (fs/L)*(0:L-1);
 % 
-% nexttile 
+% nexttile
 % semilogy(fftaxis,fftcsdAB)
-% xlim([0 100]) 
+% xlim([0 100])
 % xticks(0:10:100)
 % ax = gca;
 % ax.XScale = 'log';
