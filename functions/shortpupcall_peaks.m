@@ -54,7 +54,7 @@ for iTrial = 1:size(datain,3)
 
         % cut the detection window to on and off time set according to number
         % of clicks:
-        det_win = datain(1,det_on(iSti):det_off(iSti),iTrial);
+        det_win = datain(1,round(det_on(iSti)):round(det_off(iSti)),iTrial);
         det_win(1:5) = mean_BL; % in the rare case the spont activity starts high
         det_win(end-5:end) = mean_BL; % in the rare case the spont activity doesn't fully reset
 
