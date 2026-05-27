@@ -62,11 +62,10 @@ for iSub = 1:subjects
         continue
     end
 
-    cd(figfolder);
-    if exist('Single_Avrec','dir')
-        cd Single_Avrec;
+    if exist([figfolder '\Single_Avrec'],'dir')
+        cd([figfolder '\Single_Avrec']);
     else
-        mkdir Single_Avrec, cd Single_Avrec;
+        mkdir([figfolder '\Single_Avrec']), cd([figfolder '\Single_Avrec']);
     end
 
     % loop through the avrec and layer traces
@@ -202,10 +201,10 @@ end
 
 % save it out
 cd(figfolder);
-if exist('Group_Avrec','dir')
-    cd Group_Avrec;
+if exist([figfolder '\Group_Avrec'],'dir')
+    cd([figfolder '\Group_Avrec']);
 else
-    mkdir Group_Avrec, cd Group_Avrec;
+    mkdir([figfolder '\Group_Avrec']), cd([figfolder '\Group_Avrec']);
 end
 if exist('AvrecCSDAll','var')
     save([Group '_' Condition '_AvrecCSDAll'],'AvrecCSDAll','PeakofAvgCSD');
@@ -219,10 +218,10 @@ if exist('AvrecCSDAll','var')
     % save the table in the main folder - needs to be moved to the Julia folder
     % for stats
     cd(outfolder);
-    if exist('TracePeaks','dir')
-        cd TracePeaks;
+    if exist([outfolder '\TracePeaks'],'dir')
+        cd([outfolder '\TracePeaks']);
     else
-        mkdir TracePeaks, cd TracePeaks;
+        mkdir([outfolder '\TracePeaks']), cd([outfolder '\TracePeaks']);
     end
     writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
 end

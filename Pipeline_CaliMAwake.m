@@ -9,8 +9,8 @@ clear; clc;
 % set working directory; change for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
-elseif exist('D:\CSD_Riverside','dir')
-    cd('D:\CSD_Riverside'); 
+elseif exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 else
     error('add your local repository as shown above')
 end
@@ -19,27 +19,34 @@ addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 c_axis = ([-0.2 0.2]); % this sets the default scale for all csds
 
+% output folders now specified for each analysis (to keep my sanity)
+figfold = [homedir '\figures\CaliAwake'];
+outfold = [homedir '\output\CaliAwake'];
+if ~exist(figfold, 'dir')
+    mkdir(figfold); mkdir(outfold);
+end
+
 % set consistently needed variables
-Groups = {'VMA' 'PMA' };  %'VMA' 'PMA' 
-Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall' 'ShortCall' ...
+Groups = {'VMA' 'PMA'};  %'VMA' 'PMA' 
+Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall' ...
       'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz' 'PostNoiseBurst'};
-% Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall' 'ShortCall' ...
+% Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall'  ...
 %     'Tonotopy' 'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz' 'PostNoiseBurst'}; 
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
+DynamicCSD(homedir, figfold, Condition, Groups, [-0.2 0.2],'Awake')
 
 %% Sorted figures for visualization
 
 % single subject CSDs
 ncolum = 4;
-Group_single_CSD(homedir, 'VMA', 'VMA', 'NoiseBurst',  c_axis, ncolum)
-Group_single_CSD(homedir, 'PMA', 'PMA', 'NoiseBurst',  c_axis, ncolum)
-Group_single_CSD(homedir, 'VMA', 'VMA', 'ShortCall',  c_axis, ncolum)
-Group_single_CSD(homedir, 'PMA', 'PMA', 'ShortCall',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'VMA', 'VMA', 'NoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'PMA', 'PMA', 'NoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'VMA', 'VMA', 'ShortCall',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'PMA', 'PMA', 'ShortCall',  c_axis, ncolum)
 
 %% TO DO: 
 
@@ -54,7 +61,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
+        Avrec_Layers(homedir, figfold, outfold, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
