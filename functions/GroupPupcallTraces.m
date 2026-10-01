@@ -5,10 +5,10 @@ BL     = 399;
 timeaxis = BL + stimDur + stimITI;
 
 % AvrecAll is layers x data x subject
-load([Group '_Pupcall30_AvrecAll.mat'],'AvrecAll')
+load([Group '_Pupcall30_AvrecCSDAll.mat'],'AvrecCSDAll')
 
 % preaverage trials
-AvrecAvg = cellfun(@(x) mean(x,3),AvrecAll,'UniformOutput',false);
+AvrecAvg = cellfun(@(x) mean(x,3),AvrecCSDAll,'UniformOutput',false);
 % empty rows will not be taken in the stacked data :) 
 
 % pull out layers
@@ -158,7 +158,7 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('AVREC [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
 
     % next up is the wave file
     nexttile
@@ -178,7 +178,7 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('II [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
     % layer IV
     nexttile
     shadedErrorBar(1:size(IV,2),mean(IV,1),std(IV,0,1),'lineprops','b');
@@ -188,7 +188,7 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('IV [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
     % layer Va
     nexttile
     shadedErrorBar(1:size(Va,2),mean(Va,1),std(Va,0,1),'lineprops','b');
@@ -198,7 +198,7 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('Va [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
     % layer Vb
     nexttile
     shadedErrorBar(1:size(Vb,2),mean(Vb,1),std(Vb,0,1),'lineprops','b');
@@ -208,7 +208,7 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('Vb [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
     % layer VI
     nexttile
     shadedErrorBar(1:size(VI,2),mean(VI,1),std(VI,0,1),'lineprops','b');
@@ -218,12 +218,12 @@ for iCall = callList
     xticklabels({'0', '100','200'})
     % ylabel
     ylabel('VI [mV/mm²]')
-    ylim([0 max(max(AVREC))])
+    ylim([0 3])%ylim([0 max(max(AVREC))])
 
     set(gcf,'Position',[100 100 300 800])
 
     savefig(gcf,[Group '_Call_Traces_' num2str(iCall)])
-    exportgraphics(gcf,[Group '_Call_Traces_' num2str(iCall) '.pdf'])
+    exportgraphics(gcf,[Group '_Call_Traces_' num2str(iCall) '.pdf'],'ContentType','vector')
     close
 
 end

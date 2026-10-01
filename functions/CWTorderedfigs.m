@@ -21,10 +21,10 @@ elseif matches(whichstudy,'FMR1') || matches(whichstudy,'EST')
     grp1 = Groups(1:3);
     grp2 = Groups(5:7);
     diftitle = [grp2 ' - ' grp1];
-else
+elseif matches(whichstudy,'PCal')
     grp1 = Groups(1:3);
     grp2 = Groups(5:7);
-    diftitle = [grp1 ' - ' grp2];
+    diftitle = [grp2 ' - ' grp1];
 end
 
 % set some things straight for naming convention
@@ -50,12 +50,30 @@ elseif contains(Condition,'Chirp')
     thisxlim = [300 3400];
     thisxtick = 400:400:3400;
     thisxtlab = 0:400:3000;
-elseif contains(Condition,'NoiseBurst')
+elseif matches(Condition,'NoiseBurst') % matches because of the nb 2.5 hz
     condname = 'NoiseBurst';
     tidbit = ' 70dB ';
     thisxlim = [300 900];
     thisxtick = 400:200:900;
     thisxtlab = 0:200:700;
+elseif contains(Condition,'ShortCall')
+    condname = 'ShortCall';
+    tidbit =  ' 1 ';
+    thisxlim = [300 4500];
+    thisxtick = 400:400:4800;
+    thisxtlab = 0:400:4400;
+elseif contains(Condition,'MaskCall')
+    condname = 'MaskCall';
+    tidbit = [' ' whichstim 'level '];
+    thisxlim = [300 4500];
+    thisxtick = 400:400:4800;
+    thisxtlab = 0:400:4400;
+elseif contains(Condition,'NoiseBurst2pt5Hz')
+    condname = 'NB Train 2.5 Hz';
+    tidbit = [' ' whichstim 'dB '];
+    thisxlim = [300 1300];
+    thisxtick = 400:200:1400;
+    thisxtlab = 0:200:1400;
 end
 count = 1;
 cd(figfolder); cd CWT
@@ -76,7 +94,7 @@ for iLay = 1:length(layers)
 
     % open the figure and scoop the contents
     openfig([Groups '_Observed Phase ' Condition tidbit layers{iLay} '.fig']);
-    pause(1)
+    pause(1) % figure literally takes a second to open and be available for copy but code will rush forward anyway
     h = gca;
 
     % young

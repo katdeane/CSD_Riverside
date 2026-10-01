@@ -142,7 +142,7 @@ elseif matches(type,'Awake')
         thisTag  = 'spont';
         compDur2 = 0; % probably don't need
         % for ITPCmean
-        ITPCwin = {1:2000};
+        ITPCwin = {1:1000};
 
     elseif contains(Condition,'ClickTrain')
         stimList = [5, 10, 40, 80];

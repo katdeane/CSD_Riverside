@@ -125,11 +125,12 @@ for iCall = callList
     clim(cbar)
     colorbar
     % x axis
-    xlim([callCSD-200,callCSD+400])
-    xticks([callCSD-200 callCSD-100 callCSD callCSD+100  ...
-        callCSD+200 callCSD+300 callCSD+400])
-    xticklabels({'0', '100','200','300','400','500','600'})
+    xlim([callCSD-50,callCSD+200])
+    xticks([callCSD-50 callCSD callCSD+50  ...
+        callCSD+100 callCSD+150 callCSD+200])
+    xticklabels({'-50', '0','50','100','150','200'})
     % ylabel
+    ylim([1 25])
     ylabel('Depth of Cortex [Channels 50 µm apart]')
     % title
     title(['Avg CSD in response to Pup Call ' num2str(iCall) ' — ' ...
@@ -138,9 +139,9 @@ for iCall = callList
     callWAV = PupTimes(iCall,1);
     nexttile
     plot(t,ymod,'k'); xlabel('Time [ms]'); ylabel('PupCall');
-    xlim([callWAV-0.2 callWAV+0.4])
-    xticks([callWAV-0.2 callWAV-0.1 callWAV callWAV+0.1 ...
-        callWAV+0.2 callWAV+0.3 callWAV+0.4])
+    xlim([callWAV-0.05 callWAV+0.2])
+    xticks([callWAV-0.05 callWAV callWAV+0.05 ...
+        callWAV+0.1 callWAV+0.15 callWAV+0.2])
     xticklabels({'0', '100','200','300','400','500','600'})
     ylim([-1 1])
 
