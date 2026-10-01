@@ -2,6 +2,7 @@
 animals = {'FON02','FON03','FON04','FON05','FON06','FON07','FON08','FON09','FON10','FON12'};
 
 % notes:
+% FON01 died after nicotine injection
 % N01: 16 months; male 
 % N02: 17.3 months;female
 % N03: 18.5 months;female

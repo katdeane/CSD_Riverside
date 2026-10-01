@@ -2,7 +2,7 @@
 animals = {'FYN02', 'FYN03','FYN04','FYN05','FYN06','FYN07','FYN08','FYN09','FYN10','FYN12','FYN13'};  
  
 % notes:
-%
+% FYN01 died after nicotine injection
 
 %% Channels and Layers
 % channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]

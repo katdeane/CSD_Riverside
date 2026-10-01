@@ -2,8 +2,9 @@
 animals = {'MKO01','MKO02','MKO03','MKO04','MKO05','MKO06','MKO07','MKO08','MKO11'};
 
 % notes:
-% MKO01 died during noise bursts
+% MKO01, MKO09 died during noise bursts
 % MKO04 and 05 died after tonotopies
+% MKO10 died after spontaneous
 
 %% Channels and Layers
 % channel order: [17 16 18 15 19 14 20 13 21 12 22 11 23 10 24 9 25 8 26 7 27 6 28 5 29 4 30 3 31 2 32 1]

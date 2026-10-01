@@ -1,5 +1,5 @@
 %%% Group MWT = Male Wild Type (C57 B6/J)
-animals = {'MWT01','MWT02','MWT03','MWT04','MWT06','MWT08','MWT10','MWT14','MWT16a','MWT16b','MWT17'};
+animals = {'MWT01','MWT02','MWT03','MWT04','MWT06','MWT08','MWT10','MWT4','MWT16a','MWT16b','MWT17'};
 
 % ruled out:
 % 2 WTs did not make it to surgery, ruled out before named

@@ -2,7 +2,7 @@
 animals = {'CKH01','CKH02','CKH03','CKH05','CKH06','CKH07','CKH09','CKH10'};
 
 % ruled out:
-% CKH04 - removed, 0 sound response
+% CKH04 - removed, 0 sound response, 08, 11
 
 % notes:
 % 

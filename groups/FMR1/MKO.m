@@ -2,9 +2,9 @@
 animals = {'MKO02','MKO03','MKO06','MKO07','MKO11','MKO12','MKO13','MKO14a','MKO14b','MKO15'};
 
 % notes:
-% MKO01, 16 died during noise bursts
+% MKO01, 09, 16 died during noise bursts
 % MKO04, 05 died after tonotopies
-% account for 08 09 10
+% MKO10 died after spontaneous
 
 % MKO14 is split in two because the subject became quickly wakeful and
 % broke the probe

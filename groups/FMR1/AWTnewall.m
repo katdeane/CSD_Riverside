@@ -2,7 +2,7 @@
 animals = {'AWT01','AWT02','AWT06','AWT07','AWT08','AWT13','AWT14','CWW12','AWT25','AWT26','AWT27','AWT28'};
 
 % ruled out:
-% AWT04 and AWT05 had too low amplitude responses
+% AWT04 and AWT05, 18 had too low amplitude responses
 % AWT09, hardware stopped working at the beginning of recording
 % AWT03 had huge artifacts throughout 
 

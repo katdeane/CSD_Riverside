@@ -5,7 +5,7 @@ animals = {'CWH01','CWH04','CWH05','CWH06','CWH08','CWH10','CWH12','CWH13','CWH1
 % CWH02 - lethargic during recovery, 0 sound response 
 % CWH03 - probe broke, missing gapASSR and Chirp
 % CWH07 - vein cut with probe, cortex bled out
-% CWH09 - no recording taken due to poor response
+% CWH09, 15 - no recording taken due to poor response
 % CWH11 - lethargic during recovery, 0 sound response  
 
 % notes:
