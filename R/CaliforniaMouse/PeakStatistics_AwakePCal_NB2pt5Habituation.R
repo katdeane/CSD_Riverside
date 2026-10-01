@@ -1,0 +1,240 @@
+## Noiseburst 2.5 Hz Habituation measure
+# response to NB close to 1 s divided by peak onset response per subject within each layer
+
+library(tidyverse)
+library(Matrix)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+
+
+peakMC <- read_csv("E:/CSD_Riverside/output/CaliAwake/TracePeaks/VMAvPMA_NB2pt5HzAdaptation.csv")
+  
+## Sound Level 70 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("70")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_70.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_70.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("70 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_70.png")
+
+## Sound Level 60 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("60")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_60.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_60.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("60 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_60.png")
+
+## Sound Level 50 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("50")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_50.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_50.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("50 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_50.png")
+
+## Sound Level 40 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("40")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_40.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_40.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("40 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_40.png")
+
+## Sound Level 30 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("30")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_30.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_30.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("30 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_30.png")
+
+
+## Sound Level 20 dB
+# Multilevel Anova
+peakMC_lmer <-
+  lmer(RatioPeak ~ Group * Layer + (1 | Subject),
+       data=peakMC,
+       subset = (SoundLevel %in% c("20")),
+       REML=TRUE)
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_ANOVA_habituation_20.csv")
+
+
+# posthoc contrasts
+peakMC_emm <-
+  emmeans(peakMC_lmer, pairwise ~ Group | Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakMC_emm, sigma=sigma(peakMC_lmer),
+           edf=df.residual(peakMC_lmer))
+write_csv(left_join(as_tibble(peakMC_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast,Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_emmeans_habituation_20.csv")
+
+# bar plots
+peakMC_emm_4fig <-
+  emmeans(peakMC_lmer, specs=c("Layer", "Group"))
+
+peakMC_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Layer, y=emmean, group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=asymp.UCL),
+                width=0.9, position="dodge") +
+  ggtitle("20 dB Habituated Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5peaks_habituation_20.png")
