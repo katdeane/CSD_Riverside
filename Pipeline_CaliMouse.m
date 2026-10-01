@@ -17,17 +17,25 @@ end
 homedir = pwd;
 addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
+warning('off','MATLAB:print:ContentTypeImageSuggested')
 
 % set consistently needed variables
 Groups = {'VMP' 'PMP'}; % 'PMP' 'VMP' virgin male pupcall & parent male pupcall
 % Condition = {'NoiseBurst'};
-Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
+% Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'PostNoiseBurst' 'ClickTrain' 'gapASSR' 'Chirp'};
+Condition = {'NoiseBurst' 'Spontaneous' 'Pupcall30' 'ClickTrain'};
 cbar = [-0.3 0.3]; % species specific based on experience, color axis
+
+figfold = [homedir '\figures\CaliAnes'];
+outfold = [homedir '\output\CaliAnes'];
+if ~exist(figfold, 'dir')
+    mkdir(figfold); mkdir(outfold);
+end
 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
-DynamicCSD(homedir, Condition, Groups, cbar, 'Anesthetized')
+DynamicCSD(homedir, figfold, Condition, Groups, cbar, 'Anesthetized')
 
 % special cases if you rerun the DynamicCSD, run this too
 % Note that this does not adjust RELRES (if you ever want to use it)
@@ -39,7 +47,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+        Avrec_Layers(homedir, figfold, outfold, Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
@@ -66,7 +74,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Average CSDs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},cbar,[-50 50],'Anesthetized')
+        AvgCSDfig(homedir, figfold, Groups{iGro}, Condition{iST},cbar,[-50 50],'Anesthetized')
         toc
     end
 end
@@ -80,29 +88,29 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Anesthetized')
+        Group_Avrec_Layers(homedir,figfold,outfold,Groups{iGro}, Condition{iST},'Anesthetized')
         toc
     end
 end
 
 %% Peak Stats
 
-PCal_NoiseBurstStats(homedir,Groups,20)
-PCal_NoiseBurstStats(homedir,Groups,50)
-PCal_NoiseBurstStats(homedir,Groups,70)
+% PCal_NoiseBurstStats(homedir,Groups,20)
+% PCal_NoiseBurstStats(homedir,Groups,50)
+% PCal_NoiseBurstStats(homedir,Groups,70)
 PCal_NB_HighLowStats(homedir,Groups,20,50)
 
-PCal_NP_HighLowANOVA(homedir,Groups,20,50)
+% PCal_NP_HighLowANOVA(homedir,Groups,20,50)
 
-PCal_ClickTrainStats5(homedir,Groups)
+% PCal_ClickTrainStats5(homedir,Groups)
 % PCal_ClickTrainStats40(homedir,Groups)
 
-PCal_PupcallStats(homedir,Groups,[1,18,30,44,60]) % was [1,4,9,13,18]
+% PCal_PupcallStats(homedir,Groups,[1,18,30,44,60]) % was [1,4,9,13,18]
 PCal_HighLowStats(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57]) % determined by findPupCallRMS.m
 
 PCal_HighLowANOVA(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57])
 
-PCal_PupcallStats_Latency(homedir,Groups,[1,18,30,44,60])
+% PCal_PupcallStats_Latency(homedir,Groups,[1,18,30,44,60])
 %% mTF analysis
 
 % Input:    group metadata file in /groups and curate converted files in
@@ -173,20 +181,20 @@ PCal_NoiseBurst_HighLowStatsITPC_ANOVA(homedir,'20','50')
 gapASSRcorr_ITPCmean(homedir,Groups,[18,48,45,49,53],[7,30,16,31,57])
 
 %% Fast fourier transform of the spontaneous data 
-runFftCsd(homedir,params,'Pupcall')
+runFftCsd(homedir,outfold,params,'Pupcall')
 % plotFFT(homedir,params,'Pupcall','AB')
 % plotFFT(homedir,params,'Pupcall','RE')
 
-runFftCsd(homedir,params,'Spontaneous')
+runFftCsd(homedir,outfold,params,'Spontaneous')
 % plotFFT(homedir,params,'Spontaneous','AB')
 % plotFFT(homedir,params,'Spontaneous','RE')
 
-runFftCsd(homedir,params,'ClickTrain')
+runFftCsd(homedir,outfold,params,'ClickTrain')
 runFftCsd(homedir,params,'NoiseBurst')
 
-plotFFT_PCal(homedir,params,'AB','Pupcall') % spont compared to pupcalls
-plotFFT_PCal(homedir,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 5 HZ)
-plotFFT_PCal(homedir,params,'AB','NoiseBurst') % spont compared to noisebursts
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','Pupcall') % spont compared to pupcalls
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','ClickTrain') % spont compared to clicks (CURRENTLY 5 HZ)
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','NoiseBurst') % spont compared to noisebursts
 % plotFFT_PCal(homedir,params,'RE')
 
 % Analysis of covariance to determine if age or group is predictor
@@ -205,11 +213,11 @@ PupcallCWT(homedir,subject,params) % having run runCwtCsd
 
 %% Average group pup call visualization
 
-% GroupPupcallCSD(homedir,'VMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallCSD(homedir,'VMP',cbar,'Anesthetized') % having run DynamicCSD
 GroupPupcallTraces(homedir,'VMP','Anesthetized',[1, 18, 30, 44, 60]) % having run Avrec_Layers
 % GroupPupcallCWT(homedir,'VMP',params) % having run runCwtCsd
 
-% GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
+GroupPupcallCSD(homedir,'PMP',cbar,'Anesthetized') % having run DynamicCSD
 GroupPupcallTraces(homedir,'PMP','Anesthetized',[1, 18, 30, 44, 60]) % having run Avrec_Layers
 % GroupPupcallCWT(homedir,'PMP',params) % having run runCwtCsd
 
