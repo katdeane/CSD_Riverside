@@ -1,4 +1,4 @@
-function callMaskModelFit(homedir)
+function callMaskModelFit_NoiseNorm(homedir, outfolder)
 % exponential decay fits
 % the goal here is to have each call stacked across noise mask levels (e.g.
 % call 5 in 0, 1, 2, 3 mask) across animals. Then perform an exponential
@@ -6,8 +6,8 @@ function callMaskModelFit(homedir)
 % squares.
 
 % first pull data - use average data
-pTab = readtable('PMA_MaskCall_AVG_AVRECPeak.csv');
-vTab = readtable('VMA_MaskCall_AVG_AVRECPeak.csv');
+pTab = readtable('PMA_MaskCall_AVG_NormAVRECPeak.csv');
+vTab = readtable('VMA_MaskCall_AVG_NormAVRECPeak.csv');
 
 % set some parameters for plotting
 x = 1:4; % x axis
@@ -32,7 +32,7 @@ for iLay = 1:length(layers)
 
     % set up figure
     Maskfig = tiledlayout('flow');
-    title(Maskfig,[layers{iLay} ' Exp Decay Fits'])
+    title(Maskfig,[layers{iLay} ' Exp Decay Fits on Normalized Data'])
 
     % loop through calls
     for iCall = 1:10
@@ -52,8 +52,9 @@ for iLay = 1:length(layers)
             suby   = subTab.PeakAmp';
 
             % model on this data
-            submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
-            plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakB)
+            % submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
+            % plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakB)
+            scatter(x,suby,'filled','MarkerEdgeColor',colorWeakB,'MarkerFaceColor',colorWeakB)
         end
 
         %virgins
@@ -64,8 +65,9 @@ for iLay = 1:length(layers)
             suby   = subTab.PeakAmp';
 
             % model on this data
-            submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
-            plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakR)
+            % submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
+            % plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakR)
+            scatter(x,suby,'filled','MarkerEdgeColor',colorWeakR,'MarkerFaceColor',colorWeakR)
         end
 
         % get data for each condition
@@ -93,9 +95,9 @@ for iLay = 1:length(layers)
         scatter(x,vy,'filled','MarkerEdgeColor',colorStrongR,'MarkerFaceColor',colorStrongR)
 
 
-        legend({'' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' ...
-            ['Fathers saturation=' num2str(pmod(1)) ',2=' num2str(pmod(2)) ',rate constant=' num2str(pmod(3))]...
-            ['Virgins saturation=' num2str(vmod(1)) ',2=' num2str(vmod(2)) ',rate constant=' num2str(vmod(3))]})
+        legend({'' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' '' ''  ...
+            ['Fathers sat=' num2str(pmod(1)) ',2=' num2str(pmod(2)) ',rate=' num2str(pmod(3))]...
+            ['Virgins sat=' num2str(vmod(1)) ',2=' num2str(vmod(2)) ',rate=' num2str(vmod(3))]})
 
         % ylim([0 2])
         xticks(1:1:4)
@@ -106,14 +108,14 @@ for iLay = 1:length(layers)
     end
 
     %save figures
-    cd(homedir);cd figures;
-    if ~exist('fits','dir')
-        mkdir('fits')
+    if exist([outfolder '\expo_fits'], 'dir')
+        cd([outfolder '\expo_fits']);
+    else
+        mkdir([outfolder '\expo_fits']), cd([outfolder '\expo_fits']);
     end
-    cd fits
 
     h = gcf;
-    savefig(h,['MaskFits_' layers{iLay}]);
+    savefig(h,['MaskFits_NoiseNorm_' layers{iLay}]);
     close(h)
 end
 cd(homedir)

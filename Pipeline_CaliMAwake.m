@@ -28,10 +28,9 @@ end
 
 % set consistently needed variables
 Groups = {'VMA' 'PMA'};  %'VMA' 'PMA' 
-Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall' ...
-      'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz' 'PostNoiseBurst'};
-% Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall'  ...
-%     'Tonotopy' 'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz' 'PostNoiseBurst'}; 
+% Condition = {'MaskCall'};
+Condition = {'NoiseBurst' 'ShortCall' 'Spontaneous' 'MaskCall'  ...
+    'Tonotopy' 'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz'}; 
 
 %% Data generation per subject ⊂◉‿◉つ
 
@@ -45,15 +44,11 @@ DynamicCSD(homedir, figfold, Condition, Groups, [-0.2 0.2],'Awake')
 ncolum = 4;
 Group_single_CSD(homedir, figfold, 'VMA', 'VMA', 'NoiseBurst',  c_axis, ncolum)
 Group_single_CSD(homedir, figfold, 'PMA', 'PMA', 'NoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'VMA', 'VMA', 'PostNoiseBurst',  c_axis, ncolum)
+Group_single_CSD(homedir, figfold, 'PMA', 'PMA', 'PostNoiseBurst',  c_axis, ncolum)
 Group_single_CSD(homedir, figfold, 'VMA', 'VMA', 'ShortCall',  c_axis, ncolum)
 Group_single_CSD(homedir, figfold, 'PMA', 'PMA', 'ShortCall',  c_axis, ncolum)
 
-%% TO DO: 
-
-% - Bring in the rest of the pipeline
-% - high low stats for noiseburst 2.5
-% - normalize to last noiseburst measurement
-% - get that line noise filter in there
 
 %% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
@@ -66,6 +61,16 @@ for iGro = 1:length(Groups)
     end
 end
 
+% normalization of traces: 
+disp('Running Normalization of Peak Data and Traces')
+for iST = 1:length(Condition)
+    if matches(Condition{iST},'Spontaneous')
+        continue
+    end
+    disp(Condition{iST})
+    Norm_AvrecDat(homedir, figfold, outfold, Groups, Condition{iST})
+end
+
 %% group pics
 
 % generate group averaged CSDs based on stimuli (does not BF sort)
@@ -73,7 +78,7 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Average CSDs for ' Groups{iGro} ' ' Condition{iST}])
         tic
-        AvgCSDfig(homedir, Groups{iGro}, Condition{iST},c_axis,[-50 50],'Awake')
+        AvgCSDfig(homedir, figfold, Groups{iGro}, Condition{iST},c_axis,[-50 50],'Awake')
         toc
     end
 end
@@ -83,23 +88,29 @@ for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Group traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
-        Group_Avrec_Layers(homedir, Groups{iGro}, Condition{iST},'Awake')
+        Group_Avrec_Layers(homedir,figfold,outfold,Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
 
 %% Peak Stats
 
-PCal_NoiseBurstStats(homedir,Groups,70)
-% PCal_NB_HighLowStats(homedir,Groups,20,50)
+% peak stats in R now
+% generate tables where responses are normalized to the peak / first
+% response
+ClickTrainRatio(homedir,outfold,Groups)
+NB2pt5HzRatio(homedir,outfold,Groups)
+MaskCallRatio(homedir,outfold,Groups)
+ShortCallRatio(homedir,outfold,Groups)
 
-PCal_ShortcallStats(homedir,Groups,1:10) % was [1,4,9,13,18]
-PCal_ShortHighLowStats(homedir,Groups,7,2) % determined by findPupCallRMS.m for full call (original: 18,16)
-
-% PCal_PupcallStats_Latency(homedir,Groups,[1,18,30,44,60])
+% generate table where responses to mask levels 1-3 are normalized by mask
+% level 0
+MaskCallMaskNorm(homedir,outfold,Groups)
 
 % exponential model fits over masking levels
-callMaskModelFit(homedir)
+callMaskModelFit_NoNorm(homedir,outfold)
+callMaskModelFit_NoiseNorm(homedir,outfold)
+callMaskModelFit_BaseNorm(homedir,outfold)
 
 %% CWT analysis 
 
@@ -124,36 +135,58 @@ runCwtCsd(homedir,'VMA',params,'Awake');
 TimeFreqBackground(homedir,params,Groups)
 
 % diff = second group - first group
-% params.condList = {'NoiseBurst'}; %'ClickTrain','gapASSR'
-PermutationTest_Area(homedir,'Phase',params,{'PMA' 'VMA'},yespermute,'Awake') 
+params.condList = {'NoiseBurst' 'ShortCall' 'MaskCall' ...
+      'ClickTrain' 'gapASSR' 'NoiseBurst2pt5Hz' 'PostNoiseBurst'};
+PermutationTest_Area(homedir,figfold,'Phase',params,{'PMA' 'VMA'},yespermute,'Awake') 
 
 % params.condList = {'ShortCall'}; % needs to be broken down by layers earlier
 % PermutationTest_PupcallArea(homedir,'Phase',params,{'PMA' 'VMA'},yespermute,'Awake')
 
 % get the ITPC mean across time
-% igetITPCmeanPCal(homedir,{'VMA' 'PMA'},'Phase')
+for iGro = 1:length(Groups)
+        igetITPCmean(homedir,outfold,Groups(iGro),'NoiseBurst','Phase','Awake')
+        igetITPCmean(homedir,outfold,Groups(iGro),'Spontaneous','Phase','Awake')
+        igetITPCmean(homedir,outfold,Groups(iGro),'ClickTrain','Phase','Awake')
+        igetITPCmean(homedir,outfold,Groups(iGro),'gapASSR','Phase','Awake')
+
+        igetITPCmeanPCal(homedir,outfold,Groups(iGro),'ShortCall','Phase','Awake')
+        igetITPCmeanPCal(homedir,outfold,Groups(iGro),'MaskCall','Phase','Awake')
+        igetITPCmeanPCal(homedir,outfold,Groups(iGro),'NoiseBurst2pt5Hz','Phase','Awake')
+end 
+
+ITPC_MaskNorm(homedir,outfold,Groups)
+% igetITPCmeanPCal(homedir,outfold,{'VMA' 'PMA'},'Phase')
 % now plot and test it 
 % ITPCmeanfigsPCal(homedir)
 % stats
-% PCal_PupcallStatsITPC(homedir,'Pupcall_1',[1, 18, 30, 44, 60])
-% PCal_Pupcall_HighLowStatsITPC(homedir,[18,48,45,49,53],[7,30,16,31,57])
-% PCal_PupcallStatsITPC(homedir,'ClickTrain_5',[1, 5, 10])
-% PCal_PupcallStatsITPC(homedir,'gapASSR_2',5)
-% PCal_PupcallStatsITPC(homedir,'gapASSR_4',5)
-% PCal_PupcallStatsITPC(homedir,'gapASSR_6',5)
-% PCal_PupcallStatsITPC(homedir,'gapASSR_8',5)
-% PCal_PupcallStatsITPC(homedir,'gapASSR_10',5)
-% PCal_PupcallStatsITPC(homedir,'NoiseBurst_20',1)
-% PCal_PupcallStatsITPC(homedir,'NoiseBurst_50',1)
-% PCal_PupcallStatsITPC(homedir,'NoiseBurst_70',1)
-% PCal_NoiseBurst_HighLowStatsITPC(homedir,'20','50')
 
-% runFftCsd(homedir,params,'ShortCall')
-runFftCsd(homedir,params,'Spontaneous')
-% runFftCsd(homedir,params,'NoiseBurst')
+% plot difference ITPC difference figs
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'gapASSR', '3',          [0 3.5], [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'gapASSR', '5',          [0 3.5], [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'gapASSR', '7',          [0 3.5], [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'gapASSR', '9',          [0 3.5], [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'ClickTrain', '5',       [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'NoiseBurst', '0',       [0 6],   [-2 2],    'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'ShortCall', '0',        [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'MaskCall', '0',         [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'MaskCall', '1',         [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'MaskCall', '2',         [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'MaskCall', '3',         [0 5],   [-1.5 1.5],'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'NoiseBurst2pt5Hz','70', [0 6],   [-2 2],    'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'NoiseBurst2pt5Hz','50', [0 6],   [-2 2],    'PCal')
+CWTorderedfigs(homedir, figfold, 'PMAvVMA', 'NoiseBurst2pt5Hz','20', [0 6],   [-2 2],    'PCal')
+
+%% FFT 
+runFftCsd(homedir,outfold,params,'ShortCall','Awake') 
+runFftCsd(homedir,outfold,params,'Spontaneous','Awake')
+runFftCsd(homedir,outfold,params,'ClickTrain','Awake') % just 5 Hz trains
+runFftCsd(homedir,outfold,params,'NoiseBurst','Awake')
+runFftCsd(homedir,outfold,params,'MaskCall','Awake') % just 0 mask level
 % 
-% plotFFT_PCal(homedir,params,'AB','ShortCall') % spont compared to pupcalls
-% plotFFT_PCal(homedir,params,'AB','NoiseBurst') % spont compared to noisebursts
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','ShortCall') 
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','MaskCall') 
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','NoiseBurst') 
+plotFFT_PCal(homedir,figfold,outfold,params,'AB','ClickTrain') 
 
 %% Subject specific pup call visualization
 % single subject with pup calls 

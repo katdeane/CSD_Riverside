@@ -79,7 +79,7 @@ Cond.Tonotopy = {...
     {'09'},... %V09
     {'09'},... %V10
     {'11'},... %V11
-    {'08'},... %V12
+    {[]},... %V12 %'08' index esceeds number of array elements
     };
 
 Cond.ShortCall = {... 
@@ -99,8 +99,8 @@ Cond.ShortCall = {...
 
 Cond.MaskCall = {... 
 	{'05'},... %V01
-    {[]},... %V02  '05' needs to be run  in curate again
-    {'08'},... %V03
+    {'05'},... %V02  
+    {[]},... %V03 '08' big artifacts in this measurement
     {'08'},... %V04
     {'06'},... %V05
     {'08'},... %V06
@@ -124,7 +124,7 @@ Cond.gapASSR = {...
     {'10'},... %V09
     {'13'},... %V10
     {'12'},... %V11
-    {'09'},... %V12
+    {[]},... %V12 '09' big artifacts in this measurement
     };
 
 Cond.ClickTrain = {...
