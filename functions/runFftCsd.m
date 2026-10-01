@@ -1,7 +1,7 @@
-function runFftCsd(homedir,outfolder,params,Condition)
+function runFftCsd(homedir,outfolder,params,Condition,type)
 
 % Input:    group name to match *Data.mat in \datastructs, parameters
-%           set for CWT analysis, ONLY Spontaneous data used here
+%           set for CWT analysis
 % Output:   Runs FFT on spontanous CSD data. figures of
 %           layer-wise group FFT -> figures\FFT
 %           and eventually stats (TO DO)
@@ -39,7 +39,7 @@ for iGr = 1:length(params.groups)
             % fft is going to be taken from each trial. STP is summed power
             % across stim and background
            
-        elseif matches(Condition,'NoiseBurst')
+        elseif matches(Condition,'NoiseBurst') && matches(type,'Anesthetized')
             % pull data for this condition
             index = StimIndex({Data.Condition},Cond,iAn,Condition);
             if isempty(index)
@@ -68,10 +68,23 @@ for iGr = 1:length(params.groups)
             % closest approximate to pup call rate
             % stacked in 3.4 second blocks: 2 seconds of clicks, 1 second
             % ITI, 400 ms baseline. 
-            curCSD = Data(index).sngtrlCSD{2};
+            if matches(type,'Anesthetized')
+                curCSD = Data(index).sngtrlCSD{2}; % 2,5,10... hz
+            else
+                curCSD = Data(index).sngtrlCSD{1}; % 5, 10 ... hz
+            end
             % we want to focus on clicks, so we'll keep just 200 ms on both
             % sides
             curCSD = curCSD(:,201:2600,:);
+        elseif matches(Condition,'MaskCall')
+            % pull data for this condition
+            index = StimIndex({Data.Condition},Cond,iAn,Condition);
+            if isempty(index)
+                continue
+            end
+            % we just want to look at the unmasked short call but at this
+            % higher dB level
+            curCSD = Data(index).sngtrlCSD{2}; % 0 mask
         else % pup calls and spontaneous data
             index = StimIndex({Data.Condition},Cond,iAn,Condition);
             if isempty(index)
@@ -127,11 +140,10 @@ for iGr = 1:length(params.groups)
     end % animal
 end % group
 
-cd(outfolder)
-if exist('FFT','dir')
-    cd FFT
+if exist([outfolder '\FFT'],'dir')
+    cd([outfolder '\FFT']);
 else
-    mkdir('FFT'); cd FFT
+    mkdir([outfolder '\FFT']), cd([outfolder '\FFT']);
 end
 
 savename = [params.groups{1} 'v' params.groups{2} '_' Condition '_AB_FFT.mat'];
