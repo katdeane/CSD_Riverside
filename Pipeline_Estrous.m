@@ -7,8 +7,8 @@
 clear; clc;
 
 % set working directory; change for your station
-if exist('F:\CSD_Riverside','dir')
-    cd('F:\CSD_Riverside'); 
+if exist('E:\CSD_Riverside','dir')
+    cd('E:\CSD_Riverside'); 
 elseif exist('D:\CSD_Riverside','dir')
     cd('D:\CSD_Riverside'); 
 else
@@ -18,17 +18,24 @@ homedir = pwd;
 addpath(genpath(homedir));
 set(0, 'DefaultFigureRenderer', 'painters');
 
+% output folders now specified for each analysis (to keep my sanity)
+figfold = [homedir '\figures\Fmr1Awake'];
+outfold = [homedir '\output\Fmr1Awake'];
+if ~exist(figfold, 'dir')
+    mkdir(figfold); mkdir(outfold);
+end
+
 % set consistently needed variables
 Groups = {'DIE' 'PRO' 'FYM'}; % FVB young male
-Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'}; 
+Condition = {'Chirp'}; %'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' 'gapASSR'
 
-Groups = {'FYM'}; % FVB young male
-Condition = {'ClickTrain'}; 
+% Groups = {'FYM'}; % FVB young male
+% Condition = {'ClickTrain'}; 
 %% Data generation per subject ⊂◉‿◉つ
 
 % per subject CSD Script
 % note that this reads automatically what's in groups/
-DynamicCSD(homedir, Condition, Groups, [-0.2 0.2],'Awake')
+DynamicCSD(homedir, figfold, Condition, Groups, [-0.2 0.2],'Awake')
 
 % per subject Spike Script
 % DynamicSpike(homedir, Condition)
@@ -84,7 +91,7 @@ params.frequencyLimits = [5 params.sampleRate/2]; % Hz
 params.voicesPerOctave = 8;
 params.timeBandWidth = 54;
 params.layers = {'II','IV','Va','Vb','VI'}; 
-params.condList = {'NoiseBurst','ClickTrain','Chirp','gapASSR'}; % subset 'NoiseBurst','ClickTrain','Chirp',
+params.condList = {'NoiseBurst'}; % subset 'NoiseBurst','ClickTrain','Chirp',
 params.groups = {'DIE','PRO','FYM'};
 
 % Only run when data regeneration is needed:
@@ -102,7 +109,7 @@ runCwtCsd(homedir,'FYM',params,'Awake');
 %           figures for observed t values, clusters
 %           output; boxplot and significance of permutation test
 yespermute = 1; % 0 just observed pics, 1 observed pics and perumation test
-PermutationTest_Area(homedir,'Phase',params,{'DIE','PRO'},yespermute,'Awake')
+PermutationTest_Area(homedir, figfold,'Phase',params,{'DIE','PRO'},yespermute,'Awake')
 PermutationTest_Area(homedir,'Phase',params,{'DIE','FYM'},yespermute,'Awake')
 PermutationTest_Area(homedir,'Phase',params,{'PRO','FYM'},yespermute,'Awake')
 
@@ -143,8 +150,8 @@ CWTorderedfigs(homedir, 'DIEvPRO', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'E
 CWTorderedfigs(homedir, 'DIEvPRO', 'gapASSR', '7',      [0 0.4], [-0.15 0.15],'EST')
 CWTorderedfigs(homedir, 'DIEvPRO', 'gapASSR', '9',      [0 0.4], [-0.15 0.15],'EST')
 CWTorderedfigs(homedir, 'DIEvPRO', 'ClickTrain', '40',  [0 0.6], [-0.2 0.2],'EST')
-CWTorderedfigs(homedir, 'DIEvPRO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'EST')
-CWTorderedfigs(homedir, 'DIEvPRO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'EST')
+CWTorderedfigs(homedir, figfold, 'DIEvPRO', 'Chirp', '0',        [0 0.4], [-0.15 0.15],'EST')
+CWTorderedfigs(homedir, figfold, 'DIEvPRO', 'NoiseBurst', '0',   [0 0.7], [-0.25 0.25],'EST')
 
 CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '3',      [0 0.4], [-0.15 0.15],'EST')
 CWTorderedfigs(homedir, 'DIEvFYM', 'gapASSR', '5',      [0 0.4], [-0.15 0.15],'EST')
