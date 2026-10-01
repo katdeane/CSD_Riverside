@@ -1,4 +1,4 @@
-function plotFFT_PCal(homedir,params,type,Comparison)
+function plotFFT_PCal(homedir,figfolder,outfolder,params,type,Comparison)
 
 if ~exist('type','var')
     type = 'AB'; % absolute or RE relative
@@ -7,7 +7,6 @@ if ~exist('Comparison','var')
     Comparison = 'Pupcall'; % or 'ClickTrain
 end
 
-cd(homedir); cd output;
 % Load in Spontaneous FFT
 loadnameS = [params.groups{1} 'v' params.groups{2} '_Spontaneous_' type '_FFT.mat'];
 load(loadnameS,['fftStruct' type])
@@ -41,6 +40,12 @@ elseif matches(Comparison,'NoiseBurst')
     color11 = [74/255 183/255 255/255]; % light blue
     color12 = [0/255  77/255  125/255]; % dark dark
 
+elseif matches(Comparison, 'MaskCall')
+    % Load in Pupcall FFT
+    loadname2 = [params.groups{1} 'v' params.groups{2} '_MaskCall_' type '_FFT.mat'];
+    color11 = [255/255 175/255 105/255]; % light orange
+    color12 = [224/255 115/255 0/255]; % dark orange
+
 end
 load(loadname2,['fftStruct' type])
 if matches(type,'AB')
@@ -60,95 +65,17 @@ LS  = length(fftTabS.fft{1}); % Length of signal [ms]
 color21 = [87/255 255/255 210/255]; % light teal
 color22 = [0/255  209/255 153/255]; % dark teal
 
-cd (homedir); cd figures;
-if ~exist('FFTfig','dir')
-    mkdir('FFTfig');
+if exist([figfolder '\FFTfig'],'dir')
+    cd([figfolder '\FFTfig']);
+else
+    mkdir([figfolder '\FFTfig']), cd([figfolder '\FFTfig']);
 end
-cd FFTfig
 
-% initiate table here - doozy!
-FFTStats = table('Size',[length(params.layers) 170],'VariableTypes',{'string','string',...
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7 - 42
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7 - 42
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7 - 42
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7
-    'double','double','double','double','double','double','double',... % 7 - 42 - 168
-    });
-
-FFTStats.Properties.VariableNames = ["Condition", "Layer", ... % 2
-    "pss_delta", "meanss1_delta","stdss1_delta","meanss2_delta",...
-    "stdss2_delta","dfss_delta","Cohensdss_delta",... % 7
-    "pss_theta", "meanss1_theta","stdss1_theta","meanss2_theta",...
-    "stdss2_theta","dfss_theta","Cohensdss_theta",... % 7
-    "pss_alpha", "meanss1_alpha","stdss1_alpha","meanss2_alpha",...
-    "stdss2_alpha","dfss_alpha","Cohensdss_alpha",... % 7
-    "pss_beta", "meanss1_beta","stdss1_beta","meanss2_beta",...
-    "stdss2_beta","dfss_beta","Cohensdss_beta",... % 7
-    "pss_gammaL", "meanss1_gammaL","stdss1_gammaL","meanss2_gammaL",...
-    "stdss2_gammaL","dfss_gammaL","Cohensdss_gammaL",... % 7
-    "pss_gammaH", "meanss1_gammaH","stdss1_gammaH","meanss2_gammaH",...
-    "stdss2_gammaH","dfss_gammaH","Cohensdss_gammaH",... % 7 - 42
-    "pps1_delta", "meanps1s_delta","stdps1s_delta","meanps1p_delta",...
-    "stdps1p_delta","dfps1_delta","Cohensdps1_delta",... % 7
-    "pps1_theta", "meanps1s_theta","stdps1s_theta","meanps1p_theta",...
-    "stdps1p_theta","dfps1_theta","Cohensdps1_theta",... % 7
-    "pps1_alpha", "meanps1s_alpha","stdps1s_alpha","meanps1p_alpha",...
-    "stdps1p_alpha","dfps1_alpha","Cohensdps1_alpha",... % 7
-    "pps1_beta", "meanps1s_beta","stdps1s_beta","meanps1p_beta",...
-    "stdps1p_beta","dfps1_beta","Cohensdps1_beta",... % 7
-    "pps1_gammaL", "meanps1s_gammaL","stdps1s_gammaL","meanps1p_gammaL",...
-    "stdps1p_gammaL","dfps1_gammaL","Cohensdps1_gammaL",... % 7
-    "pps1_gammaH", "meanps1s_gammaH","stdps1s_gammaH","meanps1p_gammaH",...
-    "stdps1p_gammaH","dfps1_gammaH","Cohensdps1_gammaH",... % 7 - 42
-    "pps2_delta", "meanps2s_delta","stdps2s_delta","meanps2p_delta",...
-    "stdps2p_delta","dfps2_delta","Cohensdps2_delta",... % 7
-    "pps2_theta", "meanps2s_theta","stdps2s_theta","meanps2p_theta",...
-    "stdps2p_theta","dfps2_theta","Cohensdps2_theta",... % 7
-    "pps2_alpha", "meanps2s_alpha","stdps2s_alpha","meanps2p_alpha",...
-    "stdps2p_alpha","dfps2_alpha","Cohensdps2_alpha",... % 7
-    "pps2_beta", "meanps2s_beta","stdps2s_beta","meanps2p_beta",...
-    "stdps2p_beta","dfps2_beta","Cohensdps2_beta",... % 7
-    "pps2_gammaL", "meanps2s_gammaL","stdps2s_gammaL","meanps2p_gammaL",...
-    "stdps2p_gammaL","dfps2_gammaL","Cohensdps2_gammaL",... % 7
-    "pps2_gammaH", "meanps2s_gammaH","stdps2s_gammaH","meanps2p_gammaH",...
-    "stdps2p_gammaH","dfps2_gammaH","Cohensdps2_gammaH",... % 7 - 42
-    "pps_delta", "meanps1_delta","stdps1_delta","meanps2_delta",...
-    "stdps2_delta","dfps_delta","Cohensdps_delta",... % 7
-    "pps_theta", "meanps1_theta","stdps1_theta","meanps2_theta",...
-    "stdps2_theta","dfps_theta","Cohensdps_theta",... % 7
-    "pps_alpha", "meanps1_alpha","stdps1_alpha","meanps2_alpha",...
-    "stdps2_alpha","dfps_alpha","Cohensdps_alpha",... % 7
-    "pps_beta", "meanps1_beta","stdps1_beta","meanps2_beta",...
-    "stdps2_beta","dfps_beta","Cohensdps_beta",... % 7
-    "pps_gammaL", "meanps1_gammaL","stdps1_gammaL","meanps2_gammaL",...
-    "stdps2_gammaL","dfps_gammaL","Cohensdps_gammaL",... % 7
-    "pps_gammaH", "meanps1_gammaH","stdps1_gammaH","meanps2_gammaH",...
-    "stdps2_gammaH","dfps_gammaH","Cohensdps_gammaH",... % 7 - 42 - 168
-    ];
-
-FFTData = table('Size',[20000 10], 'VariableTypes', {'string',...
+% initiate table here 
+FFTData = table('Size',[20000 11], 'VariableTypes', {'string','string',...
     'string','string','double','double','double','double','double',...
     'double','double'});
-FFTData.Properties.VariableNames = ["Group","Condition","Layer",...
+FFTData.Properties.VariableNames = ["Group","Subject","Condition","Layer",...
     "trial","delta","theta","alpha","beta","lowgam","highgam"];
 count = 1;
 
@@ -168,8 +95,9 @@ for iLay = 1:length(params.layers)
     grp2S = layTabS.fft(matches(layTabS.group,params.groups{2}),:);
     grp1P = layTabP.fft(matches(layTabP.group,params.groups{1}),:);
     grp2P = layTabP.fft(matches(layTabP.group,params.groups{2}),:);
+    trialsize = size(grp1P{1},2);
     % stack the trials
-    if matches(Comparison,'NoiseBurst')
+    if matches(Comparison,'NoiseBurst') && trialsize > 75
         % noiseburst has too many trials, we want the spread of 20 - 50 dB
         % but we want to pare it down. Randomly take 60 from the 200 trials
         % but keep it the same every time
@@ -260,7 +188,7 @@ for iLay = 1:length(params.layers)
     xlim([0 100])
     xticks(0:10:100)
     line('XData', [0 100], 'YData', [1 1])
-    ax = gca;
+    % ax = gca;
     % ax.XScale = 'log';
     ylim([0.1 100])
     legend({params.groups{1} params.groups{2}})
@@ -292,32 +220,32 @@ for iLay = 1:length(params.layers)
     GHS2 = mean(grp2S(gammahigh_range,:),1);
     % [gh_h,gh_AN,gh_CO,gh_Stats] = aoctool(ages,)
 
-    [ghss_P,ghss_DF,ghss_Cohd,ghssmean1,ghssstd1,ghssmean2,ghssstd2] = ...
+    [ghss_P,~,~,ghssmean1,ghssstd1,ghssmean2,ghssstd2] = ...
         myttest2(GHS1',GHS2',1,'both');
 
     GLS1 = mean(grp1S(gammalow_range,:),1);
     GLS2 = mean(grp2S(gammalow_range,:),1);
-    [glss_P,glss_DF,glss_Cohd,glssmean1,glssstd1,glssmean2,glssstd2] = ...
+    [glss_P,~,~,glssmean1,glssstd1,glssmean2,glssstd2] = ...
         myttest2(GLS1',GLS2',1,'both');
 
     BS1 = mean(grp1S(beta_range,:),1);
     BS2 = mean(grp2S(beta_range,:),1);
-    [bss_P,bss_DF,bss_Cohd,bssmean1,bssstd1,bssmean2,bssstd2] = ...
+    [bss_P,~,~,bssmean1,bssstd1,bssmean2,bssstd2] = ...
         myttest2(BS1',BS2',1,'both');
 
     AS1 = mean(grp1S(alpha_range,:),1);
     AS2 = mean(grp2S(alpha_range,:),1);
-    [ass_P,ass_DF,ass_Cohd,assmean1,assstd1,assmean2,assstd2] = ...
+    [ass_P,~,~,assmean1,assstd1,assmean2,assstd2] = ...
         myttest2(AS1',AS2',1,'both');
 
     TS1 = mean(grp1S(theta_range,:),1);
     TS2 = mean(grp2S(theta_range,:),1);
-    [tss_P,tss_DF,tss_Cohd,tssmean1,tssstd1,tssmean2,tssstd2] = ...
+    [tss_P,~,~,tssmean1,tssstd1,tssmean2,tssstd2] = ...
         myttest2(TS1',TS2',1,'both');
 
     DS1 = mean(grp1S(delta_range,:),1);
     DS2 = mean(grp2S(delta_range,:),1);
-    [dss_P,dss_DF,dss_Cohd,dssmean1,dssstd1,dssmean2,dssstd2] = ...
+    [dss_P,dss_DF,~,dssmean1,dssstd1,dssmean2,dssstd2] = ...
         myttest2(DS1',DS2',1,'both');
 
     % fill the data table
@@ -333,8 +261,13 @@ for iLay = 1:length(params.layers)
     FFTData.beta(count:count+g1size-1)      = BS1';
     FFTData.lowgam(count:count+g1size-1)    = GLS1';
     FFTData.highgam(count:count+g1size-1)   = GHS1';
+    sublist = "0";
+    for iSub = 1:(g1size/60)
+        sublist = vertcat(sublist, repmat(['VM' num2str(iSub)],[60,1]));
+    end
+    FFTData.Subject(count:count+g1size-1)   = sublist(2:end);
     count = count+g1size;
-    % group 1
+    % group 2
     FFTData.Group(count:count+g2size-1)     = repmat(params.groups{2},[g2size,1]);
     FFTData.Condition(count:count+g2size-1) = repmat("Spontaneous",[g2size,1]);
     FFTData.Layer(count:count+g2size-1)     = repmat(params.layers{iLay},[g2size,1]);
@@ -345,6 +278,11 @@ for iLay = 1:length(params.layers)
     FFTData.beta(count:count+g2size-1)      = BS2';
     FFTData.lowgam(count:count+g2size-1)    = GLS2';
     FFTData.highgam(count:count+g2size-1)   = GHS2';
+    sublist = "0";
+    for iSub = 1:(g2size/60)
+        sublist = vertcat(sublist, repmat(['PM' num2str(iSub)],[60,1]));
+    end
+    FFTData.Subject(count:count+g2size-1)   = sublist(2:end);
     count = count+g2size;
         
     S_Means = [dssmean1 dssmean2 tssmean1 tssmean2 assmean1 assmean2 ...
@@ -363,49 +301,16 @@ for iLay = 1:length(params.layers)
         {'B'} {num2str(bss_P)} {'GL'} {num2str(glss_P)} {'GH'} {num2str(ghss_P)}])
     title(['L ' params.layers{iLay} ' ' params.groups{2} ' vs ' params.groups{1} ' Resting'])
     
-    % fill the stats table
-    FFTStats.Layer(iLay)     = params.layers{iLay};
-    % delta
-    FFTStats.pss_delta(iLay) = dss_P; FFTStats.Cohensdss_delta(iLay) = dss_Cohd;
-    FFTStats.meanss1_delta(iLay) = dssmean1; FFTStats.meanss2_delta(iLay) = dssmean2;
-    FFTStats.stdss1_delta(iLay) = dssstd1; FFTStats.stdss2_delta(iLay) = dssstd2; 
-    FFTStats.dfss_delta(iLay) = dss_DF;
-    % theta
-    FFTStats.pss_theta(iLay) = tss_P; FFTStats.Cohensdss_theta(iLay) = tss_Cohd;
-    FFTStats.meanss1_theta(iLay) = tssmean1; FFTStats.meanss2_theta(iLay) = tssmean2;
-    FFTStats.stdss1_theta(iLay) = tssstd1; FFTStats.stdss2_theta(iLay) = tssstd2; 
-    FFTStats.dfss_theta(iLay) = tss_DF;
-    % alpha
-    FFTStats.pss_alpha(iLay) = ass_P; FFTStats.Cohensdss_alpha(iLay) = ass_Cohd;
-    FFTStats.meanss1_alpha(iLay) = assmean1; FFTStats.meanss2_alpha(iLay) = assmean2;
-    FFTStats.stdss1_alpha(iLay) = assstd1; FFTStats.stdss2_alpha(iLay) = assstd2; 
-    FFTStats.dfss_alpha(iLay) = ass_DF;
-    % beta
-    FFTStats.pss_beta(iLay) = bss_P; FFTStats.Cohensdss_beta(iLay) = bss_Cohd;
-    FFTStats.meanss1_beta(iLay) = bssmean1; FFTStats.meanss2_beta(iLay) = bssmean2;
-    FFTStats.stdss1_beta(iLay) = bssstd1; FFTStats.stdss2_beta(iLay) = bssstd2; 
-    FFTStats.dfss_beta(iLay) = bss_DF;
-    % gamma low
-    FFTStats.pss_gammaL(iLay) = glss_P; FFTStats.Cohensdss_gammaL(iLay) = glss_Cohd;
-    FFTStats.meanss1_gammaL(iLay) = glssmean1; FFTStats.meanss2_gammaL(iLay) = glssmean2;
-    FFTStats.stdss1_gammaL(iLay) = glssstd1; FFTStats.stdss2_gammaL(iLay) = glssstd2; 
-    FFTStats.dfss_gammaL(iLay) = glss_DF;
-    % gamma high
-    FFTStats.pss_gammaH(iLay) = ghss_P; FFTStats.Cohensdss_gammaH(iLay) = ghss_Cohd;
-    FFTStats.meanss1_gammaH(iLay) = ghssmean1; FFTStats.meanss2_gammaH(iLay) = ghssmean2;
-    FFTStats.stdss1_gammaH(iLay) = ghssstd1; FFTStats.stdss2_gammaH(iLay) = ghssstd2; 
-    FFTStats.dfss_gammaH(iLay) = ghss_DF;
-
     % difference for each group between pupcall / spont and spont / spont
     GHS1 = mean(ratioSS1(gammahigh_range,:),1);
     GHS2 = mean(ratioSS2(gammahigh_range,:),1);
     GHP1 = mean(ratioPS1(gammahigh_range,:),1);
     GHP2 = mean(ratioPS2(gammahigh_range,:),1);
     % difference group 1
-    [ghps1_P,ghps1_DF,ghps1_Cohd,ghps1meanp,ghps1stdp,ghps1means,ghps1stds] = ...
+    [ghps1_P,~,~,ghps1meanp,ghps1stdp,ghps1means,ghps1stds] = ...
         myttest2(GHP1',GHS1',1,'both');
     % difference group 2
-    [ghps2_P,ghps2_DF,ghps2_Cohd,ghps2meanp,ghps2stdp,ghps2means,ghps2stds] = ...
+    [ghps2_P,~,~,ghps2meanp,ghps2stdp,ghps2means,ghps2stds] = ...
         myttest2(GHP2',GHS2',1,'both');
     
     GLS1 = mean(ratioSS1(gammalow_range,:),1);
@@ -413,10 +318,10 @@ for iLay = 1:length(params.layers)
     GLP1 = mean(ratioPS1(gammalow_range,:),1);
     GLP2 = mean(ratioPS2(gammalow_range,:),1);
     % difference group 1
-    [glps1_P,glps1_DF,glps1_Cohd,glps1meanp,glps1stdp,glps1means,glps1stds] = ...
+    [glps1_P,~,~,glps1meanp,glps1stdp,glps1means,glps1stds] = ...
         myttest2(GLP1',GLS1',1,'both');
     % difference group 2
-    [glps2_P,glps2_DF,glps2_Cohd,glps2meanp,glps2stdp,glps2means,glps2stds] = ...
+    [glps2_P,~,~,glps2meanp,glps2stdp,glps2means,glps2stds] = ...
         myttest2(GLP2',GLS2',1,'both');
 
     BS1 = mean(ratioSS1(beta_range,:),1);
@@ -424,10 +329,10 @@ for iLay = 1:length(params.layers)
     BP1 = mean(ratioPS1(beta_range,:),1);
     BP2 = mean(ratioPS2(beta_range,:),1);
     % difference group 1
-    [bps1_P,bps1_DF,bps1_Cohd,bps1meanp,bps1stdp,bps1means,bps1stds] = ...
+    [bps1_P,~,~,bps1meanp,bps1stdp,bps1means,bps1stds] = ...
         myttest2(BP1',BS1',1,'both');
     % difference group 2
-    [bps2_P,bps2_DF,bps2_Cohd,bps2meanp,bps2stdp,bps2means,bps2stds] = ...
+    [bps2_P,~,~,bps2meanp,bps2stdp,bps2means,bps2stds] = ...
         myttest2(BP2',BS2',1,'both');
 
     AS1 = mean(ratioSS1(alpha_range,:),1);
@@ -435,10 +340,10 @@ for iLay = 1:length(params.layers)
     AP1 = mean(ratioPS1(alpha_range,:),1);
     AP2 = mean(ratioPS2(alpha_range,:),1);
     % difference group 1
-    [aps1_P,aps1_DF,aps1_Cohd,aps1meanp,aps1stdp,aps1means,aps1stds] = ...
+    [aps1_P,~,~,aps1meanp,aps1stdp,aps1means,aps1stds] = ...
         myttest2(AP1',AS1',1,'both');
     % difference group 2
-    [aps2_P,aps2_DF,aps2_Cohd,aps2meanp,aps2stdp,aps2means,aps2stds] = ...
+    [aps2_P,~,~,aps2meanp,aps2stdp,aps2means,aps2stds] = ...
         myttest2(AP2',AS2',1,'both');
 
     TS1 = mean(ratioSS1(theta_range,:),1);
@@ -446,10 +351,10 @@ for iLay = 1:length(params.layers)
     TP1 = mean(ratioPS1(theta_range,:),1);
     TP2 = mean(ratioPS2(theta_range,:),1);
     % difference group 1
-    [tps1_P,tps1_DF,tps1_Cohd,tps1meanp,tps1stdp,tps1means,tps1stds] = ...
+    [tps1_P,~,~,tps1meanp,tps1stdp,tps1means,tps1stds] = ...
         myttest2(TP1',TS1',1,'both');
     % difference group 2
-    [tps2_P,tps2_DF,tps2_Cohd,tps2meanp,tps2stdp,tps2means,tps2stds] = ...
+    [tps2_P,~,~,tps2meanp,tps2stdp,tps2means,tps2stds] = ...
         myttest2(TP2',TS2',1,'both');
 
     DS1 = mean(ratioSS1(delta_range,:),1);
@@ -457,10 +362,10 @@ for iLay = 1:length(params.layers)
     DP1 = mean(ratioPS1(delta_range,:),1);
     DP2 = mean(ratioPS2(delta_range,:),1);
     % difference group 1
-    [dps1_P,dps1_DF,dps1_Cohd,dps1meanp,dps1stdp,dps1means,dps1stds] = ...
+    [dps1_P,dps1_DF,~,dps1meanp,dps1stdp,dps1means,dps1stds] = ...
         myttest2(DP1',DS1',1,'both');
     % difference group 2
-    [dps2_P,dps2_DF,dps2_Cohd,dps2meanp,dps2stdp,dps2means,dps2stds] = ...
+    [dps2_P,dps2_DF,~,dps2meanp,dps2stdp,dps2means,dps2stds] = ...
         myttest2(DP2',DS2',1,'both');
         
     Means1 = [dps1means dps1meanp tps1means tps1meanp aps1means aps1meanp ...
@@ -494,69 +399,6 @@ for iLay = 1:length(params.layers)
         {'B'} {num2str(bps2_P)} {'GL'} {num2str(glps2_P)} {'GH'} {num2str(ghps2_P)}])
     title(['L ' params.layers{iLay} ' ' params.groups{2} ' ' Comparison '/ Resting'])
     
-    % fill the table
-    % delta
-    FFTStats.pps1_delta(iLay) = dps1_P; FFTStats.Cohensdps1_delta(iLay) = dps1_Cohd;
-    FFTStats.meanps1p_delta(iLay) = dps1meanp; FFTStats.meanps1s_delta(iLay) = dps1means;
-    FFTStats.stdps1p_delta(iLay) = dps1stdp; FFTStats.stdps1s_delta(iLay) = dps1stds; 
-    FFTStats.dfps1_delta(iLay) = dps1_DF;
-    % theta
-    FFTStats.pps1_theta(iLay) = tps1_P; FFTStats.Cohensdps1_theta(iLay) = tps1_Cohd;
-    FFTStats.meanps1p_theta(iLay) = tps1meanp; FFTStats.meanps1s_theta(iLay) = tps1means;
-    FFTStats.stdps1p_theta(iLay) = tps1stdp; FFTStats.stdps1s_theta(iLay) = tps1stds; 
-    FFTStats.dfps1_theta(iLay) = tps1_DF;
-    % alpha
-    FFTStats.pps1_alpha(iLay) = aps1_P; FFTStats.Cohensdps1_alpha(iLay) = aps1_Cohd;
-    FFTStats.meanps1p_alpha(iLay) = aps1meanp; FFTStats.meanps1s_alpha(iLay) = aps1means;
-    FFTStats.stdps1p_alpha(iLay) = aps1stdp; FFTStats.stdps1s_alpha(iLay) = aps1stds; 
-    FFTStats.dfps1_alpha(iLay) = aps1_DF;
-    % beta
-    FFTStats.pps1_beta(iLay) = bps1_P; FFTStats.Cohensdps1_beta(iLay) = bps1_Cohd;
-    FFTStats.meanps1p_beta(iLay) = bps1meanp; FFTStats.meanps1s_beta(iLay) = bps1means;
-    FFTStats.stdps1p_beta(iLay) = bps1stdp; FFTStats.stdps1s_beta(iLay) = bps1stds; 
-    FFTStats.dfps1_beta(iLay) = bps1_DF;
-    % gamma low
-    FFTStats.pps1_gammaL(iLay) = glps1_P; FFTStats.Cohensdps1_gammaL(iLay) = glps1_Cohd;
-    FFTStats.meanps1p_gammaL(iLay) = glps1meanp; FFTStats.meanps1s_gammaL(iLay) = glps1means;
-    FFTStats.stdps1p_gammaL(iLay) = glps1stdp; FFTStats.stdps1s_gammaL(iLay) = glps1stds; 
-    FFTStats.dfps1_gammaL(iLay) = glps1_DF;
-    % gamma high
-    FFTStats.pps1_gammaH(iLay) = ghps1_P; FFTStats.Cohensdps1_gammaH(iLay) = ghps1_Cohd;
-    FFTStats.meanps1p_gammaH(iLay) = ghps1meanp; FFTStats.meanps1s_gammaH(iLay) = ghps1means;
-    FFTStats.stdps1p_gammaH(iLay) = ghps1stdp; FFTStats.stdps1s_gammaH(iLay) = ghps1stds; 
-    FFTStats.dfps1_gammaH(iLay) = ghps1_DF;
-
-    % DELTA AGAIN
-    FFTStats.pps2_delta(iLay) = dps2_P; FFTStats.Cohensdps2_delta(iLay) = dps2_Cohd;
-    FFTStats.meanps2p_delta(iLay) = dps2meanp; FFTStats.meanps2s_delta(iLay) = dps2means;
-    FFTStats.stdps2p_delta(iLay) = dps2stdp; FFTStats.stdps2s_delta(iLay) = dps2stds; 
-    FFTStats.dfps2_delta(iLay) = dps2_DF;
-    % theta
-    FFTStats.pps2_theta(iLay) = tps2_P; FFTStats.Cohensdps2_theta(iLay) = tps2_Cohd;
-    FFTStats.meanps2p_theta(iLay) = tps2meanp; FFTStats.meanps2s_theta(iLay) = tps2means;
-    FFTStats.stdps2p_theta(iLay) = tps2stdp; FFTStats.stdps2s_theta(iLay) = tps2stds; 
-    FFTStats.dfps2_theta(iLay) = tps2_DF;
-    % alpha
-    FFTStats.pps2_alpha(iLay) = aps2_P; FFTStats.Cohensdps2_alpha(iLay) = aps2_Cohd;
-    FFTStats.meanps2p_alpha(iLay) = aps2meanp; FFTStats.meanps2s_alpha(iLay) = aps2means;
-    FFTStats.stdps2p_alpha(iLay) = aps2stdp; FFTStats.stdps2s_alpha(iLay) = aps2stds; 
-    FFTStats.dfps2_alpha(iLay) = aps2_DF;
-    % beta
-    FFTStats.pps2_beta(iLay) = bps2_P; FFTStats.Cohensdps2_beta(iLay) = bps2_Cohd;
-    FFTStats.meanps2p_beta(iLay) = bps2meanp; FFTStats.meanps2s_beta(iLay) = bps2means;
-    FFTStats.stdps2p_beta(iLay) = bps2stdp; FFTStats.stdps2s_beta(iLay) = bps2stds; 
-    FFTStats.dfps2_beta(iLay) = bps2_DF;
-    % gamma low
-    FFTStats.pps2_gammaL(iLay) = glps2_P; FFTStats.Cohensdps2_gammaL(iLay) = glps2_Cohd;
-    FFTStats.meanps2p_gammaL(iLay) = glps2meanp; FFTStats.meanps2s_gammaL(iLay) = glps2means;
-    FFTStats.stdps2p_gammaL(iLay) = glps2stdp; FFTStats.stdps2s_gammaL(iLay) = glps2stds; 
-    FFTStats.dfps2_gammaL(iLay) = glps2_DF;
-    % gamma high
-    FFTStats.pps2_gammaH(iLay) = ghps2_P; FFTStats.Cohensdps2_gammaH(iLay) = ghps2_Cohd;
-    FFTStats.meanps2p_gammaH(iLay) = ghps2meanp; FFTStats.meanps2s_gammaH(iLay) = ghps2means;
-    FFTStats.stdps2p_gammaH(iLay) = ghps2stdp; FFTStats.stdps2s_gammaH(iLay) = ghps2stds; 
-    FFTStats.dfps2_gammaH(iLay) = ghps2_DF;
-
     % Finally, difference between groups at pupcall / spont
     % fill the data table
     g1size = length(GHP1); g2size = length(GHP2);
@@ -564,38 +406,82 @@ for iLay = 1:length(params.layers)
     FFTData.Group(count:count+g1size-1)     = repmat(params.groups{1},[g1size,1]);
     FFTData.Condition(count:count+g1size-1) = repmat(Comparison,[g1size,1]);
     FFTData.Layer(count:count+g1size-1)     = repmat(params.layers{iLay},[g1size,1]);
-    FFTData.trial(count:count+g1size-1)     = vertcat((1:20)', repmat((1:50)',[(g1size-20)/50,1])); %repmat((1:50)',[(g1size-20)/50,1]); % altered for VMP02 having 20
+    if sum(contains(params.groups,'VMP'))==1
+        FFTData.trial(count:count+g1size-1) = vertcat((1:20)', repmat((1:50)',[(g1size-20)/50,1])); % altered for VMP02 having 20
+    else
+        FFTData.trial(count:count+g1size-1) = repmat((1:trialsize)',[(g1size)/trialsize,1]);
+    end
     FFTData.delta(count:count+g1size-1)     = DP1';
     FFTData.theta(count:count+g1size-1)     = TP1';
     FFTData.alpha(count:count+g1size-1)     = AP1';
     FFTData.beta(count:count+g1size-1)      = BP1';
     FFTData.lowgam(count:count+g1size-1)    = GLP1';
     FFTData.highgam(count:count+g1size-1)   = GHP1';
+    sublist = "0";
+    if contains(params.groups{1},'VMP')
+        sublist = vertcat(sublist, repmat('VM1',[trialsize,1]));
+        for iSub = 2:6
+            sublist = vertcat(sublist, repmat(['VM' num2str(iSub)],[50,1]));
+        end
+    else
+        for iSub = 1:(g1size/trialsize)
+            sublist = vertcat(sublist, repmat(['VM' num2str(iSub)],[trialsize,1]));
+        end
+    end
+    FFTData.Subject(count:count+g1size-1)   = sublist(2:end);
     count = count+g1size;
     % group 2
     FFTData.Group(count:count+g2size-1)     = repmat(params.groups{2},[g2size,1]);
     FFTData.Condition(count:count+g2size-1) = repmat(Comparison,[g2size,1]);
     FFTData.Layer(count:count+g2size-1)     = repmat(params.layers{iLay},[g2size,1]);
-    FFTData.trial(count:count+g2size-1)     = vertcat((1:50)',(1:50)',(1:50)',(1:24)',(1:50)',(1:50)',(1:50)',(1:50)'); % repmat((1:50)',[g2size/50,1]);
+    if sum(contains(params.groups,'PMP'))==1
+        vertcat((1:50)',(1:50)',(1:50)',(1:24)',(1:50)',(1:50)',(1:50)',(1:50)'); 
+    else
+        try % such bad coding - accounting for 1 missed trial in the click trains
+            FFTData.trial(count:count+g2size-1)     = repmat((1:trialsize)',[(g2size)/trialsize,1]); 
+        catch
+            FFTData.trial(count:count+g2size-1)     = vertcat((1:49)', repmat((1:50)',[(g2size-49)/50,1]));
+        end
+    end
     FFTData.delta(count:count+g2size-1)     = DP2';
     FFTData.theta(count:count+g2size-1)     = TP2';
     FFTData.alpha(count:count+g2size-1)     = AP2';
     FFTData.beta(count:count+g2size-1)      = BP2';
     FFTData.lowgam(count:count+g2size-1)    = GLP2';
     FFTData.highgam(count:count+g2size-1)   = GHP2';
+    sublist = "0";
+    if contains(params.groups{2},'PMP')
+        for iSub = 1:3
+            sublist = vertcat(sublist, repmat(['PM' num2str(iSub)],[50,1]));
+        end
+        sublist = vertcat(sublist, repmat('PM4',[24,1]));
+        for iSub = 5:8
+            sublist = vertcat(sublist, repmat(['PM' num2str(iSub)],[50,1]));
+        end
+    else
+        for iSub = 1:(g2size/trialsize)
+            sublist = vertcat(sublist, repmat(['PM' num2str(iSub)],[trialsize,1]));
+        end
+    end
+    try
+        FFTData.Subject(count:count+g2size-1)   = sublist(2:end);
+    catch
+        sublist = vertcat(sublist, repmat(['PM' '10'],[trialsize-1,1]));
+        FFTData.Subject(count:count+g2size-1)   = sublist(2:end);
+    end
     count = count+g2size;
 
-    [dps_P,dps_DF,dps_Cohd,dpsmean1,dpsstd1,dpsmean2,dpsstd2] = ...
+    [dps_P,dps_DF,~,dpsmean1,dpsstd1,dpsmean2,dpsstd2] = ...
         myttest2(DP1',DP2',1,'both');
-    [tps_P,tps_DF,tps_Cohd,tpsmean1,tpsstd1,tpsmean2,tpsstd2] = ...
+    [tps_P,~,~,tpsmean1,tpsstd1,tpsmean2,tpsstd2] = ...
         myttest2(TP1',TP2',1,'both');
-    [aps_P,aps_DF,aps_Cohd,apsmean1,apsstd1,apsmean2,apsstd2] = ...
+    [aps_P,~,~,apsmean1,apsstd1,apsmean2,apsstd2] = ...
         myttest2(AP1',AP2',1,'both');
-    [bps_P,bps_DF,bps_Cohd,bpsmean1,bpsstd1,bpsmean2,bpsstd2] = ...
+    [bps_P,~,~,bpsmean1,bpsstd1,bpsmean2,bpsstd2] = ...
         myttest2(BP1',BP2',1,'both');
-    [glps_P,glps_DF,glps_Cohd,glpsmean1,glpsstd1,glpsmean2,glpsstd2] = ...
+    [glps_P,~,~,glpsmean1,glpsstd1,glpsmean2,glpsstd2] = ...
         myttest2(GLP1',GLP2',1,'both');
-    [ghps_P,ghps_DF,ghps_Cohd,ghpsmean1,ghpsstd1,ghpsmean2,ghpsstd2] = ...
+    [ghps_P,~,~,ghpsmean1,ghpsstd1,ghpsmean2,ghpsstd2] = ...
         myttest2(GHP1',GHP2',1,'both');
 
     PS_Means = [dpsmean1 dpsmean2 tpsmean1 tpsmean2 apsmean1 apsmean2 ...
@@ -618,44 +504,19 @@ for iLay = 1:length(params.layers)
     savefig(gcf,savename)
     close
 
-    % fill the table
-    % delta
-    FFTStats.pps_delta(iLay) = dps_P; FFTStats.Cohensdps_delta(iLay) = dps_Cohd;
-    FFTStats.meanps1_delta(iLay) = dpsmean1; FFTStats.meanps2_delta(iLay) = dpsmean2;
-    FFTStats.stdps1_delta(iLay) = dpsstd1; FFTStats.stdps2_delta(iLay) = dpsstd2; 
-    FFTStats.dfps_delta(iLay) = dps_DF;
-    % theta
-    FFTStats.pps_theta(iLay) = tps_P; FFTStats.Cohensdps_theta(iLay) = tps_Cohd;
-    FFTStats.meanps1_theta(iLay) = tpsmean1; FFTStats.meanps2_theta(iLay) = tpsmean2;
-    FFTStats.stdps1_theta(iLay) = tpsstd1; FFTStats.stdps2_theta(iLay) = tpsstd2; 
-    FFTStats.dfps_theta(iLay) = tps_DF;
-    % alpha
-    FFTStats.pps_alpha(iLay) = aps_P; FFTStats.Cohensdps_alpha(iLay) = aps_Cohd;
-    FFTStats.meanps1_alpha(iLay) = apsmean1; FFTStats.meanps2_alpha(iLay) = apsmean2;
-    FFTStats.stdps1_alpha(iLay) = apsstd1; FFTStats.stdps2_alpha(iLay) = apsstd2; 
-    FFTStats.dfps_alpha(iLay) = aps_DF;
-    % beta
-    FFTStats.pps_beta(iLay) = bps_P; FFTStats.Cohensdps_beta(iLay) = bps_Cohd;
-    FFTStats.meanps1_beta(iLay) = bpsmean1; FFTStats.meanps2_beta(iLay) = bpsmean2;
-    FFTStats.stdps1_beta(iLay) = bpsstd1; FFTStats.stdps2_beta(iLay) = bpsstd2; 
-    FFTStats.dfps_beta(iLay) = bps_DF;
-    % gamma low
-    FFTStats.pps_gammaL(iLay) = glps_P; FFTStats.Cohensdps_gammaL(iLay) = glps_Cohd;
-    FFTStats.meanps1_gammaL(iLay) = glpsmean1; FFTStats.meanps2_gammaL(iLay) = glpsmean2;
-    FFTStats.stdps1_gammaL(iLay) = glpsstd1; FFTStats.stdps2_gammaL(iLay) = glpsstd2; 
-    FFTStats.dfps_gammaL(iLay) = glps_DF;
-    % gamma high
-    FFTStats.pps_gammaH(iLay) = ghps_P; FFTStats.Cohensdps_gammaH(iLay) = ghps_Cohd;
-    FFTStats.meanps1_gammaH(iLay) = ghpsmean1; FFTStats.meanps2_gammaH(iLay) = ghpsmean2;
-    FFTStats.stdps1_gammaH(iLay) = ghpsstd1; FFTStats.stdps2_gammaH(iLay) = ghpsstd2; 
-    FFTStats.dfps_gammaH(iLay) = ghps_DF;
-
 end
 
 % save table 
-writetable(FFTStats,[params.groups{1} 'v' params.groups{2} '_' type '_' Comparison  '_FFTStats.csv'])
+
+if exist([outfolder '\FFT'],'dir')
+    cd([outfolder '\FFT']);
+else
+    mkdir([outfolder '\FFT']), cd([outfolder '\FFT']);
+end
+
 toDelete = FFTData.trial == 0;
 FFTData(toDelete,:) = [];
 writetable(FFTData,[params.groups{1} 'v' params.groups{2} '_' type '_' Comparison  '_FFTData.csv'])
 
 cd(homedir)
+addpath(genpath(homedir))
