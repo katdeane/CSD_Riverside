@@ -91,11 +91,10 @@ for iStim = 1:length(stimList)
     colorbar
 end
 
-cd(figfolder);
-if exist('Average_CSD','dir')
-    cd Average_CSD;
+if exist([figfolder '\Average_CSD'],'dir')
+    cd([figfolder '\Average_CSD']);
 else
-    mkdir Average_CSD, cd Average_CSD;
+    mkdir([figfolder '\Average_CSD']), cd([figfolder '\Average_CSD']);
 end
 
 h = gcf;
@@ -121,11 +120,10 @@ for iStim = 1:length(stimList)
     colorbar
 end
 
-cd(figfolder); 
-if exist('Average_LFP','dir')
-    cd Average_LFP;
+if exist([figfolder '\Average_LFP'],'dir')
+    cd([figfolder '\Average_LFP']);
 else
-    mkdir Average_LFP, cd Average_LFP;
+    mkdir([figfolder '\Average_LFP']), cd([figfolder '\Average_LFP']);
 end
 
 h = gcf;

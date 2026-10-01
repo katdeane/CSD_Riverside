@@ -128,19 +128,6 @@ for iSub = 1:subjects
             xline(BL+stimDur+1,'LineWidth',2) % offset
             title([num2str(stimList(iStim)) ' ' thisUnit])
 
-            if contains('All',layers{iLay}) && iStim==6 && contains('NoiseBurst',Condition)
-                % only for the avrec 70 dB noiseburst;
-                % store the highest peak of each measurement for later correction;
-                % correction will be per animal so all layers
-                % and frequencies will be corrected by this output
-                PeakofAvgCSD(iSub) = {max(max(traceCSD,[],2))};
-                PeakofAvgLFP(iSub) = {max(max(traceLFP,[],2))};
-            elseif contains('All',layers{iLay}) && iStim == 1
-                % in every other case, just take the first stim
-                PeakofAvgCSD(iSub) = {max(max(traceCSD,[],2))};
-                PeakofAvgLFP(iSub) = {max(max(traceLFP,[],2))};
-            end
-
             % peak detection over single trials
             if contains(Condition, 'ClickTrain')
                 reprate = stimList(iStim);
@@ -178,6 +165,21 @@ for iSub = 1:subjects
                 end
             end
 
+            % to normalize, take the very trial-averaged detected peak response to NB
+            if matches(type,'Awake')
+                if contains('All',layers{iLay}) && contains('NoiseBurst',Condition)
+                    PeakofAvgCSD(iSub) = {nanmean(peakout)};
+                end
+            elseif matches(type,'Anesthetized')
+                if contains('All',layers{iLay}) && iStim==6 && contains('NoiseBurst',Condition)
+                    % only for the avrec 70 dB noiseburst;
+                    % store the highest peak of each measurement for later correction;
+                    % correction will be per animal so all layers
+                    % and frequencies will be corrected by this output
+                    PeakofAvgCSD(iSub) = {nanmean(peakout)};
+                end
+            end
+
             % and store the it single trial
             AvrecCSDAll{iStim,iLay,iSub} = traceCSD;
             AvrecLFPAll{iStim,iLay,iSub} = traceLFP;
@@ -195,20 +197,22 @@ for iSub = 1:subjects
         savefig(h,[Condition '_LFPTrace_' layers{iLay} '_' AnName])
         close (h)
     end
-
+    
     cd(homedir);
 end
 
 % save it out
-cd(figfolder);
 if exist([figfolder '\Group_Avrec'],'dir')
     cd([figfolder '\Group_Avrec']);
 else
     mkdir([figfolder '\Group_Avrec']), cd([figfolder '\Group_Avrec']);
 end
+if contains('NoiseBurst',Condition)
+    save([Group '_' Condition '_NormTo'],'PeakofAvgCSD');
+end
 if exist('AvrecCSDAll','var')
-    save([Group '_' Condition '_AvrecCSDAll'],'AvrecCSDAll','PeakofAvgCSD');
-    save([Group '_' Condition '_AvrecLFPAll'],'AvrecLFPAll','PeakofAvgLFP');
+    save([Group '_' Condition '_AvrecCSDAll'],'AvrecCSDAll');
+    save([Group '_' Condition '_AvrecLFPAll'],'AvrecLFPAll');
 
     % save out collected peaks too
     % give the table variable names after everything is collected
@@ -217,7 +221,6 @@ if exist('AvrecCSDAll','var')
 
     % save the table in the main folder - needs to be moved to the Julia folder
     % for stats
-    cd(outfolder);
     if exist([outfolder '\TracePeaks'],'dir')
         cd([outfolder '\TracePeaks']);
     else
@@ -225,5 +228,6 @@ if exist('AvrecCSDAll','var')
     end
     writetable(PeakData,[Group '_' Condition '_AVRECPeak.csv'])
 end
+
 cd(homedir)
 addpath(genpath(homedir));
