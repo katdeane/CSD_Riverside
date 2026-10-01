@@ -14,7 +14,16 @@ for iGro = 1:length(Groups)
 
     for iSub = 1:length(animals)
         input = [animals{iSub} '_Spontaneous_1_WT.mat'];
-        load(input, 'wtTable')
+        if exist(input,'file')
+            load(input, 'wtTable')
+            spontdur = 1:2000;
+        else 
+            input = [animals{iSub} '_NoiseBurst_70_WT.mat'];
+            load(input, 'wtTable')
+            % if the spont measurement doesn't exist, get the 1:300 ms 
+            % before stim onset at 400 ms in NB
+            spontdur = 1:300; 
+        end
         for iLay = 1:length(params.layers)
             % split out the layer
             layWT = wtTable(matches(wtTable.layer, params.layers{iLay}),:);
@@ -22,8 +31,8 @@ for iGro = 1:length(Groups)
             % rows
             PowerOut = getpowerout(layWT);
             PhaseOut = getphaseout(layWT);
-            BG_Power(:,iSub,iLay) = mean(squeeze(PowerOut),2);
-            BG_Phase(:,iSub,iLay) = mean(squeeze(PhaseOut),2);
+            BG_Power(:,iSub,iLay) = mean(squeeze(PowerOut(:,:,spontdur)),2);
+            BG_Phase(:,iSub,iLay) = mean(squeeze(PhaseOut(:,:,spontdur)),2);
 
         end % layer
     end % subject

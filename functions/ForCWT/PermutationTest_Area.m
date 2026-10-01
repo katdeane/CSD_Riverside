@@ -41,7 +41,7 @@ clear animals channels Cond Layer
 cd (homedir); cd output; cd WToutput
 % load('Cone.mat','cone');
 
-for iCond = 1:length(params.condList)
+for iCond = 3:length(params.condList)
     tic
     disp(['For condition: ' params.condList{iCond}])
 
@@ -68,19 +68,24 @@ for iCond = 1:length(params.condList)
     for iStim = 1:length(stimList)
         disp(['For stimulus: ' num2str(stimList(iStim))])
 
-        clear group1WT group2WT
+        clear group1WT group2WT skip1 skip2
         % stack first group data
         for iIn = 1:length(grp1sub)
             input = [grp1sub{iIn} '_' grp1cond ...
                 '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
+                if exist('skip1','var')
+                    skip1 = [skip1 iIn];
+                else
+                    skip1 = iIn;
+                end
                 continue
             end
             load(input, 'wtTable')
             if exist('group1WT','var')
                 group1WT = [group1WT; wtTable]; %#ok<AGROW>
             else
-                group1WT = wtTable; clear wtTable
+                group1WT = wtTable;
             end
             clear wtTable
         end
@@ -90,19 +95,41 @@ for iCond = 1:length(params.condList)
             input = [grp2sub{iIn} '_' grp2cond ...
                 '_' num2str(stimList(iStim)) '_WT.mat'];
             if contains(input,'MWT16b_NoiseBurst') || ~exist(input,'file')
+                if exist('skip2','var')
+                    skip2 = [skip2 iIn];
+                else
+                    skip2 = iIn;
+                end
                 continue
             end
             load(input, 'wtTable')
             if exist('group2WT','var')
                 group2WT = [group2WT; wtTable]; %#ok<AGROW>
             else
-                group2WT = wtTable; clear wtTable
+                group2WT = wtTable;
             end
             clear wtTable
         end
 
+        % normalize to the background if it was collected for both
+        % groups (run TimeFreqBackground.m)
+        if exist([Groups{1} '_Background.mat'],'file') && exist([Groups{2} '_Background.mat'],'file')
+            if contains(whichtest, 'Power') || contains(whichtest, 'STP')
+                load([Groups{1} '_Background.mat'],'BG_Power');
+                grp1BG = BG_Power; clear BG_Power
+                load([Groups{2} '_Background.mat'],'BG_Power');
+                grp2BG = BG_Power; clear BG_Power
+            elseif contains(whichtest, 'Phase')
+                load([Groups{1} '_Background.mat'],'BG_Phase');
+                grp1BG = BG_Phase; clear BG_Phase
+                load([Groups{2} '_Background.mat'],'BG_Phase');
+                grp2BG = BG_Phase; clear BG_Phase
+            end
+            % it comes in as 54(chan) x animal(#) x layer
+        end
+
         % loop through layers here
-        %Stack the individual animals' data (animal#x54x600)
+        %Stack the individual animals' data (animal(#) x 54(chan) x time(ms))
         for iLay = 1:length(params.layers)
 
             disp(['Layer ' params.layers{iLay}])
@@ -124,6 +151,25 @@ for iCond = 1:length(params.condList)
                 grp1Out = getphaseout(grp1Lay);
                 grp2Out = getphaseout(grp2Lay);
 
+            end
+
+            if exist([Groups{1} '_Background.mat'],'file') && exist([Groups{2} '_Background.mat'],'file') 
+                % pull layer and orient animal(#) x 54(chan)
+                grp1BGLay = grp1BG(:,:,iLay)'; 
+                grp2BGLay = grp2BG(:,:,iLay)';
+
+                % remove any subjects that didn't come with their own
+                % wtTable
+                if exist('skip1','var')
+                    grp1BGLay(skip1,:) = [];
+                end
+                if exist('skip2','var')
+                    grp2BGLay(skip2,:) = [];
+                end
+
+               % normalization is done per subject across each channel
+               grp1Out = grp1Out ./ grp1BGLay; 
+               grp2Out = grp2Out ./ grp2BGLay; 
             end
 
             % relevant spectral bands: theta - high gamma
@@ -170,18 +216,17 @@ for iCond = 1:length(params.condList)
             % posclust(obs_clusters(19:54,:)<0) = 0;
             % [B,~] = bwboundaries(posclust);
 
-            cd(figfolder); 
-            if exist('CWT','dir') == 7
-                cd CWT
+            if exist([figfolder '\CWT'],'dir') == 7
+                cd([figfolder '\CWT'])
             else
-                mkdir('CWT'),cd CWT
+                mkdir(([figfolder '\CWT'])),cd([figfolder '\CWT'])
             end
 
             if yespermute == 1
                 %% Permutation Step 3 - do the permute
 
                 % Jeff's:
-                % Monte Carlo permutation: Tperm,POS and NEG ClusterSizes
+                % Monte Carlo permutation: POS and NEG ClusterSizes
 
                 % stack groups together
                 AllData = cat(1,grp1Out,grp2Out); % (19 x 54 x 4000)

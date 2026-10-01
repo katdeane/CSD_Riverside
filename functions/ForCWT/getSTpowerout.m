@@ -1,4 +1,4 @@
-function Power = getpowerout(SpectData)
+function Power = getSTpowerout(SpectData)
 
 %Stack the individual animals' data (animal#x54xtimeaxis)
 subjects = unique(SpectData.animal);
