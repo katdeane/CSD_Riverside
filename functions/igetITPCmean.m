@@ -130,12 +130,12 @@ for iStim = 1:length(stimList)
     end % subject
 end % stimulus presentation
 
-cd(outfolder); 
-if exist('ITPCmean','dir')
-    cd ITPCmean;
+if exist([outfolder '\ITPCmean'],'dir')
+    cd([outfolder '\ITPCmean']);
 else
-    mkdir ITPCmean, cd ITPCmean;
+    mkdir([outfolder '\ITPCmean']), cd([outfolder '\ITPCmean']);
 end
+
 if length(Groups) == 1
     writetable(DataT,[Groups{1} '_' Condition '_ITPCmean.csv'])
 elseif length(Groups) == 2

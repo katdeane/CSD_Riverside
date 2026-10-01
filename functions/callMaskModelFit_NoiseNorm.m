@@ -6,8 +6,8 @@ function callMaskModelFit_NoiseNorm(homedir, outfolder)
 % squares.
 
 % first pull data - use average data
-pTab = readtable('PMA_MaskCall_AVG_NormAVRECPeak.csv');
-vTab = readtable('VMA_MaskCall_AVG_NormAVRECPeak.csv');
+pTab = readtable('PMA_MaskCall_AVRECPeak.csv');
+vTab = readtable('VMA_MaskCall_AVRECPeak.csv');
 
 % set some parameters for plotting
 x = 1:4; % x axis
@@ -32,7 +32,7 @@ for iLay = 1:length(layers)
 
     % set up figure
     Maskfig = tiledlayout('flow');
-    title(Maskfig,[layers{iLay} ' Exp Decay Fits on Normalized Data'])
+    title(Maskfig,[layers{iLay} ' Exp Decay Fits on Noise Normalized Data'])
 
     % loop through calls
     for iCall = 1:10
@@ -49,12 +49,19 @@ for iLay = 1:length(layers)
 
             % pull out the data
             subTab = pcallTab(matches(pcallTab.Animal, sublistp{iSub}),:);
-            suby   = subTab.PeakAmp';
+            % y   = subTab.NormPeak';
+            % y   = reshape(y,[50 4]);
+
+            zero  = nanmean(subTab.NormPeak(subTab.ClickFreq == 0));
+            lvl1  = nanmean(subTab.NormPeak(subTab.ClickFreq == 1));
+            lvl2  = nanmean(subTab.NormPeak(subTab.ClickFreq == 2));
+            lvl3  = nanmean(subTab.NormPeak(subTab.ClickFreq == 3));
+            y = [zero lvl1 lvl2 lvl3];
 
             % model on this data
             % submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
             % plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakB)
-            scatter(x,suby,'filled','MarkerEdgeColor',colorWeakB,'MarkerFaceColor',colorWeakB)
+            scatter(x,y,'filled','MarkerEdgeColor',colorWeakB,'MarkerFaceColor',colorWeakB)
         end
 
         %virgins
@@ -62,24 +69,31 @@ for iLay = 1:length(layers)
 
             % pull out the data
             subTab = vcallTab(matches(vcallTab.Animal, sublistv{iSub}),:);
-            suby   = subTab.PeakAmp';
+            % y   = subTab.NormPeak';
+            % y   = reshape(y,[50 4]);
+
+            zero  = nanmean(subTab.NormPeak(subTab.ClickFreq == 0));
+            lvl1  = nanmean(subTab.NormPeak(subTab.ClickFreq == 1));
+            lvl2  = nanmean(subTab.NormPeak(subTab.ClickFreq == 2));
+            lvl3  = nanmean(subTab.NormPeak(subTab.ClickFreq == 3));
+            y = [zero lvl1 lvl2 lvl3];
 
             % model on this data
             % submod = lsqnonlin(@(p) ( suby -  p(1)*(1+exp((x-p(2))/p(3))) ),[min(suby) 0.1 -1] );
             % plot(smooth_x,submod(1)*(1+exp((smooth_x-submod(2))/submod(3))),'Color',colorWeakR)
-            scatter(x,suby,'filled','MarkerEdgeColor',colorWeakR,'MarkerFaceColor',colorWeakR)
+            scatter(x,y,'filled','MarkerEdgeColor',colorWeakR,'MarkerFaceColor',colorWeakR)
         end
 
         % get data for each condition
-        pzero  = mean(pcallTab.PeakAmp(pcallTab.ClickFreq == 0));
-        plvl1  = mean(pcallTab.PeakAmp(pcallTab.ClickFreq == 1));
-        plvl2  = mean(pcallTab.PeakAmp(pcallTab.ClickFreq == 2));
-        plvl3  = mean(pcallTab.PeakAmp(pcallTab.ClickFreq == 3));
+        pzero  = nanmean(pcallTab.NormPeak(pcallTab.ClickFreq == 0));
+        plvl1  = nanmean(pcallTab.NormPeak(pcallTab.ClickFreq == 1));
+        plvl2  = nanmean(pcallTab.NormPeak(pcallTab.ClickFreq == 2));
+        plvl3  = nanmean(pcallTab.NormPeak(pcallTab.ClickFreq == 3));
 
-        vzero  = mean(vcallTab.PeakAmp(vcallTab.ClickFreq == 0));
-        vlvl1  = mean(vcallTab.PeakAmp(vcallTab.ClickFreq == 1));
-        vlvl2  = mean(vcallTab.PeakAmp(vcallTab.ClickFreq == 2));
-        vlvl3  = mean(vcallTab.PeakAmp(vcallTab.ClickFreq == 3));
+        vzero  = nanmean(vcallTab.NormPeak(vcallTab.ClickFreq == 0));
+        vlvl1  = nanmean(vcallTab.NormPeak(vcallTab.ClickFreq == 1));
+        vlvl2  = nanmean(vcallTab.NormPeak(vcallTab.ClickFreq == 2));
+        vlvl3  = nanmean(vcallTab.NormPeak(vcallTab.ClickFreq == 3));
 
         % build model fit
         py = [pzero plvl1 plvl2 plvl3];

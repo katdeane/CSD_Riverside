@@ -1,67 +1,62 @@
-function igetITPCmeanPCal(homedir,Groups,whichtest)
+function igetITPCmeanPCal(homedir,outfolder,Group,Condition,whichtest,type)
 
 % each WT table is saved as *subject*_*condition*_*stimPresentation*_WT.mat
 % meaning we can call them in whatever order we want to save. Therefore
 % we'll work backwards, loop through stim presentation, subject.
 
 % get subject list and variables
-if length(Groups) == 1
-    run([Groups{1} '.m'])
-    subList = animals;
-    clear animals
-elseif length(Groups) == 2
-    run([Groups{1} '.m'])
-    grp1sub = animals;
-    clear animals
-    run([Groups{2} '.m'])
-    subList = [grp1sub animals];
-    clear animals grp1sub
+run([Group{1} '.m'])
+subList = animals;
+clear animals
+
+[stimList, ~, ~, ~, ~,~,~,~] = ...
+    StimVariableCWT(Condition,1,type);
+
+if matches(Condition,'Pupcall_1')
+    load('PupTimes.mat','PupTimes')
+    PupTimes = PupTimes(:,1);
+    PupTimes = PupTimes .* 0.9856; % 192000/194800 (fixing fs)
+    PupTimes = PupTimes + 0.400; % add the prestimulus time
+    TimeListOn = PupTimes .* 1000; % match axes for CSD
+elseif matches(Condition,'ShortCall') || matches(Condition,'MaskCall')
+    load('ShortPupTimes.mat','ShortPupTimes')
+    ShortPupTimes = ShortPupTimes(:,1);
+    ShortPupTimes = ShortPupTimes .* 0.9856; % 192000/194800 (fixing fs)
+    ShortPupTimes = ShortPupTimes + 0.400; % add the prestimulus time
+    TimeListOn = ShortPupTimes .* 1000; % match axes for CSD
+elseif matches(Condition,'NoiseBurst2pt5Hz')
+    TimeListOn = [400; 800; 1200]; % already adding 400 for BL 
+else
+    error('Not for this stimulus type')
 end
 
-Condition = {'gapASSR_2' 'gapASSR_4' 'gapASSR_6' 'gapASSR_8'}; 
-%'Pupcall_1' 'ClickTrain_5' 'gapASSR_10' 'NoiseBurst_20' 'NoiseBurst_50' 'NoiseBurst_70'
-for iCond = 1:length(Condition)
+layers = {'II' 'IV' 'Va' 'Vb' 'VI'};
+count = 1;
 
-    if matches(Condition{iCond},'Pupcall_1')
-        load('PupTimes.mat','PupTimes')
-        PupTimes = PupTimes .* 0.9856; % 192000/194800 (fixing fs)
-        PupTimes = PupTimes + 0.400; % add the prestimulus time
-        TimeListOn = PupTimes .* 1000; % match axes for CSD
-    elseif matches(Condition{iCond},'ClickTrain_5')
-        TimeListOn = 400 + [0 200 400 600 800 1000 1200 1400 1600 1800 2000];
-    elseif contains(Condition{iCond},'gapASSR')
-        TimeListOn = 400 + [250, 750, 1250, 1750, 2250, 2750];
-    elseif contains(Condition{iCond},'NoiseBurst')
-        TimeListOn = 400;
-    else
-        error('how did you do this?')
-    end
+% initialize table
+DataT = table('Size',[length(layers)*length(TimeListOn)*length(stimList)*length(subList) 10],...
+    'VariableTypes', {'string','string','string','string','double',...
+    'double','double','double','double','string'});
 
-    layers = {'II' 'IV' 'Va' 'Vb' 'VI'};
-    count = 1;
+% S = single, A = average, TH = thalamic, CO = cortical, CN = continue
+DataT.Properties.VariableNames = ["Group", "Subject", "Stimulus",...
+    "Layer", "Theta_mean", "Alpha_mean", "Beta_mean",....
+    "GammaLow_mean", "GammaHigh_mean", "TimeWindow"];
 
-    % initialize table
-    DataT = table('Size',[length(layers)*length(TimeListOn)*length(subList) 9],...
-        'VariableTypes', {'string','string','string','double',...
-        'double','double','double','double','double'});
+for iStim = 1:length(stimList)
 
-    % S = single, A = average, TH = thalamic, CO = cortical, CN = continue
-    DataT.Properties.VariableNames = ["Group", "Subject",...
-        "Layer", "Order_Presentation", "Theta_mean", "Alpha_mean", "Beta_mean",....
-        "GammaLow_mean", "GammaHigh_mean"];
+    disp(['Stim Presentation ' num2str(stimList(iStim))])
 
     for iSub = 1:length(subList)
 
         disp(['Subject ' subList{iSub}])
-        input = [subList{iSub} '_' Condition{iCond} '_WT.mat'];
+        input = [subList{iSub} '_' Condition '_' num2str(stimList(iStim)) '_WT.mat'];
         if ~exist(input,'file')
             continue
         end
         load(input,'wtTable')
 
         for iLay = 1:length(layers)
-
-            disp(['Layer ' layers{iLay}])
 
             WTLay = wtTable(matches(wtTable.layer, layers{iLay}),:);
 
@@ -78,7 +73,7 @@ for iCond = 1:length(Condition)
                 ON = round(TimeListOn(iOn));
 
                 % relevant spectral bands
-                if contains(Condition{iCond},'gapASSR') 
+                if contains(Condition,'gapASSR')
                     % narrowed to specific areas
                     DataT.Theta_mean(count)     = NaN;
                     DataT.Alpha_mean(count)     = NaN;
@@ -98,24 +93,23 @@ for iCond = 1:length(Condition)
                 % take the mean and save metadata
                 DataT.Group(count)              = wtTable.group{1};
                 DataT.Subject(count)            = subList{iSub};
+                DataT.Stimulus(count)           = num2str(stimList(iStim));
                 DataT.Layer(count)              = layers{iLay};
                 DataT.Order_Presentation(count) = iOn;
+                DataT.TimeWindow(count)         = [num2str(ON) ':' num2str(ON+200)];
                 count = count + 1;
 
             end % time window
         end % layer
     end % subject
 
-    cd(homedir); cd output;
-    if exist('ITPCmean','dir')
-        cd ITPCmean;
+    if exist([outfolder '\ITPCmean'],'dir')
+        cd([outfolder '\ITPCmean']);
     else
-        mkdir ITPCmean, cd ITPCmean;
+        mkdir([outfolder '\ITPCmean']), cd([outfolder '\ITPCmean']);
     end
-    if length(Groups) == 1
-        writetable(DataT,[Groups{1} '_' Condition{iCond} '_ITPCmean.csv'])
-    elseif length(Groups) == 2
-        writetable(DataT,[Groups{1} 'and' Groups{2} '_' Condition{iCond} '_ITPCmean.csv'])
-    end
+    writetable(DataT,[Group{1} '_' Condition '_ITPCmean.csv'])
+
 end
 cd(homedir)
+addpath(genpath(homedir))
