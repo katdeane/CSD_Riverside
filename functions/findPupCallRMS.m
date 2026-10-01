@@ -6,11 +6,12 @@
 % is based on the RPvdsEx playing (this is at max fs in the software)
 fs  = 194800;
 y   = y(:,1);
+dt  = 1/fs;
 t   = 0:dt:(length(y)*dt)-dt;
 
 % figure
 % nexttile
-% plot(t,y,'k'); xlabel('PupCall');
+% plot(t,y,'w'); xlabel('PupCall');
 % xlim([0 26])
 % ylim([-1 1])
 
