@@ -65,7 +65,8 @@ elseif contains(Condition,'ShortCall')
 elseif contains(Condition,'MaskCall')
     condname = 'MaskCall';
     tidbit = [' ' whichstim 'level '];
-    thisxlim = [300 4500];
+    thisxlim = [2400 3600];
+    % thisxlim = [300 4500];
     thisxtick = 400:400:4800;
     thisxtlab = 0:400:4400;
 elseif contains(Condition,'NoiseBurst2pt5Hz')
