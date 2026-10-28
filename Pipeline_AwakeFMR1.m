@@ -13,7 +13,7 @@
 
 clear; clc;
 
-% set working directory; change for your station
+% set working directory; add for your station
 if exist('F:\CSD_Riverside','dir')
     cd('F:\CSD_Riverside'); 
 elseif exist('E:\CSD_Riverside','dir')
@@ -36,8 +36,8 @@ end
 Groups = {'AWT' 'AKO' 'CKH'};  %'AWT' 'AKO' 'CKH'
 % Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
-    'gapASSR' 'postNoiseBurst'};
-% resultant CSD color map axis:ar
+    'gapASSR' 'postNoiseBurst'}; % 'Tonotopy'
+% resultant CSD color map axis
 c_axis = [-0.2 0.2]; 
 
 %% Data generation per subject ⊂◉‿◉つ
@@ -47,34 +47,35 @@ c_axis = [-0.2 0.2];
 DynamicCSD(homedir, figfold, Condition, Groups, c_axis,'Awake')
 
 % LFP single subject figures
-singleLFPfig(homedir, figfold, Groups, Condition,[-50 50],'Awake')
+% singleLFPfig(homedir, figfold, Groups, Condition,[-50 50],'Awake')
 
 %% Group pics (⌐▨_▨)
 
-% generate group averaged CSDs based on stimuli (does not BF sort)
+% generate group averaged CSDs based on stimuli (does not BF sort for Tonotopy)
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
-
         disp(['Average CSDs & LFPs for ' Groups{iGro} ' ' Condition{iST}])
         tic
         AvgCSDfig(homedir, figfold, Groups{iGro}, Condition{iST},c_axis,[-50 50],'Awake')
         toc
-
     end
 end
 
-%% trial-averaged AVREC and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
+%% trial-averaged column and layer trace generation / peak detection ┏ʕ •ᴥ•ʔ┛
 
+% This script extracts peak data and outputs GRP_Cond_AVRECPEAK.csv file
 for iGro = 1:length(Groups)
     for iST = 1:length(Condition)
         disp(['Single traces for ' Groups{iGro} ' ' Condition{iST}])
         tic 
+        % avrec is currently a misnomer, it's taking the nan-source data
+        % from all channels now instead of averaging the rectified column
         Avrec_Layers(homedir, figfold, outfold, Groups{iGro}, Condition{iST},'Awake')
         toc
     end
 end
 
-%% Group AVREC and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
+%% Group column and layer traces / average peak detection ʕ ◕ᴥ◕ ʔ
 
 disp('Producing group-averaged traces for each group')
 for iGro = 1:length(Groups)
@@ -88,7 +89,7 @@ end
 
 %% Peak and RMS statistics - this will be deleted when the figure output from R is good to go
 
-ClickTrainRatio_3grp(homedir,outfold,Groups)
+% ClickTrainRatio_3grp(homedir,outfold,Groups)
 
 % NoiseBurstStats_3grp(homedir,Groups,70)
 % ClickTrainStats_3grp(homedir,Groups)
