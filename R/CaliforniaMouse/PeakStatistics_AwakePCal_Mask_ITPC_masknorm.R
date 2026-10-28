@@ -61,7 +61,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_1_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(1) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(1) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -75,7 +75,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 1 LVI")
+  ggtitle("ITPC means for Call 1 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_1_IV_masknormITPC.png")
 
@@ -190,7 +190,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_2_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(2) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(2) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -204,7 +204,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 2 LVI")
+  ggtitle("ITPC means for Call 2 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_2_IV_masknormITPC.png")
 
@@ -319,7 +319,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_3_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(3) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(3) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -333,7 +333,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 3 LVI")
+  ggtitle("ITPC means for Call 3 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_3_IV_masknormITPC.png")
 
@@ -448,7 +448,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_4_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(4) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(4) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -462,7 +462,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 4 LVI")
+  ggtitle("ITPC means for Call 4 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_4_IV_masknormITPC.png")
 
@@ -577,7 +577,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_5_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(5) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(5) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -591,7 +591,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 5 LVI")
+  ggtitle("ITPC means for Call 5 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_5_IV_masknormITPC.png")
 
@@ -706,7 +706,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_6_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(6) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(6) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -720,7 +720,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 6 LVI")
+  ggtitle("ITPC means for Call 6 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_6_IV_masknormITPC.png")
 
@@ -835,7 +835,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_7_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(7) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(7) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -849,7 +849,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 7 LVI")
+  ggtitle("ITPC means for Call 7 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_7_IV_masknormITPC.png")
 
@@ -964,7 +964,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_8_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(8) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(8) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -978,7 +978,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 8 LVI")
+  ggtitle("ITPC means for Call 8 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_8_IV_masknormITPC.png")
 
@@ -1093,7 +1093,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_9_II_masknormITP
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(9) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(9) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -1107,7 +1107,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 9 LVI")
+  ggtitle("ITPC means for Call 9 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_9_IV_masknormITPC.png")
 
@@ -1222,7 +1222,7 @@ ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_10_II_masknormIT
 ITPC_MC_lmer <-
   lmer(ITPC_mean ~ Freq * Mask * Group + (1 | Subject),
        data=ITPC_MC,
-       subset = (Order_Presentation %in% c(10) & Layer %in% c("VI")),
+       subset = (Order_Presentation %in% c(10) & Layer %in% c("IV")),
        REML=TRUE)
 
 ITPC_MC_emm_4fig <-
@@ -1236,7 +1236,7 @@ ITPC_MC_emm_4fig %>%
   geom_errorbar(aes(ymin=0, ymax=upper.CL),
                 width=0.9, position="dodge") +
   facet_wrap("Mask") +
-  ggtitle("ITPC means for Call 10 LVI")
+  ggtitle("ITPC means for Call 10 LIV")
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MC_10_IV_masknormITPC.png")
 
