@@ -123,7 +123,7 @@ elseif matches(type,'Awake')
     if contains(Condition,'NoiseBurst')
         if contains(Condition,'NoiseBurst2pt5Hz')
             stimList = [20, 30, 40, 50, 60, 70];
-            thisUnit = 'dB';
+            thisUnit = 'dB att';
             stimDur  = 1000*sr_mult; % ms
             stimITI  = 1000*sr_mult; % actually 2 s
             thisTag  = 'noise';
