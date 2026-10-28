@@ -146,3 +146,91 @@ peakSC_emm_4fig %>%
 
 ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_SCpeaks_basenorm.png")
 
+## Noiseburst 2.5 Hz
+
+# Load Data
+VMA_peakNB <- read_csv("E:/CSD_Riverside/output/CaliAwake/TracePeaks/VMA_NoiseBurst2pt5Hz_AVRECPeak.csv")
+PMA_peakNB <- read_csv("E:/CSD_Riverside/output/CaliAwake/TracePeaks/PMA_NoiseBurst2pt5Hz_AVRECPeak.csv")
+
+# bind groups into one dataset
+peakNB <- bind_rows(VMA_peakNB, PMA_peakNB)%>%
+  mutate(Click = ordered(OrderofClick))
+
+# Multilevel Anova
+peakNB_lmer <-
+  lmer(log(BasePeak) ~ Layer * Click * Group + (1 | Animal),
+       data=peakNB,
+       subset = (ClickFreq %in% c("20")),
+       REML=TRUE)
+write.csv(anova(peakNB_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_ANOVA_basenorm_20.csv")
+
+
+# posthoc contrasts
+peakNB_emm <-
+  emmeans(peakNB_lmer, pairwise ~ Group | Click:Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakNB_emm, sigma=sigma(peakNB_lmer),
+           edf=df.residual(peakNB_lmer))
+write_csv(left_join(as_tibble(peakNB_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast, Click, Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_emmeans_basenorm_20.csv")
+
+# bar plots
+peakNB_emm_4fig <-
+  emmeans(peakNB_lmer, specs=c("Click","Layer", "Group"))
+
+peakNB_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Click, y=exp(emmean), group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=exp(asymp.UCL)),
+                width=0.9, position="dodge") +
+  facet_wrap("Layer")+
+  ggtitle("Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_basenorm_20.png")
+
+# Multilevel Anova
+peakNB_lmer <-
+  lmer(log(BasePeak) ~ Layer * Click * Group + (1 | Animal),
+       data=peakNB,
+       subset = (ClickFreq %in% c("70")),
+       REML=TRUE)
+write.csv(anova(peakNB_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_ANOVA_basenorm_70.csv")
+
+
+# posthoc contrasts
+peakNB_emm <-
+  emmeans(peakNB_lmer, pairwise ~ Group | Click:Layer, p.adjust="hochberg")
+peakNB_eff <-
+  eff_size(peakNB_emm, sigma=sigma(peakNB_lmer),
+           edf=df.residual(peakNB_lmer))
+write_csv(left_join(as_tibble(peakNB_emm$contrasts),
+                    mutate(as_tibble(peakNB_eff),
+                           contrast = str_remove_all(contrast, '[()]')),
+                    by = join_by(contrast, Click, Layer),
+                    suffix=c(".contr", ".eff_size")),
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_emmeans_basenorm_70.csv")
+
+# bar plots
+peakNB_emm_4fig <-
+  emmeans(peakNB_lmer, specs=c("Click","Layer", "Group"))
+
+peakNB_emm_4fig %>%
+  as_tibble() %>%
+  ggplot(aes(x=Click, y=exp(emmean), group=Group, color=Group, fill=Group)) +
+  geom_bar(stat="identity", position="dodge") +
+  ylim(0, NA) +
+  geom_errorbar(aes(ymin=asymp.LCL, ymax=exp(asymp.UCL)),
+                width=0.9, position="dodge") +
+  facet_wrap("Layer")+
+  ggtitle("Peaks")
+
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_NB2pt5Hzpeaks_basenorm_70.png")
+
+
+

@@ -1,4 +1,9 @@
-## MASKED CALL 4 levels - between group
+## MASKED CALL 4 levels - between group (mask normalized on baseline normalization)
+library(tidyverse)
+library(Matrix)
+library(lme4)
+library(lmerTest)
+library(emmeans)
 
 peakMC <- read_csv("E:/CSD_Riverside/output/CaliAwake/TracePeaks/VMAvPMA_MaskCallNormalization.csv")%>%
   mutate(Mask = ordered(SoundLevel))
@@ -11,7 +16,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(1)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_1_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_1_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -25,7 +30,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_1_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_1_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -41,7 +46,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 1")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_1_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_1_masknorm.png")
 
 ## second call
 # Multilevel Anova
@@ -50,7 +55,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(2)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_2_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_2_masknorm_ANOVA.csv")
 
 # posthoc contrasts
 peakMC_emm <-
@@ -63,7 +68,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_2_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_2_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -79,7 +84,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 2")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_2_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_2_masknorm.png")
 
 ## third call
 # Multilevel Anova
@@ -88,7 +93,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(3)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_3_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_3_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -102,7 +107,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_3_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_3_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -118,7 +123,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 3")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_3_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_3_masknorm.png")
 
 
 ## fourth call
@@ -128,7 +133,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(4)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_4_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_4_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -142,7 +147,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_4_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_4_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -158,7 +163,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 4")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_4_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_4_masknorm.png")
 
 
 ## fifth call
@@ -168,7 +173,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(5)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_5_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_5_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -182,7 +187,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_5_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_5_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -198,7 +203,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 5")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_5_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_5_masknorm.png")
 
 
 ## sixth call
@@ -208,7 +213,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(6)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_6_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_6_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -222,7 +227,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_6_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_6_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -238,7 +243,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 6")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_6_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_6_masknorm.png")
 
 
 ## seventh call
@@ -248,7 +253,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(7)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_7_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_7_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -262,7 +267,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_7_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_7_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -278,7 +283,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 7")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_7_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_7_masknorm.png")
 
 
 ## eigth call
@@ -288,7 +293,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(8)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_8_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_8_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -302,7 +307,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_8_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_8_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -318,7 +323,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 8")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_8_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_8_masknorm.png")
 
 
 ## ninth call
@@ -328,7 +333,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(9)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_9_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_9_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -342,7 +347,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_9_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_9_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -358,7 +363,7 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 9")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_9_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_9_masknorm.png")
 
 ## tenth call
 # Multilevel Anova
@@ -367,7 +372,7 @@ peakMC_lmer <-
        data=peakMC,
        subset = (OrderofCall %in% c(10)),
        REML=TRUE)
-write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_10_masknorm_ANOVA.csv")
+write.csv(anova(peakMC_lmer),"E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_10_masknorm_ANOVA.csv")
 
 
 # posthoc contrasts
@@ -381,7 +386,7 @@ write_csv(left_join(as_tibble(peakMC_emm$contrasts),
                            contrast = str_remove_all(contrast, '[()]')),
                     by = join_by(contrast, Layer, Mask),
                     suffix=c(".contr", ".eff_size")),
-          "E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_10_masknorm_emmeans.csv")
+          "E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_10_masknorm_emmeans.csv")
 
 # bar plots
 peakMC_emm_4fig <-
@@ -397,4 +402,4 @@ peakMC_emm_4fig %>%
   facet_wrap("Layer") +
   ggtitle("Peaks normed for Call 10")
 
-ggsave("E:/CSD_Riverside/output/CaliAwake/ITPCmean/CaliAwake_MCpeaks_10_masknorm.png")
+ggsave("E:/CSD_Riverside/output/CaliAwake/TracePeaks/CaliAwake_MCpeaks_10_masknorm.png")
