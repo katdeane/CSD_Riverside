@@ -33,7 +33,7 @@ if ~exist(figfold, 'dir')
 end
 
 % set consistently needed variables
-Groups = {'AWT' 'AKO' 'CKH'};  %'AWT' 'AKO' 'CKH'
+Groups = {'AWT' 'AKO'};  %'AWT' 'AKO' 'CKH'
 % Condition = {'NoiseBurst'};
 Condition = {'NoiseBurst' 'Spontaneous' 'ClickTrain' 'Chirp' ...
     'gapASSR' 'postNoiseBurst'}; % 'Tonotopy'
